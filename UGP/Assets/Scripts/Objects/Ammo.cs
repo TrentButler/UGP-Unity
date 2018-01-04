@@ -2,6 +2,6 @@
 {
     public abstract class Ammo : Item
     {
-        int Count;
+        public int Count;
     }
 }
