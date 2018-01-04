@@ -1,16 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+namespace Trent
+{
+    [CreateAssetMenu(fileName = "Hammer", menuName = "Hammer", order = 1)]
+    public class Hammer : ScriptableObject, IDamager, IRepair
+    {
+        public float DamageFactor;
+        public float RepairFactor;
 
-public class Hammer : MonoBehaviour {
+        public void DealRepair(float repairDealt, IRepairable r)
+        {
+            r.TakeRepair(RepairFactor);
+        }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        public void DealDamage(float damageDealt, IDamageable d)
+        {
+            d.TakeDamage(DamageFactor);
+        }
+    }
 }
