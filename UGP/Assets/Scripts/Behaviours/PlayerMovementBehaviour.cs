@@ -65,7 +65,7 @@ namespace Trent
 
             if (Input.GetKeyDown(KeyCode.LeftShift)) 
             {
-                Vector3 sprintVector = new Vector3(TurnHead * TurnSpeed, 0.0f, Forward * RunSpeed);
+                Vector3 sprintVector = new Vector3(Forward, WalkSpeed * RunSpeed);
                 HasSprinted = true;
                 //rb.AddForce(sprintVector);
                 transform.Translate(sprintVector);
