@@ -63,13 +63,14 @@ namespace Trent
             }
             #endregion
 
+            //NEEDS WORK
             if(Target)
             {
                 //FOLLOW THE TARGET
-                var t = Target.position + Offset;
-                //GetComponent<Transform>().Translate(t);
-                GetComponent<Transform>().position = t;
-                GetComponent<Transform>().LookAt(Target);
+                //var t = Target.position + Offset;
+                ////GetComponent<Transform>().Translate(t);
+                //GetComponent<Transform>().position = t;
+                //GetComponent<Transform>().LookAt(Target);
             }
         }
     }
