@@ -37,6 +37,17 @@ namespace Trent
             
             Vector3 movementVector = new Vector3(TurnHead * TurnSpeed, 0.0f, Forward * WalkSpeed);
 
+            var deltaX = Input.GetAxis("Mouse X"); //GET THE MOUSE DELTA X
+            var deltaY = Input.GetAxis("Mouse Y"); //GET THE MOUSE DELTA Y
+
+            Vector3 rotX = new Vector3(-deltaY, 0, 0);
+            Vector3 rotY = new Vector3(0, deltaX, 0);
+
+            Quaternion rot = Quaternion.Euler(rotX); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
+            transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+           rot = Quaternion.Euler(rotY); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
+            transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+        
             if(Input.GetKeyDown(KeyCode.Space)) //JUMP
             { 
                 Vector3 jumpVector = new Vector3(0, 1 * JumpStrength, 0);
