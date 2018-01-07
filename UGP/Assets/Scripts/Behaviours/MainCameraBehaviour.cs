@@ -8,7 +8,6 @@ namespace Trent
 {
     public class MainCameraBehaviour : MonoBehaviour
     {
-        public Transform Target;
         public Vector3 Offset;
         public float CameraRotation;
         public float cameraSpeed = 1.0f;
@@ -21,8 +20,7 @@ namespace Trent
 
         private void FixedUpdate()
         {
-            if(!Target)
-                #region MouseLook
+            #region MouseLook
             //CALCULATE AN MOUSE DELTA
             //DERIVE AN DIRECTION
             //LERP BETWEEN THE CURRENT CAMERA ROTATION TO AN NEW CAMERA ROTATION
@@ -59,19 +57,9 @@ namespace Trent
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 //RESET THE CAMERA'S ROTATION TO ZERO
-                ResetCamera();
+                //ResetCamera();
             }
             #endregion
-
-            //NEEDS WORK
-            if(Target)
-            {
-                //FOLLOW THE TARGET
-                //var t = Target.position + Offset;
-                ////GetComponent<Transform>().Translate(t);
-                //GetComponent<Transform>().position = t;
-                //GetComponent<Transform>().LookAt(Target);
-            }
         }
     }
 }
