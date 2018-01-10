@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using System.IO;
 
 
@@ -8,7 +9,7 @@ namespace Trent
 {
 
 
-    public class PlayerMovementBehaviour : MonoBehaviour
+    public class PlayerMovementBehaviour : NetworkBehaviour
     {
         public float WalkSpeed = 1.0f;
         public float RunSpeed = 1.0f;
@@ -29,9 +30,17 @@ namespace Trent
                 rb = gameObject.AddComponent<Rigidbody>();
             }
         }
-       
+        public override void OnStartLocalPlayer()
+        {
+            GetComponent<MeshRenderer>().material.color = Color.white;
+        }
         void FixedUpdate()
         {
+            if(!isLocalPlayer)
+            {
+                return;
+            }
+            //OnStartLocalPlayer();
             var Forward = Input.GetAxis("Vertical");
             var TurnHead = Input.GetAxis("Horizontal");
             
