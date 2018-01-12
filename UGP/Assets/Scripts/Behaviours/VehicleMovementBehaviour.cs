@@ -29,6 +29,9 @@ namespace Trent
 
         private Rigidbody rb;
 
+        private VehicleShootBehaviour shootBehaviour;
+
+
         public void Steer(Vector3 force)
         {
             //var rot = Quaternion.Euler(new Vector3(0, force, 0));
@@ -116,6 +119,8 @@ namespace Trent
         {
             mode = VehicleState.DRIVE;
 
+            shootBehaviour = GetComponentInParent<VehicleShootBehaviour>();
+
             rb = GetComponent<Rigidbody>();
 
             if (!rb)
@@ -164,8 +169,9 @@ namespace Trent
                             rb.AddForce(hoverVector);
                         }
                         #endregion
-                        
+
                         //KeepVehicleUpright();
+                        shootBehaviour.enabled = false;
 
                         Steer(steerVector);
 
@@ -196,6 +202,8 @@ namespace Trent
                         #endregion
 
                         //KeepVehicleUpright();
+
+                        shootBehaviour.enabled = true;
 
                         Aim();
 
