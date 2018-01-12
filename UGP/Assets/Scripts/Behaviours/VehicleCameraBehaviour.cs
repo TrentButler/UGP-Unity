@@ -2,71 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VehicleCameraBehaviour : MonoBehaviour {
 
-    public bool IsActive;
-    public Transform Target;
-    public Vector3 Offset;
-    public float CameraRotation;
-    public float cameraSpeed = 1.0f;
-    public float cameraTranslationSpeed = 1.0f;
-
-    private void Start()
+namespace Trent
+{
+    public class VehicleCameraBehaviour : MonoBehaviour
     {
-        transform.SetParent(Target);
-    }
+        private VehicleMovementBehaviour behaviour;
+        private GameObject aimCamera;
+        private GameObject followCamera;
 
-    public void ResetCamera()
-    {
-        transform.rotation = Quaternion.identity; //ZERO OUT THE ROTATION
-    }
-
-    private void LateUpdate()
-    {
-        #region MouseLook
-        //CALCULATE AN MOUSE DELTA
-        //DERIVE AN DIRECTION
-        //LERP BETWEEN THE CURRENT CAMERA ROTATION TO AN NEW CAMERA ROTATION
-        if (Input.GetMouseButton(1))
+        private void Start()
         {
-            var deltaX = Input.GetAxis("Mouse X"); //GET THE MOUSE DELTA X
-            var deltaY = Input.GetAxis("Mouse Y"); //GET THE MOUSE DELTA Y
-
-            Vector3 rotX = new Vector3(-deltaY, 0, 0);
-            Vector3 rotY = new Vector3(0, deltaX, 0);
-
-            Quaternion rot = Quaternion.Euler(rotX); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
-            transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
-
-            rot = Quaternion.Euler(rotY); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
-            transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+            behaviour = GetComponentInParent<VehicleMovementBehaviour>();
+            aimCamera = GameObject.Find("AimCamera");
+            followCamera = GameObject.Find("FollowCamera");
         }
 
-        //TRANSLATE THE CAMERA BASED ON CLICKDRAG DELTA
-        if (Input.GetMouseButton(2))
+        private void LateUpdate()
         {
-            var dX = Input.GetAxis("Mouse X"); //GET THE DELTA MOUSE X
-            var dY = Input.GetAxis("Mouse Y"); //GET THE DELTA MOUSE Y
+            switch(behaviour.mode)
+            {
+                case VehicleState.DRIVE:
+                    {
+                        //SWITCH TO FOLLOW CAMERA
+                        followCamera.SetActive(true);
+                        aimCamera.SetActive(false);
+                        break;
+                    }
 
-            Vector3 trans = new Vector3(-(dX * cameraTranslationSpeed), -(dY * cameraTranslationSpeed), 0); //DERIVE A TRANSLATION VECTOR
-            GetComponent<Transform>().Translate(trans); //APPLY THE TRANSLATION TO THE CAMERA'S TRANSFORM
+                case VehicleState.COMBAT:
+                    {
+                        //SWITCH TO AIM CAMERA
+                        aimCamera.SetActive(true);
+                        followCamera.SetActive(false);
+
+                        var rot = aimCamera.transform.rotation;
+                        rot[0] = 0.0f;
+                        rot[2] = 0.0f;
+
+                        behaviour.Aim(rot);
+                        break;
+                    }
+            }
         }
-
-        //MOVE THE CAMERA EITHER FORWARD OR BACKWARD FROM MOUSE SCROLL
-        var scrollDelta = Input.GetAxis("Mouse ScrollWheel"); //GET THE MOUSE SCROLL DELTA
-        Vector3 translation = new Vector3(0, 0, scrollDelta * cameraSpeed); //DERIVE A TRANSLATION VECTOR
-        GetComponent<Transform>().Translate(translation); //TRANSLATE THE CAMERA'S TRANSFORM
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            //RESET THE CAMERA'S ROTATION TO ZERO
-            //ResetCamera();
-        }
-        #endregion
-
-        Vector3 t = Target.position + Offset;
-        transform.position = t;
-
-        //transform.rotation = Target.rotation;
     }
 }

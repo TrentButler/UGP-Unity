@@ -18,12 +18,12 @@ namespace Trent
 
         public float MaxSpeed = 1.0f;
         public float TurnSpeed = 1.0f;
-        public float TurnStrength = 1.0f;
         public float hoverStrength = 1.0f;
         public float TargetHeight = 4.0f;
 
-        public float BoostStrength = 1.0f;
+        //public float BoostStrength = 1.0f;
         public float JumpStrength = 1.0f;
+        public float StrafeSpeed = 1.0f;
 
         public Transform ThrusterPosition;
 
@@ -45,24 +45,28 @@ namespace Trent
 
         public void Aim()
         {
-            var deltaX = Input.GetAxis("Mouse X"); //GET THE MOUSE DELTA X
-            var deltaY = Input.GetAxis("Mouse Y"); //GET THE MOUSE DELTA Y
+            //var deltaX = Input.GetAxis("Mouse X"); //GET THE MOUSE DELTA X
+            //var deltaY = Input.GetAxis("Mouse Y"); //GET THE MOUSE DELTA Y
 
-            Vector3 rotX = new Vector3(-deltaY, 0, 0);
-            Vector3 rotY = new Vector3(0, deltaX, 0);
+            //Vector3 rotX = new Vector3(-deltaY, 0, 0);
+            //Vector3 rotY = new Vector3(0, deltaX, 0);
 
-            Quaternion rot = Quaternion.Euler(rotX); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
-            //transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+            ////Quaternion rot = Quaternion.Euler(rotX); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
+            ////transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
 
-            var firstRot = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
-            transform.SetPositionAndRotation(transform.position, firstRot);
+            ////var firstRot = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+            ////transform.SetPositionAndRotation(transform.position, firstRot);
 
 
-            rot = Quaternion.Euler(rotY); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
-            //transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+            //Quaternion rot = Quaternion.Euler(rotY); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
+            ////transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
 
-            var secondRot = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
-            transform.SetPositionAndRotation(transform.position, secondRot);
+            //var secondRot = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+            //transform.SetPositionAndRotation(transform.position, secondRot);
+        }
+        public void Aim(Quaternion rot)
+        {
+            transform.rotation = rot;
         }
 
         public void Jump()
@@ -72,7 +76,42 @@ namespace Trent
             rb.AddForce(jumpVector);
         }
 
+        public void ResetVehicleRotation()
+        {
 
+            var x = Mathf.Abs(transform.up.x);
+            var y = Mathf.Abs(transform.up.y);
+            var z = Mathf.Abs(transform.up.z);
+
+            rb.isKinematic = true;
+
+            var currRot = transform.rotation; //GET THE CURRENT ROTATION OF THE VEHICLE
+            currRot[0] = 0.0f; //RESET THE X ROTATION OF THE VEHICLE
+            currRot[2] = 0.0f; //RESET THE Z ROTATION OF THE VEHICLE
+
+            rb.rotation = currRot;
+            transform.rotation = currRot;
+
+            rb.isKinematic = false;
+        }
+
+        private void KeepVehicleUpright()
+        {
+            //DETERMINE THE DELTA OF THE CURRENT X AND Z ROTATION OF THE VEHICLE
+            //APPLY THE INVERSE OF THE DELTA TO EACH ROTATION
+
+            var rot = transform.rotation;
+            var dX = 0 - rot[0];
+            var dZ = 0 - rot[2];
+
+            if (dX > 0.0f || dX < 0.0f || dZ > 0.0f || dZ < 0.0f)
+                rot[0] = Mathf.LerpAngle(dX, 0.0f, 1.0f);
+                rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
+
+                rb.rotation = rot;
+                transform.rotation = rot;
+        }
+        
         void Start()
         {
             mode = VehicleState.DRIVE;
@@ -81,10 +120,6 @@ namespace Trent
 
             if (!rb)
                 rb = gameObject.AddComponent<Rigidbody>();
-
-            //NEEDS WORK
-            //rb.useGravity = false;
-            rb.constraints = RigidbodyConstraints.FreezeRotationZ;
         }
 
         //NEEDS WORK
@@ -96,7 +131,7 @@ namespace Trent
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 steerVector = new Vector3(0.0f, turnVehicle * TurnSpeed, 0.0f);
             
-            if(Input.GetKey(KeyCode.LeftControl))
+            if(Input.GetKey(KeyCode.LeftShift))
             {
                 mode = VehicleState.COMBAT;
             }
@@ -125,48 +160,57 @@ namespace Trent
                             Vector3 hoverVector = Vector3.up * vertForce * hoverStrength;
 
                             //Debug.Log(hoverVector); //DELETE THIS
-
+                            
                             rb.AddForce(hoverVector);
                         }
                         #endregion
-
+                        
+                        //KeepVehicleUpright();
 
                         Steer(steerVector);
 
-                        transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
+                        if (Input.GetKeyDown(KeyCode.LeftAlt))
+                            ResetVehicleRotation();
 
-                        //rb.AddForceAtPosition(accelerationVector, ThrusterPosition.forward);
-                        //rb.AddRelativeTorque(movementVector);
+                        transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
+                        
                         break;
                     }
 
                 case VehicleState.COMBAT:
                     {
                         #region HOVERVECTORCALCULATION
-                        //PERFORM A RAYCAST DOWNWARD, 
-                        //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
-                        //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
-                        RaycastHit hit;
-                        if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
-                        {
-                            var vertForce = (TargetHeight - hit.distance) / TargetHeight;
-                            Vector3 hoverVector = Vector3.up * vertForce * hoverStrength;
+                        ////PERFORM A RAYCAST DOWNWARD, 
+                        ////CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
+                        ////GENERATE A 'hoverVector' BASED ON THIS CALCULATION
+                        //RaycastHit hit;
+                        //if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
+                        //{
+                        //    var vertForce = (TargetHeight - hit.distance) / TargetHeight;
+                        //    Vector3 hoverVector = Vector3.up * vertForce * hoverStrength;
 
-                            //Debug.Log(hoverVector); //DELETE THIS
+                        //    //Debug.Log(hoverVector); //DELETE THIS
 
-                            rb.AddForce(hoverVector);
-                        }
+                        //    rb.AddForce(hoverVector);
+                        //}
                         #endregion
 
-                        Aim();
-                        
-                        transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
+                        //KeepVehicleUpright();
 
-                        //rb.AddForceAtPosition(accelerationVector, ThrusterPosition.position);
-                        //rb.AddRelativeTorque(movementVector);
+                        Aim();
+
+                        if (Input.GetKeyDown(KeyCode.LeftAlt))
+                            ResetVehicleRotation();
+                        
+                        transform.Translate(((new Vector3(turnVehicle, 0, throttle) * StrafeSpeed) * Time.fixedDeltaTime));
                         break;
                     }
             }
+        }
+
+        private void LateUpdate()
+        {
+            KeepVehicleUpright();
         }
     }
 }
