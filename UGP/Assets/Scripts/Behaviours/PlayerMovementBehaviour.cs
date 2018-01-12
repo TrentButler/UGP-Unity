@@ -9,8 +9,21 @@ namespace Trent
 {
 
 
+    public enum PlayerState
+    {
+        idle = 0,
+        move = 1,
+        driving = 2,
+        sitting = 3,
+        standing = 4,
+        viewing = 5,
+    }
+
     public class PlayerMovementBehaviour : NetworkBehaviour
     {
+
+        public PlayerState state;
+
         public float WalkSpeed = 1.0f;
         public float RunSpeed = 1.0f;
         public float JumpStrength = 1.0f;
@@ -19,6 +32,7 @@ namespace Trent
         private bool CanMove;
         public bool IsSitting = false;
         public bool IsStanding = false;
+        public bool IsViewing = false;
 
         private bool HasJumped;
         private bool HasSprinted;
@@ -28,6 +42,7 @@ namespace Trent
         // Use this for initialization
         void Start()
         {
+            state = PlayerState.idle;
             CanMove = true;
             rb = GetComponent<Rigidbody>();
             if (!rb)
@@ -45,6 +60,7 @@ namespace Trent
 
             if (other.tag == "ChairCollider")
             {
+                state = PlayerState.sitting;
                 transform.position = other.GetComponent<Transform>().position;
                 transform.rotation = other.GetComponent<Transform>().rotation;
                 Debug.Log("Test");
@@ -54,12 +70,33 @@ namespace Trent
             }
             if(other.tag == "ToolCollider")
             {
+                state = PlayerState.standing;
                 transform.position = other.GetComponent<Transform>().position;
                 transform.rotation = other.GetComponent<Transform>().rotation;
                 Debug.Log("Test");
                 CanMove = false;
                 rb.isKinematic = true;
                 IsStanding = true;
+            }
+            if (other.tag == "HoverCraftCollider")
+            {
+                state = PlayerState.viewing;
+                transform.position = other.GetComponent<Transform>().position;
+                transform.rotation = other.GetComponent<Transform>().rotation;
+                Debug.Log("Test");
+                CanMove = false;
+                rb.isKinematic = true;
+                IsViewing = true;
+            }
+            if (other.tag == "DockCollider")
+            {
+                state = PlayerState.viewing;
+                transform.position = other.GetComponent<Transform>().position;
+                transform.rotation = other.GetComponent<Transform>().rotation;
+                Debug.Log("Test");
+                CanMove = false;
+                rb.isKinematic = true;
+                IsSitting = true;
             }
         }
 
@@ -68,6 +105,7 @@ namespace Trent
             if(IsSitting)
                 if (Input.GetKeyDown(KeyCode.F))
                 {
+                    state = PlayerState.move;
                     //GET OUT OF CHAIR
                     Vector3 getOutPosition = new Vector3(2.5f, 0, 0);
                     transform.position = transform.position + getOutPosition;
@@ -78,6 +116,7 @@ namespace Trent
             if (IsStanding)
                 if (Input.GetKeyDown(KeyCode.F))
                 {
+                    state = PlayerState.move;
                     //GET OUT OF ToolBelt
                     Vector3 getOutPosition = new Vector3(-1.5f, 0, 0);
                     transform.position = transform.position + getOutPosition;
@@ -85,13 +124,31 @@ namespace Trent
                     CanMove = true;
                     rb.isKinematic = false;
                 }
+            if (IsViewing)
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    state = PlayerState.move;
+                    //GET OUT OF HoverCraftView
+                    Vector3 getOutPosition = new Vector3(1.5f, 0, 0);
+                    transform.position = transform.position + getOutPosition;
+                    IsViewing = false;
+                    CanMove = true;
+                    rb.isKinematic = false;
+                }
+            if (state == PlayerState.move)
+            {
+                IsStanding = false;
+                IsSitting = false;
+            }
+           
 
             if (CanMove == true)
             {
                 IsSitting = false;
-
+                state = PlayerState.move;
                 if (!isLocalPlayer)
                 {
+                  
                     return;
                 }
                 //OnStartLocalPlayer();

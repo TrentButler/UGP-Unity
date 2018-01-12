@@ -7,9 +7,7 @@ namespace Trent
 
     public class GarageCameraBehaviour : MonoBehaviour
     {
-
-        public Transform Player;
-
+        #region Camera
         public Transform SecurityCam1;
 
         public Transform SecurityPost;
@@ -17,13 +15,23 @@ namespace Trent
         public Transform ToolStationCam1;
 
         public Transform ComputerCam1;
+
+        public Transform HoverCarCam1;
+
+
+        #endregion Camera
+        #region PlayerInteraction
+        private PlayerMovementBehaviour player;
+
+        public Transform Player;
         public Transform PlayerSeat;
-        public Collider ComputerChair;
-
-        public Transform ToolStation1;
         public Transform ToolStationStand;
-        public Collider ToolStationCollider;
+        public Transform ToolStation1;
 
+        public Collider ToolStationCollider;
+        public Collider ComputerChair;
+        public Collider HoverCarCollider;
+        #endregion PlayerInteraction
         public Vector3 Offset;
 
         // Use this for initialization
@@ -31,46 +39,56 @@ namespace Trent
         {
             transform.position = SecurityCam1.position;
             transform.rotation = SecurityCam1.rotation;
-            var player = FindObjectsOfType<PlayerMovementBehaviour>();
+            player = FindObjectOfType<PlayerMovementBehaviour>();
 
         }
 
-        public void PlayerSitCameraChange()
-        {
-            var player = FindObjectOfType<PlayerMovementBehaviour>();
-            if (player.IsSitting == true)
-            {
-                transform.position = ComputerCam1.position;
-                transform.rotation = ComputerCam1.rotation;
-
-            }
-
-            if (player.IsSitting == false)
-            {
-                transform.position = SecurityPost.position;
-                transform.rotation = SecurityPost.rotation;
-            }
-        }
-        public void PlayerStandCameraChange()
-        {
-            var player = FindObjectOfType<PlayerMovementBehaviour>();
-            if (player.IsStanding == true)
-            {
-                transform.position = ToolStationCam1.position;
-                transform.rotation = ToolStationCam1.rotation;
-            }
-            if (player.IsStanding == false)
-            {
-                transform.position = SecurityPost.position;
-                transform.rotation = SecurityPost.rotation;
-            }
 
 
-        }
+
+
         void FixedUpdate()
         {
-            PlayerStandCameraChange();
-            PlayerSitCameraChange();
+
+            player = FindObjectOfType<PlayerMovementBehaviour>();
+        
+            switch (player.state)
+            {
+                case PlayerState.idle:
+                    {
+                        transform.position = SecurityCam1.position;
+                        transform.rotation = SecurityCam1.rotation;
+                        break;
+                    }
+                case PlayerState.move:
+                    {
+                        transform.position = SecurityCam1.position;
+                        transform.rotation = SecurityCam1.rotation;
+                        SecurityCam1.position = SecurityPost.position;
+                        SecurityCam1.rotation = SecurityPost.rotation;
+                        break;
+                    }
+                case PlayerState.sitting:
+                    {
+                        transform.position = ComputerCam1.position;
+                        transform.rotation = ComputerCam1.rotation;
+
+                        break;
+                    }
+                case PlayerState.standing:
+                    {
+                        transform.position = ToolStationCam1.position;
+                        transform.rotation = ToolStationCam1.rotation;
+                        break;
+                    }
+                case PlayerState.viewing:
+                    {
+                        transform.position = HoverCarCam1.position;
+                        transform.rotation = HoverCarCam1.rotation;
+                        break;
+                    }
+            }
+
             //var player = FindObjectOfType<PlayerMovementBehaviour>();
             //if(player.IsSitting == true)
             //{
@@ -113,12 +131,13 @@ namespace Trent
             //    transform.rotation = ComputerCam1.rotation;
             //}
         }
-        void Update()
+        void LateUpdate()
         {
-
         }
     }
 }
+
+
 
 
 
