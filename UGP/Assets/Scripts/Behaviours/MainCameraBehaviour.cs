@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Trent
+namespace UGP
 {
     public class MainCameraBehaviour : MonoBehaviour
     {

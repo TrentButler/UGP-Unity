@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace Trent
+namespace UGP
 {
     public abstract class Item : ScriptableObject { }
 }

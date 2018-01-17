@@ -1,4 +1,4 @@
-﻿namespace Trent
+﻿namespace UGP
 {
     public abstract class Ammo : Item
     {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-namespace Trent
+namespace UGP
 {
-    [CreateAssetMenu(fileName = "RocketRound", menuName = "AmmoType/Rocket", order = 3)]
+    [CreateAssetMenu(fileName = "RocketRound", menuName = "AmmoType/Rocket", order = 1)]
     public class RocketRound : Ammo, IShootable
     {
     }

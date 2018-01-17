@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace Trent
+namespace UGP
 {
     [CreateAssetMenu(fileName = "AmmoBox", menuName = "AmmoBox", order = 3)]
     public class AmmoBox : Item, ICollectable

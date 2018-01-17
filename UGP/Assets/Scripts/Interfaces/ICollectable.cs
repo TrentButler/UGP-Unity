@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-namespace Trent
+namespace UGP
 {
     public interface ICollectable
     {

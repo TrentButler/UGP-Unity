@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-namespace Trent
+namespace UGP
 {
     [CreateAssetMenu(fileName = "Hammer", menuName = "Hammer", order = 1)]
     public class Hammer : Item, IDamager, IRepair, ICollectable

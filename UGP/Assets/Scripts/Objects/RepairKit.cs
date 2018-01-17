@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-namespace Trent
+namespace UGP
 {
     [CreateAssetMenu(fileName = "RepairKit", menuName = "RepairKit", order = 2)]
     public class RepairKit : Item, IRepair, ICollectable

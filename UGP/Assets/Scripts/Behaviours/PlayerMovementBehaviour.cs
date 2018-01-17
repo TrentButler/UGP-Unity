@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 using System.IO;
 
 
-namespace Trent
+namespace UGP
 {
 
 

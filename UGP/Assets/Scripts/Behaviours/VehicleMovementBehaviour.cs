@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Trent
+namespace UGP
 {
     public enum VehicleState
     {
@@ -30,7 +30,6 @@ namespace Trent
         private Rigidbody rb;
 
         private VehicleShootBehaviour shootBehaviour;
-
 
         public void Steer(Vector3 force)
         {

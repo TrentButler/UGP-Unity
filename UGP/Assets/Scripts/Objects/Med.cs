@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-namespace Trent
+namespace UGP
 {
-    [CreateAssetMenu(fileName = "Med", menuName = "Med", order = 0)]
+    [CreateAssetMenu(fileName = "Med", menuName = "Med", order = 2)]
     public class Med : Item, IConsumable, ICollectable
     {
         public float HealFactor;

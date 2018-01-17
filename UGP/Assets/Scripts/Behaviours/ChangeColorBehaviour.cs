@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-namespace Trent
+namespace UGP
 {
-
-
     public class ChangeColorBehaviour : MonoBehaviour {
 
         public Transform HoverCraft;

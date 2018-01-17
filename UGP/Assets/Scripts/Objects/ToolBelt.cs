@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Trent
+namespace UGP
 {
     [CreateAssetMenu(fileName = "ToolBelt", menuName = "ToolBelt", order = 4)]
     public class ToolBelt : Item
@@ -13,15 +13,22 @@ namespace Trent
 
         public void AddItem(Item i)
         {
+
+            //ITEMS ARE STACKABLE, BE SURE TO HANDLE THAT HERE
+
             if (!items.Contains(i))
-                items.Add(i);
+                if(items.Count < capacity)
+                    items.Add(i);
         }
 
         public void RemoveItem(int index)
         {
-            var removeThis = items[index];
-            if(!removeThis)
-                items.RemoveAt(index);
+            if(items.Count < 0)
+            {
+                var removeThis = items[index];
+                if (!removeThis)
+                    items.RemoveAt(index);
+            }   
         }
     }
 }
