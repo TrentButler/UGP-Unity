@@ -14,9 +14,31 @@ namespace UGP
         //NEEDS WORK
         public void AddItem(Item i)
         {
-
             //ITEMS ARE STACKABLE, BE SURE TO HANDLE THAT HERE
             //TEST OUT THE ADDING OF ITEMS, CHECK FOR 'type mismatch'
+
+            
+
+            //DETERMINE THE TYPE OF THE ITEM THAT IS BEING ADDED,
+            //USE A SWITCH STATEMENT TO HANDLE THE SPECIFIC ADDING OF THE ITEM TYPE
+
+            //var t = i.GetType();
+
+            //switch(t)
+            //{
+            //    case Med:
+            //        {
+            //            break;
+            //        }
+            //}
+
+
+
+            if (items.Contains(i))
+            {
+                var item = i;
+                Debug.Log(item);
+            }
 
             if (!items.Contains(i))
                 if(items.Count < capacity)

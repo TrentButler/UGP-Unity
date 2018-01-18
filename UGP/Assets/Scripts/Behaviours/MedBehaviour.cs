@@ -36,13 +36,14 @@ namespace UGP
         //TYPE MISMATCH ON PICKUP
         public void PickUp(Player p)
         {
-            p.toolBelt.AddItem(_med as Item);
+            p.toolBelt.AddItem(_med);
             Destroy(gameObject);
+            Destroy(lightGO);
         }
 
         void Start()
         {
-            _med = Instantiate(med) as Med;
+            _med = med;
 
             //lightGO = new GameObject(med.name + " Light");
             //var light = lightGO.AddComponent<Light>();
