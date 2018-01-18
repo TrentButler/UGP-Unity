@@ -37,7 +37,7 @@ namespace UGP
         {
             //INCREMENT VEHICLE HEALTH, CLAMP THE VALUE BETWEEN 0.0F AND THE 'MaxHealth'
 
-            _health += healthTaken;
+            _health += repairTaken;
             _health = Mathf.Clamp(_health, 0.0f, MaxHealth);
         }
     }
