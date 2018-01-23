@@ -7,30 +7,32 @@ namespace UGP
 {
     public class ToolWallBehaviour : MonoBehaviour
     {
-        public GameObject model;
+        public Canvas canvas;
 
-        public Transform originPoint;
-        public float Spacing;
+        public Vector2 CanvasBounds;
+
+        public float ItemSpacing;
+        public int rows;
+        public int cols;
 
         public ToolBelt wallToolBelt;
 
-        private List<GameObject> grid;
+        private List<Vector3> grid;
         public List<GameObject> items;
 
         public void GenerateGrid()
         {
-            int r = wallToolBelt.Capacity;
-            for (int rows = 0; rows < r; rows++)
+            for (int r = 0; r < rows; r++)
             {
-                for (int cols = 0; cols < r; cols++)
+                for (int c = 0; c < cols; c++)
                 {
                     //CREATE A POSITION HORIZONTALLY AND VERTICALLY
-                    Vector3 pos = new Vector3(cols * Spacing, -rows * Spacing, 0.0f);
+                    Vector3 p = new Vector3(c * ItemSpacing, -r * ItemSpacing, 0.0f);
+                    var pos = canvas.transform.position;
+                    
+                    Vector3 position = p + pos;
 
-                    var go = new GameObject();
-                    go.transform.position = pos + originPoint.position;
-
-                    grid.Add(go);
+                    grid.Add(position);
                 }
             }
         }
@@ -38,20 +40,26 @@ namespace UGP
         public void UpdateGrid()
         {
             var l = new List<Vector3>();
-            int r = wallToolBelt.Capacity;
-            for (int rows = 0; rows < r; rows++)
+
+            for (int r = 0; r < rows; r++)
             {
-                for (int cols = 0; cols < r; cols++)
+                for (int c = 0; c < cols; c++)
                 {
                     //CREATE A POSITION HORIZONTALLY AND VERTICALLY
-                    Vector3 pos = new Vector3(cols * Spacing, -rows * Spacing, 0.0f);
-                    l.Add(pos + originPoint.position);
+                    Vector3 p = new Vector3(c * ItemSpacing, -r * ItemSpacing, 0.0f);
+                    var pos = canvas.transform.position;
+
+                    Vector3 position = p + pos;
+
+                    l.Add(position);
                 }
             }
 
-            for(int i = 0; i < grid.Count; i++)
+            grid = l;
+
+            for (int i = 0; i < items.Count; i++)
             {
-                grid[i].transform.position = l[i];
+                items[i].transform.position = grid[i];
             }
         }
 
@@ -99,13 +107,18 @@ namespace UGP
             items.Clear();
             items = new List<GameObject>();
 
-            for(int i = 0; i < l.Count; i++)
+            for(int i = 0; i < 10; i++)
             {
-                var pos = grid[i].transform;
-                var itemGO = LoadItemPrefab(l[i].GetType().ToString(), l[i]);
+                var pos = grid[i];
+                //var itemGO = LoadItemPrefab(l[i].GetType().ToString(), l[i]);
+                //var itemGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
 
-                itemGO.transform.position = pos.position;
-                itemGO.transform.rotation = pos.rotation;
+                var o = Resources.Load("RuntimePrefabs/UI/MedButtonPrefab") as GameObject;
+                var itemGO = Instantiate(o);
+                itemGO.transform.SetParent(canvas.transform);
+
+                itemGO.transform.position = pos;
+                //itemGO.transform.rotation = pos.rotation;
 
                 //var itemGO = Instantiate(itemModel, pos.position, pos.rotation);
                 items.Add(itemGO);
@@ -114,8 +127,13 @@ namespace UGP
         
         void Start()
         {
-            grid = new List<GameObject>();
+            grid = new List<Vector3>();
             items = new List<GameObject>();
+
+            canvas = Instantiate(canvas);
+            canvas.transform.SetParent(transform);
+            canvas.transform.position = transform.position;
+            canvas.transform.rotation = transform.rotation;
 
             GenerateGrid();
             PopulateGrid();
@@ -124,8 +142,19 @@ namespace UGP
         
         void Update()
         {
-            PopulateGrid();
+            canvas.transform.position = transform.position;
+            canvas.transform.rotation = transform.rotation;
+            
+
+            var pos = canvas.transform.position;
+            var r = new Rect(pos, CanvasBounds);
+
+            var canvasRect = canvas.GetComponent<RectTransform>();
+            var c = canvasRect.rect;
+            c = r;
+
             UpdateGrid();
+            //PopulateGrid();            
         }
     }
 }
