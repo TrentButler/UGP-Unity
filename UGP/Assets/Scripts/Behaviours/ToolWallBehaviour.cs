@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UGP
 {
@@ -18,7 +19,7 @@ namespace UGP
 
         public void GenerateGrid()
         {
-            int r = wallToolBelt.capacity;
+            int r = wallToolBelt.Capacity;
             for (int rows = 0; rows < r; rows++)
             {
                 for (int cols = 0; cols < r; cols++)
@@ -37,7 +38,7 @@ namespace UGP
         public void UpdateGrid()
         {
             var l = new List<Vector3>();
-            int r = wallToolBelt.capacity;
+            int r = wallToolBelt.Capacity;
             for (int rows = 0; rows < r; rows++)
             {
                 for (int cols = 0; cols < r; cols++)
@@ -82,10 +83,13 @@ namespace UGP
             return null;
         }
 
+
+        //NEEDS WORK
+        //POPULATE 'grid' WITH A UI BUTTON ELEMENT FOR EACH ITEM IN THE LIST(S)
         public void PopulateGrid()
         {
             //ITERATE THROUGH ITEMS AND ADD A PREFAB AT A SPECIFIC LOCATION
-            var l = wallToolBelt.items;
+            var l = wallToolBelt.medical;
             
             for(int i = 0; i < items.Count; i++)
             {

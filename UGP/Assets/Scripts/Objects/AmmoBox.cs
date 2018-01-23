@@ -6,6 +6,12 @@ using UnityEditor;
 
 namespace UGP
 {
+
+    //NEEDS WORK, 
+    //FUNCTION(S) FOR HANDLING WHEN PLAYER SHOOTS A GIVEN AMMOTYPE
+    //FUNCTION(S) FOR HANDLING WHEN PLAYER PICKSUP ANOTHER AMMOBOX
+    //FUNCTION(S) FOR HANDLING WHEN PLAYER DROPS A GIVEN AMMOTYPE
+
     [CreateAssetMenu(fileName = "AmmoBox", menuName = "AmmoBox", order = 3)]
     public class AmmoBox : Item, ICollectable
     {

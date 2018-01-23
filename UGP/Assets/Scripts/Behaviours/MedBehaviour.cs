@@ -36,9 +36,9 @@ namespace UGP
         //TYPE MISMATCH ON PICKUP
         public void PickUp(Player p)
         {
-            p.toolBelt.AddItem(_med);
-            Destroy(gameObject);
-            Destroy(lightGO);
+            if(p.toolBelt.AddItem(_med))
+                Destroy(gameObject);
+                Destroy(lightGO);
         }
 
         void Start()

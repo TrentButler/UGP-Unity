@@ -2,148 +2,139 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace UGP
 {
     [CreateAssetMenu(fileName = "ToolBelt", menuName = "ToolBelt", order = 4)]
     public class ToolBelt : Item
     {
-        public List<Item> items = new List<Item>();
+        public int Capacity;
+        public List<Med> medical = new List<Med>();
+        public List<RepairKit> repairKits = new List<RepairKit>();
+        public List<Item> misc = new List<Item>();
+        public AmmoBox ammo;
 
-        //public Dictionary<string, List<Item>> toolBelt = new Dictionary<string, List<Item>>();
 
-        private List<string> keys;
-        private List<List<Item>> values;
-
-        public AmmoBox ammunition;
-        public int capacity;
-
-        public void DumpStartItems()
+        public bool AddItem(Item i)
         {
-            items.ForEach(x => { AddItem(x); });
-        }
+            var sItemType = i.GetType().ToString();
 
-        public void ClearToolBelt()
-        {
-            //toolBelt.Clear();
-            //toolBelt = new Dictionary<string, List<Item>>();
-        }
-        
-        public void AddItem(Item i)
-        {
-            //ITEMS ARE STACKABLE, BE SURE TO HANDLE THAT HERE
-            //TEST OUT THE ADDING OF ITEMS, CHECK FOR 'type mismatch'
-            //DETERMINE THE TYPE OF THE ITEM THAT IS BEING ADDED,
-            //USE A SWITCH STATEMENT TO HANDLE THE SPECIFIC ADDING OF THE ITEM TYPE
-
-
-            if (i != null)
+            switch (sItemType)
             {
-                items.Add(i);
+                case "UGP.Med":
+                    {
+                        if (medical.Count < Capacity)
+                        {
+                            if (i != null)
+                                medical.Add(i as Med);
+                                return true;
+                        }
+                        return false;
+                    }
+
+                case "UGP.RepairKit":
+                    {
+                        if (repairKits.Count < Capacity)
+                        {
+                            if (i != null)
+                                repairKits.Add(i as RepairKit);
+                                return true;
+                        }
+                        return false;
+                    }
+
+                case "UGP.Hammer":
+                    {
+                        if (misc.Count < Capacity)
+                        {
+                            if (i != null)
+                                misc.Add(i as Hammer);
+                                return true;
+                        }
+                        return false;
+                    }
+
+                default:
+                    {
+                        //CHECK IF ITEM IS NULL, THEN ADD TO 'misc' LIST
+                        if (misc.Count < Capacity)
+                        {
+                            if (i != null)
+                                misc.Add(i);
+                                return true;
+                        }
+                        return false;
+                    }
             }
-              
 
-
-            #region OLD
-            //string sItemType = i.GetType().ToString();
-
-
-            //if(sItemType != null)
-            //    if(!keys.Contains(sItemType))
-            //    {
-            //        //GENERATE A NEW KEY VALUE PAIR FOR THIS ITEM
-
-            //        //MAKE SURE YOU KNOW WHICH LIST IS WHICH
-
-            //        keys.Add(sItemType);
-            //        values.Add(new List<Item>() { i });
-
-            //        //toolBelt.Add(sItemType, );
-            //    }
-
-            //if(toolBelt.ContainsKey(sItemType))
-            //{
-            //    //ADD THE ITEM TO ITS LIST
-            //    toolBelt[sItemType].Add(i);
-            //}
-            #endregion
+            return false;
         }
 
-        public void RemoveItem(int index)
+        public void RemoveItem(string type)
         {
-            if(items.Count < 0)
+            //REMOVES THE FIRST ITEM FROM A SPECIFIC LIST
+            var s = type;
+
+            switch (s)
             {
-                var removeThis = items[index];
-                if (!removeThis)
-                    items.RemoveAt(index);
-            }   
+                case "UGP.Med":
+                    {
+                        medical.RemoveAt(0);
+                        break;
+                    }
+
+                case "UGP.RepairKit":
+                    {
+                        repairKits.RemoveAt(0);
+                        break;
+                    }
+
+                case "UGP.Hammer":
+                    {
+                        misc.RemoveAt(0);
+                        break;
+                    }
+
+                default:
+                    {
+                        misc.RemoveAt(0);
+                        break;
+                    }
+            }
+        }
+        public void RemoveItem(Item i)
+        {
+            //FIND SPECIFIC ITEM IN ITS LIST, REMOVE IT
+
+            var sItemType = i.GetType().ToString();
+
+            switch (sItemType)
+            {
+                case "UGP.Med":
+                    {
+                        var m = i as Med;
+                        if (medical.Contains(m))
+                            medical.Remove(m);
+                        break;
+                    }
+
+                case "UGP.RepairKit":
+                    {
+                        var r = i as RepairKit;
+                        if (repairKits.Contains(r))
+                            repairKits.Remove(r);
+                        break;
+                    }
+
+                case "UGP.Hammer":
+                    {
+                        var h = i as Hammer;
+                        if (misc.Contains(h))
+                            misc.Remove(h);
+
+                        break;
+                    }
+            }
         }
     }
-
-
-    #region TOOLBELT_INSPECTOR
-#if UNITY_EDITOR
-    [CustomEditor(typeof(ToolBelt))]
-    public class InspectorToolBelt : Editor
-    {
-        ToolBelt myTarget;
-
-        private void OnEnable()
-        {
-            myTarget = (ToolBelt)target;
-        }
-
-
-        //NEEDS WORK
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-
-
-            //ITERATE THROUGH THE DICTIONARY
-            //SAVE EACH ENTRY TO THE TOOLBELT 
-            //DISPLAY EACH ENTRY TO THE INSPECTOR
-            //foreach(var k in myTarget.toolBelt.Keys)
-            //{
-            //    EditorGUI.BeginChangeCheck();
-
-            //    List<Item> list = myTarget.toolBelt[k];
-
-            //    //var so = new SerializedObject(list.ToArray());
-            //    var so = new SerializedObject(myTarget);
-
-            //    var sp = so.FindProperty("targetObjects");
-
-            //    EditorGUILayout.PropertyField(sp, true);
-
-
-            //    so.ApplyModifiedProperties();
-                
-
-            //    EditorGUI.EndChangeCheck();
-
-                
-            //}
-            
-            if(GUILayout.Button("Save ToolBelt"))
-            {
-                myTarget.DumpStartItems();
-            }
-
-            GUILayout.Space(10);
-            if(GUILayout.Button("Clear ToolBelt"))
-            {
-                myTarget.ClearToolBelt();
-            }
-        }
-
-
-    }
-
-#endif
-    #endregion
-
 }
