@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.35930035, g: 0.3617606, b: 0.33153638, a: 1}
+  m_IndirectSpecularColor: {r: 0.35930088, g: 0.3617607, b: 0.33153635, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -210,53 +210,6 @@ MonoBehaviour:
   CameraRotation: 0
   cameraSpeed: 1
   cameraTranslationSpeed: 1
---- !u!1 &950626853
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 950626854}
-  - component: {fileID: 950626855}
-  m_Layer: 0
-  m_Name: ToolWallGridPrefab
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &950626854
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 950626853}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 103.53, y: 1.81, z: 126.75}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &950626855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 950626853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5380c1ebc09717a4ea48a8a07b346de3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canvas: {fileID: 223710720874579004, guid: a8c6725013c7a1e4d91bc5b8fa0561da, type: 2}
-  CanvasBounds: {x: 120, y: 120}
-  ItemSpacing: 2
-  rows: 2
-  cols: 6
-  wallToolBelt: {fileID: 11400000, guid: 880bbc42dff2dcf4491967825d381ec1, type: 2}
-  items: []
 --- !u!1 &1121716060
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,6 +392,10 @@ Prefab:
         type: 2}
       propertyPath: field of view
       value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1453121176349342, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f79180ca549c7ae44a36742b36805c01, type: 2}

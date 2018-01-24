@@ -23,6 +23,8 @@ namespace UGP
         public float TurnSpeed = 1.0f;
 
         private Rigidbody rb;
+
+        private Transform cam;
         #endregion
         
 
@@ -48,6 +50,9 @@ namespace UGP
             rb = GetComponent<Rigidbody>();
             if (!rb)
                 rb = gameObject.AddComponent<Rigidbody>();
+
+            cam = transform.Find("PlayerCamera").GetComponent<Transform>();
+
         }
 
         private void FixedUpdate()
