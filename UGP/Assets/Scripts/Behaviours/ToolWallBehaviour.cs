@@ -122,6 +122,9 @@ namespace UGP
                 var itemGO = Instantiate(o);
                 itemGO.transform.SetParent(canvas.transform);
 
+                var button = itemGO.GetComponent<Button>();
+                button.onClick.AddListener(OnButtonClick);
+
                 itemGO.transform.position = pos;
                 //itemGO.transform.rotation = pos.rotation;
 
