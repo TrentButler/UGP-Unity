@@ -316,7 +316,7 @@ Transform:
   m_Children:
   - {fileID: 4679981329419498}
   m_Father: {fileID: 4524020308106728}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4260170843339580
 Transform:
@@ -346,7 +346,7 @@ Transform:
   - {fileID: 4312159664979452}
   - {fileID: 4580611298185586}
   m_Father: {fileID: 4524020308106728}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4312159664979452
 Transform:
@@ -415,9 +415,9 @@ Transform:
   - {fileID: 4401324466736792}
   - {fileID: 4260170843339580}
   - {fileID: 4490311408760580}
+  - {fileID: 4939636173780224}
   - {fileID: 4187178911253334}
   - {fileID: 4274745662547654}
-  - {fileID: 4939636173780224}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -427,8 +427,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1608714188572586}
-  m_LocalRotation: {x: 0.21864507, y: -0, z: -0, w: 0.97580445}
-  m_LocalPosition: {x: 0, y: 1.1123626, z: 0.14239964}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4606944231450194}
@@ -533,13 +533,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1158877766890048}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -50.714443, y: -0.25, z: -70.42847}
+  m_LocalRotation: {x: 0.14142169, y: -0, z: -0, w: 0.98994946}
+  m_LocalPosition: {x: 0, y: 0.55, z: -1.5}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4628600113388336}
   m_Father: {fileID: 4524020308106728}
-  m_RootOrder: 6
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!20 &20420040724454142
 Camera:
@@ -559,7 +559,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 40
+  field of view: 90
   orthographic: 0
   orthographic size: 10
   m_Depth: 0
@@ -881,7 +881,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 2.127996, z: -2.551834}
+  m_FollowOffset: {x: 0, y: 1.1, z: -3}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -952,7 +952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 2.127996, z: -2.551834}
+  m_FollowOffset: {x: 0, y: 1.1, z: -3}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -1269,7 +1269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 1
-  m_FollowOffset: {x: 0, y: 2.127996, z: -2.551834}
+  m_FollowOffset: {x: 0, y: 1.1, z: -3}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
