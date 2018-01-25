@@ -11,12 +11,17 @@ namespace UGP
         private VehicleMovementBehaviour behaviour;
         private GameObject aimCamera;
         private GameObject followCamera;
+        private Transform cam;
 
         private void Start()
         {
+            cam = transform.Find("Camera");
+
             if (!isLocalPlayer)
-                this.enabled = false;
+                cam.gameObject.SetActive(false);
                 return;
+
+            cam = transform.Find("Camera");
 
             behaviour = GetComponentInParent<VehicleMovementBehaviour>();
             aimCamera = GameObject.Find("AimCamera");
@@ -26,10 +31,10 @@ namespace UGP
         private void LateUpdate()
         {
             if (!isLocalPlayer)
-                this.enabled = false;
+                cam.gameObject.SetActive(false);
                 return;
 
-            switch(behaviour.mode)
+            switch (behaviour.mode)
             {
                 case VehicleState.DRIVE:
                     {
