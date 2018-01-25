@@ -40,7 +40,8 @@ namespace UGP
                         rot[0] = 0.0f;
                         rot[2] = 0.0f;
 
-                        behaviour.Aim(rot);
+                        
+                        //behaviour.Aim(rot);
                         break;
                     }
             }

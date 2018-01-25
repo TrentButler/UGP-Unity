@@ -31,6 +31,8 @@ namespace UGP
 
         private VehicleShootBehaviour shootBehaviour;
 
+        private Transform cam;
+
         public void Steer(Vector3 force)
         {
             //var rot = Quaternion.Euler(new Vector3(0, force, 0));
@@ -47,24 +49,8 @@ namespace UGP
 
         public void Aim()
         {
-            //var deltaX = Input.GetAxis("Mouse X"); //GET THE MOUSE DELTA X
-            //var deltaY = Input.GetAxis("Mouse Y"); //GET THE MOUSE DELTA Y
-
-            //Vector3 rotX = new Vector3(-deltaY, 0, 0);
-            //Vector3 rotY = new Vector3(0, deltaX, 0);
-
-            ////Quaternion rot = Quaternion.Euler(rotX); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
-            ////transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
-
-            ////var firstRot = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
-            ////transform.SetPositionAndRotation(transform.position, firstRot);
-
-
-            //Quaternion rot = Quaternion.Euler(rotY); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
-            ////transform.rotation = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
-
-            //var secondRot = Quaternion.Slerp(transform.rotation, transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
-            //transform.SetPositionAndRotation(transform.position, secondRot);
+            //MATCH THE FORWARD FROM THE CAMERA
+            transform.forward = cam.forward;
         }
         public void Aim(Quaternion rot)
         {
@@ -119,6 +105,8 @@ namespace UGP
             mode = VehicleState.DRIVE;
 
             shootBehaviour = GetComponentInParent<VehicleShootBehaviour>();
+
+            cam = transform.Find("Camera");
 
             rb = GetComponent<Rigidbody>();
 
