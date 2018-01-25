@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 namespace UGP
 {
-    public class VehicleCameraBehaviour : MonoBehaviour
+    public class VehicleCameraBehaviour : NetworkBehaviour
     {
         private VehicleMovementBehaviour behaviour;
         private GameObject aimCamera;
@@ -13,6 +14,8 @@ namespace UGP
 
         private void Start()
         {
+            if (!isLocalPlayer)
+                return;
             behaviour = GetComponentInParent<VehicleMovementBehaviour>();
             aimCamera = GameObject.Find("AimCamera");
             followCamera = GameObject.Find("FollowCamera");
@@ -20,6 +23,9 @@ namespace UGP
 
         private void LateUpdate()
         {
+            if (!isLocalPlayer)
+                return;
+
             switch(behaviour.mode)
             {
                 case VehicleState.DRIVE:

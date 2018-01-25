@@ -16,6 +16,7 @@ namespace UGP
     [RequireComponent(typeof(NetworkTransform))]
     public class VehicleMovementBehaviour : NetworkBehaviour
     {
+        [SyncVar]
         public VehicleState mode;
 
         public float MaxSpeed = 1.0f;

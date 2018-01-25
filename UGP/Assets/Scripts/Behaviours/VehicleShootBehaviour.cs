@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+
 
 namespace UGP
 {
-    public class VehicleShootBehaviour : MonoBehaviour
+    public class VehicleShootBehaviour : NetworkBehaviour
     {
         public GameObject bulletModel;
         public Transform GunBarrel;
@@ -16,16 +18,25 @@ namespace UGP
 
         private void Awake()
         {
+            if (!isLocalPlayer)
+                return;
+
             shotCooldown = shotTimer;
         }
 
         private void Start()
         {
+            if (!isLocalPlayer)
+                return;
+
             shotCooldown = shotTimer;
         }
 
         private void Shoot()
         {
+            if (!isLocalPlayer)
+                return;
+
             if (shotCooldown <= 0.0f)
                 hasFired = false;
                 shotCooldown = shotTimer;
@@ -60,6 +71,9 @@ namespace UGP
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer)
+                return;
+
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 Shoot();
 
@@ -68,7 +82,7 @@ namespace UGP
 
             if (shotCooldown <= 0.0f)
                 hasFired = false;
-                shotCooldown = shotTimer;            
+                shotCooldown = shotTimer;
         }
     }
 }
