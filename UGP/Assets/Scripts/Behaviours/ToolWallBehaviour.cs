@@ -19,6 +19,11 @@ namespace UGP
 
         private List<Vector3> grid;
         public List<GameObject> items;
+        
+        public void OnButtonClick()
+        {
+            Debug.Log("BUTTON PRESS");
+        }
 
         public void GenerateGrid()
         {
