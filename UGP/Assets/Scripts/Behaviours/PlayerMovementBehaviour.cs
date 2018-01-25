@@ -107,7 +107,7 @@ namespace UGP
                 {
                     state = PlayerState.move;
                     //GET OUT OF CHAIR
-                    Vector3 getOutPosition = new Vector3(-1.5f, 0, 0);
+                    Vector3 getOutPosition = new Vector3(2.5f, 0, 0);
                     transform.position = transform.position + getOutPosition;
                     IsSitting = false;
                     CanMove = true;
