@@ -105,8 +105,8 @@ namespace UGP
         
         void Start()
         {
-
             if (!isLocalPlayer)
+                this.enabled = false;
                 return;
 
             mode = VehicleState.DRIVE;
@@ -125,6 +125,7 @@ namespace UGP
         void FixedUpdate()
         {
             if (!isLocalPlayer)
+                this.enabled = false;
                 return;
 
 
@@ -217,6 +218,7 @@ namespace UGP
         private void LateUpdate()
         {
             if (!isLocalPlayer)
+                this.enabled = false;
                 return;
 
             KeepVehicleUpright();

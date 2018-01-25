@@ -15,7 +15,9 @@ namespace UGP
         private void Start()
         {
             if (!isLocalPlayer)
+                this.enabled = false;
                 return;
+
             behaviour = GetComponentInParent<VehicleMovementBehaviour>();
             aimCamera = GameObject.Find("AimCamera");
             followCamera = GameObject.Find("FollowCamera");
@@ -24,6 +26,7 @@ namespace UGP
         private void LateUpdate()
         {
             if (!isLocalPlayer)
+                this.enabled = false;
                 return;
 
             switch(behaviour.mode)
