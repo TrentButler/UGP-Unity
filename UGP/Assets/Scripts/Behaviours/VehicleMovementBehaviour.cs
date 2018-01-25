@@ -13,7 +13,6 @@ namespace UGP
     }
 
     //NEEDS WORK
-    [RequireComponent(typeof(NetworkTransform))]
     public class VehicleMovementBehaviour : NetworkBehaviour
     {
         [SyncVar]
@@ -29,12 +28,10 @@ namespace UGP
         public float StrafeSpeed = 1.0f;
 
         public Transform ThrusterPosition;
-
         private Rigidbody rb;
-
         private VehicleShootBehaviour shootBehaviour;
 
-        private Transform cam;
+        #region VehicleMovement
 
         public void Steer(Vector3 force)
         {
@@ -97,23 +94,22 @@ namespace UGP
 
             if (dX > 0.0f || dX < 0.0f || dZ > 0.0f || dZ < 0.0f)
                 rot[0] = Mathf.LerpAngle(dX, 0.0f, 1.0f);
-                rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
+            rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
 
-                rb.rotation = rot;
-                transform.rotation = rot;
+            rb.rotation = rot;
+            transform.rotation = rot;
         }
-        
+        #endregion
+
         void Start()
         {
             if (!isLocalPlayer)
-                this.enabled = false;
                 return;
+            
 
             mode = VehicleState.DRIVE;
 
             shootBehaviour = GetComponentInParent<VehicleShootBehaviour>();
-
-            cam = transform.Find("Camera");
 
             rb = GetComponent<Rigidbody>();
 
@@ -125,7 +121,6 @@ namespace UGP
         void FixedUpdate()
         {
             if (!isLocalPlayer)
-                this.enabled = false;
                 return;
 
 
@@ -134,8 +129,8 @@ namespace UGP
 
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 steerVector = new Vector3(0.0f, turnVehicle * TurnSpeed, 0.0f);
-            
-            if(Input.GetKey(KeyCode.LeftShift))
+
+            if (Input.GetKey(KeyCode.LeftShift))
             {
                 mode = VehicleState.COMBAT;
             }
@@ -144,7 +139,7 @@ namespace UGP
                 mode = VehicleState.DRIVE;
             }
 
-            if(Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 Jump();
             }
@@ -164,7 +159,7 @@ namespace UGP
                             Vector3 hoverVector = Vector3.up * vertForce * hoverStrength;
 
                             //Debug.Log(hoverVector); //DELETE THIS
-                            
+
                             rb.AddForce(hoverVector);
                         }
                         #endregion
@@ -179,6 +174,7 @@ namespace UGP
 
                         transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
                         
+
                         break;
                     }
 
@@ -208,8 +204,9 @@ namespace UGP
 
                         if (Input.GetKeyDown(KeyCode.LeftAlt))
                             ResetVehicleRotation();
-                        
+
                         transform.Translate(((new Vector3(turnVehicle, 0, throttle) * StrafeSpeed) * Time.fixedDeltaTime));
+                        
                         break;
                     }
             }
@@ -218,7 +215,6 @@ namespace UGP
         private void LateUpdate()
         {
             if (!isLocalPlayer)
-                this.enabled = false;
                 return;
 
             KeepVehicleUpright();
