@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace UGP
 {
-    public class PlayerPickUpItemBehaviour : MonoBehaviour
+    public class PlayerInteractionBehaviour : MonoBehaviour
     {
 
         public GameObject Head;
@@ -21,12 +21,12 @@ namespace UGP
         public float BODYmaxRot;
 
         //RAYCAST FROM THE 'origin' A SET 'distance' FROM PLAYER
-        
+
         void Start()
         {
-            
+
         }
-        
+
         //NEEDS WORK
         void FixedUpdate()
         {
@@ -37,7 +37,7 @@ namespace UGP
 
                 Debug.Log("Press F to pick up: " + hit.collider.gameObject.name);
 
-                if(Input.GetKeyDown(KeyCode.F))
+                if (Input.GetKeyDown(KeyCode.F))
                 {
                     var p = GetComponent<PlayerBehaviour>().player;
                     hit.collider.gameObject.SendMessage("PickUp", p);
@@ -46,7 +46,7 @@ namespace UGP
                 Debug.Log(hit.collider.tag);
             }
         }
-        
+
         //NEEDS WORK
         private void LateUpdate()
         {
