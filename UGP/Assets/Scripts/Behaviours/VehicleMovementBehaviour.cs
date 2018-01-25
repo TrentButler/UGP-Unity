@@ -50,7 +50,7 @@ namespace UGP
         public void Aim()
         {
             //MATCH THE FORWARD FROM THE CAMERA
-            transform.forward = cam.forward;
+            //transform.forward = cam.forward;
         }
         public void Aim(Quaternion rot)
         {
