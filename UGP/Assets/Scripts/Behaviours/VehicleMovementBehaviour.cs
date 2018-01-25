@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 namespace UGP
@@ -12,7 +13,8 @@ namespace UGP
     }
 
     //NEEDS WORK
-    public class VehicleMovementBehaviour : MonoBehaviour
+    [RequireComponent(typeof(NetworkTransform))]
+    public class VehicleMovementBehaviour : NetworkBehaviour
     {
         public VehicleState mode;
 
@@ -102,6 +104,10 @@ namespace UGP
         
         void Start()
         {
+
+            if (!isLocalPlayer)
+                return;
+
             mode = VehicleState.DRIVE;
 
             shootBehaviour = GetComponentInParent<VehicleShootBehaviour>();
@@ -117,6 +123,10 @@ namespace UGP
         //NEEDS WORK
         void FixedUpdate()
         {
+            if (!isLocalPlayer)
+                return;
+
+
             var throttle = Input.GetAxis("Vertical");
             var turnVehicle = Input.GetAxis("Horizontal");
 
@@ -205,6 +215,9 @@ namespace UGP
 
         private void LateUpdate()
         {
+            if (!isLocalPlayer)
+                return;
+
             KeepVehicleUpright();
         }
     }
