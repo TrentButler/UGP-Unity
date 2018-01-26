@@ -33,6 +33,7 @@ namespace UGP
         {
             NetworkHUD = GameObject.FindGameObjectWithTag("NetworkManager");
             NetworkHUD.SetActive(false);
+            Cursor.visible = true;
         }
 
 

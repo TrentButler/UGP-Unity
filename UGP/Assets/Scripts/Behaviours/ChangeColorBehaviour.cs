@@ -29,6 +29,7 @@ namespace UGP
             {
                 NetworkManager.singleton.StopClient();
                 NetworkManager.singleton.StopHost();
+             
                
                 Debug.Log("hit");
                 //SceneManager.LoadScene(0);
