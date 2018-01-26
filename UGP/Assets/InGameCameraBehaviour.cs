@@ -7,25 +7,31 @@ using UnityEngine.Networking;
 
 namespace UGP
 {
-    public class InGameCameraBehaviour : MonoBehaviour
+    public class InGameCameraBehaviour : NetworkBehaviour
     {
         public Cinemachine.CinemachineVirtualCamera cam;
 
         // Use this for initialization
         void Start()
         {
-          
-
-            var players = GameObject.FindObjectsOfType<InGameVehicleMovementBehaviour>().ToList();
-
-            players.ForEach(x =>
+            if (isLocalPlayer)
             {
-                if (x.localPlayerAuthority)
+               
+                var players = GameObject.FindObjectsOfType<InGameVehicleMovementBehaviour>().ToList();
+
+                players.ForEach(x =>
                 {
-                    cam.Follow = x.transform;
-                    cam.LookAt = x.transform;
-                }
-            });
+                    if (x.localPlayerAuthority)
+                    {
+                        cam.Follow = x.transform;
+                        cam.LookAt = x.transform;
+                    }
+                });
+            }
+            if(!isLocalPlayer)
+            {
+                return;
+            }
         }
 
         // Update is called once per frame
