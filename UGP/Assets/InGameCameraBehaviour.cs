@@ -7,17 +7,14 @@ using UnityEngine.Networking;
 
 namespace UGP
 {
-    public class InGameCameraBehaviour : NetworkBehaviour
+    public class InGameCameraBehaviour : MonoBehaviour
     {
         public Cinemachine.CinemachineVirtualCamera cam;
 
         // Use this for initialization
         void Start()
         {
-            if (!localPlayerAuthority)
-            {
-                return;
-            }
+          
 
             var players = GameObject.FindObjectsOfType<InGameVehicleMovementBehaviour>().ToList();
 
@@ -34,10 +31,7 @@ namespace UGP
         // Update is called once per frame
         void Update()
         {
-            if (!localPlayerAuthority)
-            {
-                return;
-            }
+           
 
             var players = GameObject.FindObjectsOfType<InGameVehicleMovementBehaviour>().ToList();
 
