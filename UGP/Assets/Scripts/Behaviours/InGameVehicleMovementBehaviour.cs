@@ -97,6 +97,9 @@ namespace UGP
         [Command]
         public void CmdMove()
         {
+            if (!localPlayerAuthority)
+                return;
+            
             var throttle = Input.GetAxis("Vertical");
             var turnVehicle = Input.GetAxis("Horizontal");
             var mDX = Input.GetAxis("Mouse X");
