@@ -9,56 +9,59 @@ namespace UGP
     public class VehicleCameraBehaviour : NetworkBehaviour
     {
         private VehicleMovementBehaviour behaviour;
-        private GameObject aimCamera;
-        private GameObject followCamera;
-        private Transform cam;
+        public GameObject aimCamera;
+        public GameObject followCamera;
+        public GameObject cam;
 
         private void Start()
         {
-            cam = transform.Find("Camera");
-
             if (!isLocalPlayer)
-                cam.gameObject.SetActive(false);
+                Destroy(cam);
+                Destroy(aimCamera);
+                Destroy(followCamera);
                 return;
 
-            cam = transform.Find("Camera");
+            //cam = transform.Find("Camera");
 
-            behaviour = GetComponentInParent<VehicleMovementBehaviour>();
-            aimCamera = GameObject.Find("AimCamera");
-            followCamera = GameObject.Find("FollowCamera");
+            //behaviour = GetComponentInParent<VehicleMovementBehaviour>();
+            //aimCamera = GameObject.Find("AimCamera");
+            //followCamera = GameObject.Find("FollowCamera");
         }
 
-        private void LateUpdate()
+        private void FixedUpdate()
         {
             if (!isLocalPlayer)
-                cam.gameObject.SetActive(false);
+                //cam.gameObject.SetActive(false);
                 return;
 
-            switch (behaviour.mode)
-            {
-                case VehicleState.DRIVE:
-                    {
-                        //SWITCH TO FOLLOW CAMERA
-                        followCamera.SetActive(true);
-                        aimCamera.SetActive(false);
-                        break;
-                    }
+            //behaviour = GetComponentInParent<VehicleMovementBehaviour>();
+            //aimCamera = GameObject.Find("AimCamera");
+            //followCamera = GameObject.Find("FollowCamera");
 
-                case VehicleState.COMBAT:
-                    {
-                        //SWITCH TO AIM CAMERA
-                        aimCamera.SetActive(true);
-                        followCamera.SetActive(false);
+            //switch (behaviour.mode._mode)
+            //{
+            //    case 0:
+            //        {
+            //            //SWITCH TO FOLLOW CAMERA
+            //            followCamera.SetActive(true);
+            //            aimCamera.SetActive(false);
+            //            break;
+            //        }
 
-                        var rot = aimCamera.transform.rotation;
-                        rot[0] = 0.0f;
-                        rot[2] = 0.0f;
+            //    case 1:
+            //        {
+            //            //SWITCH TO AIM CAMERA
+            //            aimCamera.SetActive(true);
+            //            followCamera.SetActive(false);
 
-                        
-                        behaviour.Aim(rot);
-                        break;
-                    }
-            }
+            //            var rot = aimCamera.transform.rotation;
+            //            rot[0] = 0.0f;
+            //            rot[2] = 0.0f;
+
+            //            behaviour.Aim(rot);
+            //            break;
+            //        }
+            //}
         }
     }
 }

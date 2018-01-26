@@ -6,10 +6,9 @@ using UnityEngine.Networking;
 
 namespace UGP
 {
-    public enum VehicleState
+    public struct VehicleState
     {
-        DRIVE = 0,
-        COMBAT = 1,
+        public int _mode;
     }
 
     //NEEDS WORK
@@ -17,6 +16,9 @@ namespace UGP
     {
         [SyncVar]
         public VehicleState mode;
+
+        [SyncVar]
+        public int Mode;
 
         public float MaxSpeed = 1.0f;
         public float TurnSpeed = 1.0f;
@@ -83,7 +85,8 @@ namespace UGP
             rb.isKinematic = false;
         }
 
-        private void KeepVehicleUpright()
+        [Command]
+        private void CmdKeepVehicleUpright()
         {
             //DETERMINE THE DELTA OF THE CURRENT X AND Z ROTATION OF THE VEHICLE
             //APPLY THE INVERSE OF THE DELTA TO EACH ROTATION
@@ -99,31 +102,10 @@ namespace UGP
             rb.rotation = rot;
             transform.rotation = rot;
         }
-        #endregion
 
-        void Start()
+        [Command]
+        public void CmdMove()
         {
-            if (!isLocalPlayer)
-                return;
-            
-
-            mode = VehicleState.DRIVE;
-
-            shootBehaviour = GetComponentInParent<VehicleShootBehaviour>();
-
-            rb = GetComponent<Rigidbody>();
-
-            if (!rb)
-                rb = gameObject.AddComponent<Rigidbody>();
-        }
-
-        //NEEDS WORK
-        void FixedUpdate()
-        {
-            if (!isLocalPlayer)
-                return;
-
-
             var throttle = Input.GetAxis("Vertical");
             var turnVehicle = Input.GetAxis("Horizontal");
 
@@ -132,11 +114,13 @@ namespace UGP
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                mode = VehicleState.COMBAT;
+                //DRIVE
+                mode._mode = 1;
             }
             else
             {
-                mode = VehicleState.DRIVE;
+                //COMBAT
+                mode._mode = 0;
             }
 
             if (Input.GetKeyDown(KeyCode.Space))
@@ -144,9 +128,9 @@ namespace UGP
                 Jump();
             }
 
-            switch (mode)
+            switch (mode._mode)
             {
-                case VehicleState.DRIVE:
+                case 0:
                     {
                         #region HOVERVECTORCALCULATION
                         //PERFORM A RAYCAST DOWNWARD, 
@@ -173,12 +157,12 @@ namespace UGP
                             ResetVehicleRotation();
 
                         transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
-                        
+
 
                         break;
                     }
 
-                case VehicleState.COMBAT:
+                case 1:
                     {
                         #region HOVERVECTORCALCULATION
                         ////PERFORM A RAYCAST DOWNWARD, 
@@ -206,10 +190,36 @@ namespace UGP
                             ResetVehicleRotation();
 
                         transform.Translate(((new Vector3(turnVehicle, 0, throttle) * StrafeSpeed) * Time.fixedDeltaTime));
-                        
+
                         break;
                     }
             }
+        }
+        #endregion
+
+        void Start()
+        {
+            if (!isLocalPlayer)
+                return;
+
+            mode = new VehicleState { _mode = 0, };
+
+            shootBehaviour = GetComponentInParent<VehicleShootBehaviour>();
+
+            rb = GetComponent<Rigidbody>();
+
+            if (!rb)
+                rb = gameObject.AddComponent<Rigidbody>();
+        }
+
+        //NEEDS WORK
+        void FixedUpdate()
+        {
+            if (!isLocalPlayer)
+                return;
+            
+            CmdMove();
+            Mode = mode._mode;
         }
 
         private void LateUpdate()
@@ -217,7 +227,7 @@ namespace UGP
             if (!isLocalPlayer)
                 return;
 
-            KeepVehicleUpright();
+            CmdKeepVehicleUpright();
         }
     }
 }

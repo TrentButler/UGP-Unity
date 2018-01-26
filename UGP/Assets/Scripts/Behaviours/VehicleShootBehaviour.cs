@@ -18,7 +18,7 @@ namespace UGP
 
         private void Awake()
         {
-            if (!isLocalPlayer)
+            if (!localPlayerAuthority)
                 return;
 
             shotCooldown = shotTimer;
@@ -26,7 +26,7 @@ namespace UGP
 
         private void Start()
         {
-            if (!isLocalPlayer)
+            if (!localPlayerAuthority)
                 return;
 
             shotCooldown = shotTimer;
@@ -69,7 +69,7 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if (!isLocalPlayer)
+            if (!localPlayerAuthority)
                 return;
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
