@@ -5,13 +5,13 @@ using UnityEngine.Networking;
 
 public class NetworkMangerHUD : NetworkBehaviour
 {
-    public Button StartHost;
+    //public Button StartHost;
 
-    public Button StartServer;
+    //public Button StartServer;
 
-    public Button StopHost;
+    //public Button StopHost;
 
-    public Button StartMatchmaker;
+    //public Button StartMatchmaker;
 
 
 	// Use this for initialization

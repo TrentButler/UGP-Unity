@@ -8,6 +8,7 @@ public class GarageHoverBehaviour : MonoBehaviour {
     private Rigidbody rb;
     public float hoverStrength;
     public float TargetHeight;
+    public float RotateSpeed;
 	// Use this for initialization
 	void Start ()
     {
@@ -21,7 +22,12 @@ public class GarageHoverBehaviour : MonoBehaviour {
         //rb.constraints = RigidbodyConstraints.FreezeRotationZ;
     }
 	// Update is called once per frame
-	void FixedUpdate ()
+    void Update()
+    {
+        transform.Rotate(new Vector3(0, Time.deltaTime * RotateSpeed, 0));
+
+    }
+    void FixedUpdate ()
     {
         RaycastHit hit;
         if (Physics.Raycast(transform.position, -Vector3.up, out hit))

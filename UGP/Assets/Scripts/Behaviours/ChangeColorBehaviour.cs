@@ -1,15 +1,19 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 namespace UGP
 {
     public class ChangeColorBehaviour : MonoBehaviour {
 
-        public Transform HoverCraft;
+
+        public GameObject HoverCraft;
         public Collider DockEntrance;
+        public NetworkPlayer Player;
         public bool Clicked;
         public PlayerState state;
+
         // Use this for initialization
         void Start() {
             Clicked = false;
@@ -20,11 +24,14 @@ namespace UGP
         void OnTriggerEnter(Collider vehicle)
         {
             var player = FindObjectsOfType<VehicleMovementBehaviour>();
-
+            
             if (vehicle.tag == "Vehicle")
             {
+                NetworkManager.singleton.StopClient();
+                NetworkManager.singleton.StopHost();
+               
                 Debug.Log("hit");
-                SceneManager.LoadScene(0);
+                //SceneManager.LoadScene(0);
             }
         }
     public void OnclickChangeColor()

@@ -1,9 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using System.IO;
-
 
 namespace UGP
 {
@@ -19,7 +17,7 @@ namespace UGP
         viewing = 5,
     }
 
-    public class PlayerMovementBehaviour : NetworkBehaviour
+    public class PlayerMovementBehaviour : MonoBehaviour
     {
 
         public PlayerState state;
@@ -50,10 +48,10 @@ namespace UGP
                 rb = gameObject.AddComponent<Rigidbody>();
             }
         }
-        public override void OnStartLocalPlayer()
-        {
-            GetComponent<MeshRenderer>().material.color = Color.white;
-        }
+        //public override void OnStartLocalPlayer()
+        //{
+        //    GetComponent<MeshRenderer>().material.color = Color.white;
+        //}
         void OnTriggerEnter(Collider other)
         {
             var player = FindObjectsOfType<PlayerMovementBehaviour>();
@@ -118,7 +116,7 @@ namespace UGP
                 {
                     state = PlayerState.move;
                     //GET OUT OF ToolBelt
-                    Vector3 getOutPosition = new Vector3(2.5f, 0, 0);
+                    Vector3 getOutPosition = new Vector3(-2.5f, 0, 0);
                     transform.position = transform.position + getOutPosition;
                     IsStanding = false;
                     CanMove = true;
@@ -146,11 +144,11 @@ namespace UGP
             {
                 IsSitting = false;
                 state = PlayerState.move;
-                if (!isLocalPlayer)
-                {
+                //if (!isLocalPlayer)
+                //{
                   
-                    return;
-                }
+                //    return;
+                //}
                 //OnStartLocalPlayer();
                 var Forward = Input.GetAxis("Vertical");
                 var TurnHead = Input.GetAxis("Horizontal");

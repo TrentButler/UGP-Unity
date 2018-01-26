@@ -40,7 +40,7 @@ namespace UGP
             transform.position = SecurityCam1.position;
             transform.rotation = SecurityCam1.rotation;
             player = FindObjectOfType<PlayerMovementBehaviour>();
-
+            ToolStationCam1.gameObject.SetActive(false);
         }
 
 
@@ -79,6 +79,7 @@ namespace UGP
                     {
                         transform.position = ToolStationCam1.position;
                         transform.rotation = ToolStationCam1.rotation;
+                        ToolStationCam1.gameObject.SetActive(true);
                         break;
                     }
                 case PlayerState.viewing:
