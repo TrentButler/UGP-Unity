@@ -1,30 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 namespace UGP
 {
-    public enum InGamePlayerState
-    {
-        IDLE = 0,
-        WALK = 1,
-        SPRINT = 2,
-        DRIVE = 3,
-    }
-
-    public class InGamePlayerMovementBehaviour : MonoBehaviour
+    public class InGamePlayerMovementBehaviour : NetworkBehaviour
     {
         #region MemeberVariables
-        public InGamePlayerState state;
 
         public float WalkSpeed = 1.0f;
         public float RunSpeed = 1.0f;
         public float TurnSpeed = 1.0f;
 
-        private Rigidbody rb;
+        public float JumpStrength = 1.0f;
 
-        private Transform cam;
+        private Rigidbody rb;
         #endregion
         
 
@@ -45,32 +37,64 @@ namespace UGP
             transform.rotation = rot;
         }
 
+
+        private void Awake()
+        {
+            if (!localPlayerAuthority)
+            {
+                enabled = false;
+                return;
+            }
+        }
+
         private void Start()
         {
+            if(!localPlayerAuthority)
+            {
+                enabled = false;
+                return;
+            }
+
+
             rb = GetComponent<Rigidbody>();
             if (!rb)
                 rb = gameObject.AddComponent<Rigidbody>();
-
-            cam = transform.Find("PlayerCamera").GetComponent<Transform>();
-
         }
 
         private void FixedUpdate()
         {
+            if (!localPlayerAuthority)
+            {
+                enabled = false;
+                return;
+            }
+
+
             var h = Input.GetAxis("Horizontal");
             var v = Input.GetAxis("Vertical");
 
-            Vector3 moveVector = new Vector3(0.0f, 0.0f, v * WalkSpeed);
+            //NEEDS WORK
+            //PLAYER MOVE FORWARD WITHOUT BUTTONPRESS
 
-            //transform.Rotate(new Vector3(0.0f, h * TurnSpeed, 0.0f));
+            Vector3 moveForward = new Vector3(0.0f, 0.0f, v * WalkSpeed);
+            var move = (moveForward + transform.forward);
 
-            //transform.Translate((moveVector + transform.forward) * Time.fixedDeltaTime);
+            var YRot = new Vector3(0.0f, h * TurnSpeed, 0.0f);
+            Debug.Log(move);
+            Debug.Log(YRot);
 
-            transform.Translate(((new Vector3(h, 0, v) * WalkSpeed) * Time.fixedDeltaTime));
+            transform.Rotate(YRot);
+            transform.Translate(move * Time.fixedDeltaTime);
         }
 
         private void LateUpdate()
         {
+            if (!localPlayerAuthority)
+            {
+                enabled = false;
+                return;
+            }
+
             KeepPlayerUpright();
         }
     }
