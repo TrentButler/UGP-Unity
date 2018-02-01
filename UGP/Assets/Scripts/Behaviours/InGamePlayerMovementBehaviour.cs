@@ -80,8 +80,8 @@ namespace UGP
             var move = (moveForward + transform.forward);
 
             var YRot = new Vector3(0.0f, h * TurnSpeed, 0.0f);
-            Debug.Log(move);
-            Debug.Log(YRot);
+            //Debug.Log(move);
+            //Debug.Log(YRot);
 
             transform.Rotate(YRot);
             transform.Translate(move * Time.fixedDeltaTime);

@@ -70,10 +70,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4260358671366546}
-  - component: {fileID: 114690593929687478}
+  - component: {fileID: 114843804702031498}
   - component: {fileID: 114507939287104346}
   - component: {fileID: 114119439211231952}
-  - component: {fileID: 114736998399738990}
   - component: {fileID: 54585418986937570}
   - component: {fileID: 114109988571725416}
   - component: {fileID: 114442636837487046}
@@ -379,36 +378,17 @@ MonoBehaviour:
   JumpStrength: 1500
   StrafeSpeed: 10
   ThrusterPosition: {fileID: 4658260266104964}
---- !u!114 &114690593929687478
+--- !u!114 &114843804702031498
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1912099926934314}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7e6a152ee9f182409e10e46a0444529, type: 3}
+  m_Script: {fileID: 11500000, guid: beadd3ee7ea545e4fa493e0e7908fab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Mode: 0
-  MaxSpeed: 60
-  TurnSpeed: 2.5
-  hoverStrength: 99
-  TargetHeight: 2
-  JumpStrength: 1104.3
-  StrafeSpeed: 5
-  ThrusterPosition: {fileID: 4658260266104964}
---- !u!114 &114736998399738990
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1912099926934314}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 685dbc5d24cc4b74c901f5aae8bc70d5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  aimCamera: {fileID: 0}
-  followCamera: {fileID: 0}
-  cam: {fileID: 0}
+  vehicleMovement: {fileID: 114507939287104346}
+  shootBehaviour: {fileID: 114119439211231952}
+  vehicleActive: 0

@@ -99,7 +99,7 @@ namespace UGP
         {
             if (!localPlayerAuthority)
                 return;
-            
+
             var throttle = Input.GetAxis("Vertical");
             var turnVehicle = Input.GetAxis("Horizontal");
             var mDX = Input.GetAxis("Mouse X");
@@ -166,14 +166,27 @@ namespace UGP
         }
         #endregion
 
-        void Start()
+
+        private void Awake()
         {
             if (!localPlayerAuthority)
+            {
+                enabled = false;
                 return;
+            }
+        }
 
-            gameObject.name = netId.ToString();
+        private void Start()
+        {
+            if (!localPlayerAuthority)
+            {
+                enabled = false;
+                return;
+            }
 
-            Cursor.visible = false;
+            //gameObject.name = netId.ToString();
+
+            //Cursor.visible = false;
 
             shootBehaviour = GetComponentInParent<VehicleShootBehaviour>();
 
@@ -189,7 +202,10 @@ namespace UGP
         void FixedUpdate()
         {
             if (!localPlayerAuthority)
+            {
+                enabled = false;
                 return;
+            }
 
             CmdMove();
         }
@@ -197,7 +213,10 @@ namespace UGP
         private void LateUpdate()
         {
             if (!localPlayerAuthority)
+            {
+                enabled = false;
                 return;
+            }
 
             CmdKeepVehicleUpright();
         }
