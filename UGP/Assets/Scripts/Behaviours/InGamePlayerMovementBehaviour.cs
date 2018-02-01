@@ -9,16 +9,13 @@ namespace UGP
     public class InGamePlayerMovementBehaviour : NetworkBehaviour
     {
         #region MemeberVariables
-
         public float WalkSpeed = 1.0f;
         public float RunSpeed = 1.0f;
         public float TurnSpeed = 1.0f;
 
         public float JumpStrength = 1.0f;
-
         private Rigidbody rb;
         #endregion
-        
 
         private void KeepPlayerUpright()
         {
@@ -36,7 +33,6 @@ namespace UGP
             rb.rotation = rot;
             transform.rotation = rot;
         }
-
 
         private void Awake()
         {

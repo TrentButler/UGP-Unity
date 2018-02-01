@@ -39,7 +39,8 @@ namespace UGP
             for(int i = 0; i < vehiclesNeeded; i++)
             {
                 var pos = NetworkManager.singleton.GetStartPosition();
-                NetworkManager.Instantiate(Vehicle, pos.position, pos.rotation);
+                var v = Instantiate(Vehicle, pos.position, pos.rotation);
+                NetworkServer.Spawn(v);
             }
         }
     }

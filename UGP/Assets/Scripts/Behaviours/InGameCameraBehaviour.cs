@@ -17,6 +17,7 @@ namespace UGP
         {
             if (!localPlayerAuthority)
             {
+                enabled = false;
                 return;
             }
         }
@@ -25,6 +26,7 @@ namespace UGP
         {
             if (!localPlayerAuthority)
             {
+                enabled = false;
                 return;
             }
         }
@@ -33,6 +35,7 @@ namespace UGP
         {
             if (!localPlayerAuthority)
             {
+                enabled = false;
                 return;
             }
 

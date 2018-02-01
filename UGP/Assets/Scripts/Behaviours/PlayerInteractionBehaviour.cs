@@ -58,6 +58,7 @@ namespace UGP
                     //F KEY PRESS TO ENTER THE VEHICLE
                     if (Input.GetKeyDown(KeyCode.F))
                     {
+
                         p.vehicle = v;
                         v.SetVehicleActive(true);
                         //GET IN THE VEHICLE
