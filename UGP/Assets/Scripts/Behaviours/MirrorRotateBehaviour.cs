@@ -12,23 +12,32 @@ namespace UGP
         public Button Rightbutton;
         public Transform model;
         public float turnspeed;
-
+        public PlayerMovementBehaviour playerstater;
         public void RotateLeft()
         {
-            if(Input.GetKey(KeyCode.LeftArrow))
+            if (playerstater.state == PlayerState.standing)
             {
-            var left = new Vector3(0.0f, -1 * turnspeed, 0.0f);
-            model.Rotate(left * Time.deltaTime);
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    var left = new Vector3(0.0f, -1 * turnspeed, 0.0f);
+                    model.Rotate(left * Time.deltaTime);
+                }
+
+
             }
-          
+
+
 
         }
         public void RotateRight()
         {
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (playerstater.state == PlayerState.standing)
             {
-                var right = new Vector3(0.0f, 1 * turnspeed, 0.0f);
-                model.Rotate(right * Time.deltaTime);
+                if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    var right = new Vector3(0.0f, 1 * turnspeed, 0.0f);
+                    model.Rotate(right * Time.deltaTime);
+                }
             }
         }
         void Start()
