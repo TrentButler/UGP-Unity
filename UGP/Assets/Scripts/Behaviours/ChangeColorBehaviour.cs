@@ -8,7 +8,7 @@ namespace UGP
     public class ChangeColorBehaviour : MonoBehaviour {
 
 
-        public GameObject HoverCraft;
+        public Transform HoverCraft;
         public Collider DockEntrance;
         public NetworkPlayer Player;
         public bool Clicked;
@@ -35,11 +35,16 @@ namespace UGP
                 //SceneManager.LoadScene(0);
             }
         }
+
+    
     public void OnclickChangeColor()
         {
             GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = Color.yellow;
             HoverCraft.GetComponent<MeshRenderer>().material.color = Color.red;
         }
+
+
+
         public void ChangeScene()
         {
 
@@ -56,6 +61,7 @@ namespace UGP
         }
         // Update is called once per frame
         void Update() {
+            
             if (Clicked == true)
             {
                 GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = Color.yellow;

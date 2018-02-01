@@ -27,6 +27,8 @@ public class GarageHoverBehaviour : MonoBehaviour {
         transform.Rotate(new Vector3(0, Time.deltaTime * RotateSpeed, 0));
 
     }
+
+
     void FixedUpdate ()
     {
         RaycastHit hit;
