@@ -20,16 +20,16 @@ namespace UGP
         {
             //SPAWN A VEHICLE FOR EACH PLAYER THAT IS CONNECTED
 
-            //var allPlayers = GameObject.FindObjectsOfType<PlayerBehaviour>().ToList();
+            var allPlayers = GameObject.FindObjectsOfType<PlayerBehaviour>().ToList();
 
-            var allPlayers = NetworkManager.singleton.numPlayers;
+            //var allPlayers = NetworkManager.singleton.numPlayers;
             var allVehicles = GameObject.FindObjectsOfType<VehicleBehaviour>().ToList();
 
-            int playerCount = allPlayers;
+            int playerCount = 0;
             int vehicleCount = 0;
 
-            //if (allPlayers != null)
-            //    playerCount = allPlayers.Count;
+            if (allPlayers != null)
+                playerCount = allPlayers.Count;
 
             if (allVehicles != null)
                 vehicleCount = allVehicles.Count;

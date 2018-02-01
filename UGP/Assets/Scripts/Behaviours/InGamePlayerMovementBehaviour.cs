@@ -65,7 +65,6 @@ namespace UGP
                 return;
             }
 
-
             var h = Input.GetAxis("Horizontal");
             var v = Input.GetAxis("Vertical");
 

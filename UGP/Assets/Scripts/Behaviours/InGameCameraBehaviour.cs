@@ -41,30 +41,34 @@ namespace UGP
 
             var players = GameObject.FindObjectsOfType<PlayerBehaviour>().ToList();
 
-            players.ForEach(player =>
+            PlayerBehaviour player = null;
+
+            players.ForEach(p =>
             {
-                if (player.localPlayerAuthority)
+                if (p.localPlayerAuthority)
                 {
-                    var driving = player.isDriving;
-
-                    if(driving)
-                    {
-                        vehicleCam.Follow = player.vehicle.transform;
-                        vehicleCam.LookAt = player.vehicle.transform;
-
-                        vehicleCam.gameObject.SetActive(true);
-                        playerCam.gameObject.SetActive(false);
-                    }
-                    else
-                    {
-                        playerCam.Follow = player.playerMovement.transform;
-                        playerCam.LookAt = player.playerMovement.transform;
-
-                        playerCam.gameObject.SetActive(true);
-                        vehicleCam.gameObject.SetActive(false);
-                    }
+                    player = p;
                 }
             });
+
+            var driving = player.isDriving;
+
+            if (driving)
+            {
+                vehicleCam.Follow = player.vehicle.transform;
+                vehicleCam.LookAt = player.vehicle.transform;
+
+                vehicleCam.gameObject.SetActive(true);
+                playerCam.gameObject.SetActive(false);
+            }
+            else
+            {
+                playerCam.Follow = player.playerMovement.transform;
+                playerCam.LookAt = player.playerMovement.transform;
+
+                playerCam.gameObject.SetActive(true);
+                vehicleCam.gameObject.SetActive(false);
+            }
         }
     }
 }
