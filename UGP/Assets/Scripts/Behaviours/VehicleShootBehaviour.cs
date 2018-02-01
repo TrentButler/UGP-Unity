@@ -19,7 +19,10 @@ namespace UGP
         private void Awake()
         {
             if (!localPlayerAuthority)
+            {
+                enabled = false;
                 return;
+            }
 
             shotCooldown = shotTimer;
         }
@@ -27,8 +30,10 @@ namespace UGP
         private void Start()
         {
             if (!localPlayerAuthority)
+            {
+                enabled = false;
                 return;
-
+            }
             shotCooldown = shotTimer;
         }
 
@@ -70,7 +75,10 @@ namespace UGP
         private void FixedUpdate()
         {
             if (!localPlayerAuthority)
+            {
+                enabled = false;
                 return;
+            }
 
             if (Input.GetKeyDown(KeyCode.Mouse0))
                 CmdShoot();

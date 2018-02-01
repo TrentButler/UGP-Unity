@@ -33,6 +33,11 @@ namespace UGP
 
         private void OnTriggerEnter(Collider other)
         {
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+
             //CHECK FOR THE LOCAL PLAYER??????
             if (!localPlayerAuthority)
             {
@@ -42,9 +47,10 @@ namespace UGP
 
             if (other.tag == "Vehicle")
             {
-                var v = other.GetComponent<VehicleBehaviour>();
+                var v = other.GetComponentInParent<VehicleBehaviour>();
+
                 var vActive = v.vehicleActive;
-                
+
 
                 if (!vActive) //CHECK IF THE VEHICLE IS ALREADY IN USE
                 {
@@ -59,5 +65,6 @@ namespace UGP
                 }
             }
         }
+
     }
 }

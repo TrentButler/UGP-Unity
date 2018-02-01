@@ -75,9 +75,8 @@ namespace UGP
 
             rb.isKinematic = false;
         }
-
-        [Command]
-        private void CmdKeepVehicleUpright()
+        
+        private void KeepVehicleUpright()
         {
             //DETERMINE THE DELTA OF THE CURRENT X AND Z ROTATION OF THE VEHICLE
             //APPLY THE INVERSE OF THE DELTA TO EACH ROTATION
@@ -93,25 +92,12 @@ namespace UGP
             rb.rotation = rot;
             transform.rotation = rot;
         }
-
-        [Command]
-        public void CmdMove()
+        
+        public void Move()
         {
-            if (!localPlayerAuthority)
-                return;
-
             var throttle = Input.GetAxis("Vertical");
             var turnVehicle = Input.GetAxis("Horizontal");
-            var mDX = Input.GetAxis("Mouse X");
-            var mDY = Input.GetAxis("Mouse Y");
 
-            //var input = throttle + turnVehicle + mDX + mDY;
-
-            //if(input == 0.0f)
-            //{
-            //    var r = transform.rotation;
-            //    r[1] = 0.0f;
-            //}
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 //BOOST
@@ -166,7 +152,6 @@ namespace UGP
         }
         #endregion
 
-
         private void Awake()
         {
             if (!localPlayerAuthority)
@@ -207,7 +192,7 @@ namespace UGP
                 return;
             }
 
-            CmdMove();
+            Move();
         }
 
         private void LateUpdate()
@@ -218,7 +203,7 @@ namespace UGP
                 return;
             }
 
-            CmdKeepVehicleUpright();
+            KeepVehicleUpright();
         }
     }
 }

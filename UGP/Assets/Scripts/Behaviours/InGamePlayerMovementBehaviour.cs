@@ -74,7 +74,7 @@ namespace UGP
             var v = Input.GetAxis("Vertical");
 
             //NEEDS WORK
-            //PLAYER MOVE FORWARD WITHOUT BUTTONPRESS
+            //PLAYER MOVE FORWARD WITHOUT BUTTON PRESS
 
             Vector3 moveForward = new Vector3(0.0f, 0.0f, v * WalkSpeed);
             var move = (moveForward + transform.forward);

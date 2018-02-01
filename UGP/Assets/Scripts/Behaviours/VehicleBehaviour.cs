@@ -13,12 +13,14 @@ namespace UGP
         public VehicleShootBehaviour shootBehaviour;
 
         [SyncVar] public bool vehicleActive;
+        public Transform seat;
 
 
         public void SetVehicleActive(bool active)
         {
-            if(!localPlayerAuthority)
+            if (!localPlayerAuthority)
             {
+                enabled = false;
                 return;
             }
             vehicleActive = active;

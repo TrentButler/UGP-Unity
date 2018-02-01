@@ -120,7 +120,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4524020308106728}
-  - component: {fileID: 114415759488778322}
   - component: {fileID: 114967143345316988}
   - component: {fileID: 114078183736234396}
   - component: {fileID: 114631925883238532}
@@ -947,25 +946,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114415759488778322
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1278334256096292}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e7e6a152ee9f182409e10e46a0444529, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Mode: 0
-  MaxSpeed: 60
-  TurnSpeed: 2.5
-  hoverStrength: 99
-  TargetHeight: 2
-  JumpStrength: 1104.3
-  StrafeSpeed: 5
-  ThrusterPosition: {fileID: 4260170843339580}
 --- !u!114 &114469738794451216
 MonoBehaviour:
   m_ObjectHideFlags: 1
