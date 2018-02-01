@@ -32,6 +32,10 @@ namespace UGP
         public bool IsStanding = false;
         public bool IsViewing = false;
 
+
+        public Transform GarageDoor;
+        public float DoorTimer = 1.0f;
+
         private bool HasJumped;
         private bool HasSprinted;
         private float SprintTimer = 1.0f;
@@ -55,6 +59,8 @@ namespace UGP
         void OnTriggerEnter(Collider other)
         {
             var player = FindObjectsOfType<PlayerMovementBehaviour>();
+
+            var upforce = new Vector3(0, Time.deltaTime * DoorTimer,0);
 
             if (other.tag == "ChairCollider")
             {
@@ -85,6 +91,8 @@ namespace UGP
                 CanMove = false;
                 rb.isKinematic = true;
                 IsViewing = true;
+             
+                GarageDoor.Translate(upforce * Time.deltaTime);
             }
             if (other.tag == "DockCollider")
             {
