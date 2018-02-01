@@ -2,69 +2,62 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 
 
 namespace UGP
 {
-
     //NEEDS WORK
-    public class PlayerInteractionBehaviour : MonoBehaviour
+    public class PlayerInteractionBehaviour : NetworkBehaviour
     {
+        public PlayerBehaviour p;
 
-        public GameObject Head;
-        public GameObject Body;
-
-        public float distance;
-
-        public float HEADminRot;
-        public float HEADmaxRot;
-
-        public float BODYminRot;
-        public float BODYmaxRot;
-
-        //RAYCAST FROM THE 'origin' A SET 'distance' FROM PLAYER
-
-        void Start()
+        private void Awake()
         {
-
-        }
-
-        //NEEDS WORK
-        void FixedUpdate()
-        {
-            RaycastHit hit;
-            if (Physics.Raycast(Head.transform.position, Head.transform.forward.normalized, out hit, distance))
+            if (!localPlayerAuthority)
             {
-                hit.collider.gameObject.SendMessage("LightOn");
-
-                Debug.Log("Press F to pick up: " + hit.collider.gameObject.name);
-
-                if (Input.GetKeyDown(KeyCode.F))
-                {
-                    var p = GetComponent<PlayerBehaviour>().player;
-                    hit.collider.gameObject.SendMessage("PickUp", p);
-                }
-
-                Debug.Log(hit.collider.tag);
+                enabled = false;
+                return;
             }
         }
 
-        //NEEDS WORK
-        private void LateUpdate()
+        private void Start()
         {
-            //CLAMP THE ROTATIONS
-            var r = transform.Find("PlayerCamera").transform.rotation;
+            if (!localPlayerAuthority)
+            {
+                enabled = false;
+                return;
+            }
+        }
 
-            var yRot = r[1];
-            Quaternion rot = Body.transform.rotation;
-            //rot[1] = yRot * Time.fixedDeltaTime;
+        private void OnTriggerEnter(Collider other)
+        {
+            //CHECK FOR THE LOCAL PLAYER??????
+            if (!localPlayerAuthority)
+            {
+                enabled = false;
+                return;
+            }
 
-            rot[1] = Mathf.Clamp(yRot, BODYminRot, BODYmaxRot);
+            if (other.tag == "Vehicle")
+            {
+                var v = other.GetComponent<VehicleBehaviour>();
+                var vActive = v.vehicleActive;
+                
 
-            Head.transform.rotation = r;
-            Body.transform.rotation = rot;
-
-            Debug.DrawRay(Head.transform.position, Head.transform.forward.normalized, Color.red);
+                if (!vActive) //CHECK IF THE VEHICLE IS ALREADY IN USE
+                {
+                    Debug.Log("PRESS F TO ENTER VEHICLE");
+                    //F KEY PRESS TO ENTER THE VEHICLE
+                    if (Input.GetKeyDown(KeyCode.F))
+                    {
+                        p.vehicle = v;
+                        v.SetVehicleActive(true);
+                        //GET IN THE VEHICLE
+                    }
+                }
+            }
         }
     }
 }

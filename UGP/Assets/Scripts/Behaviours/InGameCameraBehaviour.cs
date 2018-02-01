@@ -46,9 +46,10 @@ namespace UGP
 
                     if(driving)
                     {
-                        vehicleCam.Follow = player.vehicleMovement.transform;
-                        vehicleCam.LookAt = player.vehicleMovement.transform;
+                        vehicleCam.Follow = player.vehicle.transform;
+                        vehicleCam.LookAt = player.vehicle.transform;
 
+                        vehicleCam.gameObject.SetActive(true);
                         playerCam.gameObject.SetActive(false);
                     }
                     else
@@ -56,6 +57,7 @@ namespace UGP
                         playerCam.Follow = player.playerMovement.transform;
                         playerCam.LookAt = player.playerMovement.transform;
 
+                        playerCam.gameObject.SetActive(true);
                         vehicleCam.gameObject.SetActive(false);
                     }
                 }

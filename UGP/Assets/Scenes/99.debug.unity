@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.35930035, g: 0.3617606, b: 0.33153638, a: 1}
+  m_IndirectSpecularColor: {r: 0.35930088, g: 0.3617607, b: 0.33153635, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -113,6 +113,48 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &222608298
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 104.84782
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 119.12358
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4108389995840454, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: f79180ca549c7ae44a36742b36805c01, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1001 &526253659
 Prefab:
   m_ObjectHideFlags: 0
@@ -161,6 +203,48 @@ MonoBehaviour:
     type: 2}
   m_PrefabInternal: {fileID: 526253659}
   m_Script: {fileID: 11500000, guid: 45e653bab7fb20e499bda25e1b646fea, type: 3}
+--- !u!1001 &530667112
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 122.333885
+      objectReference: {fileID: 0}
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 179.41925
+      objectReference: {fileID: 0}
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4260358671366546, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1047378263
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,6 +466,7 @@ GameObject:
   - component: {fileID: 1747267766}
   - component: {fileID: 1747267767}
   - component: {fileID: 1747267768}
+  - component: {fileID: 1747267769}
   m_Layer: 0
   m_Name: NETWORK
   m_TagString: Untagged
@@ -499,6 +584,17 @@ MonoBehaviour:
   showGUI: 1
   offsetX: 0
   offsetY: 0
+--- !u!114 &1747267769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1747267765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69251d46c1b58ba44847b88e3cf50e43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1894351750
 GameObject:
   m_ObjectHideFlags: 0

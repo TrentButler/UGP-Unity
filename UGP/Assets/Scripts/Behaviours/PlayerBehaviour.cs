@@ -12,7 +12,7 @@ namespace UGP
         private Player p;
 
         [SyncVar] public bool isDriving;
-        public InGameVehicleMovementBehaviour vehicleMovement;
+        public VehicleBehaviour vehicle;
         public InGamePlayerMovementBehaviour playerMovement;
 
         private void Awake()
@@ -51,7 +51,7 @@ namespace UGP
                 return;
             }
 
-            if (vehicleMovement == null)
+            if (vehicle == null)
             {
                 isDriving = false;
             }
@@ -62,12 +62,20 @@ namespace UGP
 
             if (isDriving)
             {
-                vehicleMovement.enabled = true;
+                vehicle.enabled = true;
                 playerMovement.enabled = false;
+
+
+                //NEEDS WORK
+                if(Input.GetKeyDown(KeyCode.F))
+                {
+                    //GET OUT OF VEHICLE
+                    vehicle = null;
+                }
             }
             else
             {
-                vehicleMovement = null;
+                vehicle = null;
                 playerMovement.enabled = true;
             }
         }
