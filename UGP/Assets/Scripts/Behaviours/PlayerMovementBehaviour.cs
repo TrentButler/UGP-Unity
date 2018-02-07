@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
+
 namespace UGP
 {
 
@@ -20,6 +21,8 @@ namespace UGP
     public class PlayerMovementBehaviour : MonoBehaviour
     {
 
+        public Animator Ani;
+
         public PlayerState state;
 
         public float WalkSpeed = 1.0f;
@@ -32,6 +35,7 @@ namespace UGP
         public bool IsStanding = false;
         public bool IsViewing = false;
 
+        public GameObject WardrobeStandPoint;
 
         public Transform GarageDoor;
         public float DoorTimer = 1.0f;
@@ -71,6 +75,7 @@ namespace UGP
                 CanMove = false;
                 rb.isKinematic = true;
                 IsSitting = true;
+                Ani.SetFloat("Forward", 0);
             }
             if(other.tag == "ToolCollider")
             {
@@ -81,6 +86,8 @@ namespace UGP
                 CanMove = false;
                 rb.isKinematic = true;
                 IsStanding = true;
+                Ani.SetFloat("Forward", 0);
+                rb.transform.position = WardrobeStandPoint.transform.position;
             }
             if (other.tag == "HoverCraftCollider")
             {
@@ -91,7 +98,8 @@ namespace UGP
                 CanMove = false;
                 rb.isKinematic = true;
                 IsViewing = true;
-             
+                Ani.SetFloat("Forward", 0);
+
                 GarageDoor.Translate(upforce * Time.deltaTime);
             }
             if (other.tag == "DockCollider")
@@ -103,6 +111,7 @@ namespace UGP
                 CanMove = false;
                 rb.isKinematic = true;
                 IsSitting = true;
+                Ani.SetFloat("Forward", 0);
             }
         }
 
@@ -140,6 +149,7 @@ namespace UGP
                     IsViewing = false;
                     CanMove = true;
                     rb.isKinematic = false;
+                 
                 }
             if (state == PlayerState.move)
             {
@@ -160,6 +170,8 @@ namespace UGP
                 //OnStartLocalPlayer();
                 var Forward = Input.GetAxis("Vertical");
                 var TurnHead = Input.GetAxis("Horizontal");
+
+                Ani.SetFloat("Forward", Forward);
 
                 Vector3 movementVector = new Vector3(0, 0.0f, Forward * WalkSpeed);
                 var YRot = new Vector3(0.0f, TurnSpeed * TurnHead, 0.0f);

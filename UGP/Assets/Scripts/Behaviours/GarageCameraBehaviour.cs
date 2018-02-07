@@ -34,6 +34,8 @@ namespace UGP
         #endregion PlayerInteraction
         public Vector3 Offset;
 
+
+        public Collider WardrobeStandPoint;
         // Use this for initialization
         void Start()
         {
@@ -72,7 +74,7 @@ namespace UGP
                     {
                         transform.position = ComputerCam1.position;
                         transform.rotation = ComputerCam1.rotation;
-
+                        player.transform.position = PlayerSeat.transform.position;
                         break;
                     }
                 case PlayerState.standing:
@@ -80,12 +82,14 @@ namespace UGP
                         transform.position = ToolStationCam1.position;
                         transform.rotation = ToolStationCam1.rotation;
                         ToolStationCam1.gameObject.SetActive(true);
+                        player.transform.position = WardrobeStandPoint.transform.position;
                         break;
                     }
                 case PlayerState.viewing:
                     {
                         transform.position = HoverCarCam1.position;
                         transform.rotation = HoverCarCam1.rotation;
+                        player.transform.position = HoverCarCollider.transform.position;
                         break;
                     }
             }

@@ -35,11 +35,11 @@ namespace UGP
             if (playerstater.state == PlayerState.standing)
             {
                 ClosetCanvas.enabled = true;
-                if (Input.GetKey(KeyCode.LeftArrow))
-                {
+               
+              
                     var left = new Vector3(0.0f, -1 * turnspeed, 0.0f);
                     model.Rotate(left * Time.deltaTime);
-                }
+                
 
 
             }
@@ -54,11 +54,10 @@ namespace UGP
             if (playerstater.state == PlayerState.standing)
             {
                 ClosetCanvas.enabled = true;
-                if (Input.GetKey(KeyCode.RightArrow))
-                {
+               
                     var right = new Vector3(0.0f, 1 * turnspeed, 0.0f);
                     model.Rotate(right * Time.deltaTime);
-                }
+                
             }
         }
         void Start()
