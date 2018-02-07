@@ -285,10 +285,10 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1912099926934314}
   serializedVersion: 2
-  m_Mass: 2
+  m_Mass: 1
   m_Drag: 0
   m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
@@ -363,10 +363,13 @@ MonoBehaviour:
   bulletModel: {fileID: 1537869310021538, guid: be405b0ceb96d894aa9e47b8e818eb35,
     type: 2}
   GunBarrel: {fileID: 4052162712709280}
+  BulletTravelDist: 100
   shotTimer: 6
   shotCooldown: 0
   bulletSpeed: 250
   hasFired: 0
+  minXRot: 3
+  maxXRot: -10
 --- !u!114 &114442636837487046
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -401,7 +404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxSpeed: 20
   TurnSpeed: 2.5
-  hoverStrength: 100
+  hoverStrength: 10
   TargetHeight: 1.5
   BoostSpeed: 80
   JumpStrength: 1500

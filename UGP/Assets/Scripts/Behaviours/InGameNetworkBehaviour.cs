@@ -12,10 +12,6 @@ namespace UGP
     {
         public GameObject Vehicle;
 
-
-
-
-
         private void FixedUpdate()
         {
             //SPAWN A VEHICLE FOR EACH PLAYER THAT IS CONNECTED
