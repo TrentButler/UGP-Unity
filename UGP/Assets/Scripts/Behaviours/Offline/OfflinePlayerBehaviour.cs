@@ -21,8 +21,6 @@ namespace UGP
 
         private void Start()
         {
-            
-
             if (player != null)
                 p = player;
 
@@ -36,8 +34,6 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            
-
             if (vehicle == null)
             {
                 isDriving = false;
