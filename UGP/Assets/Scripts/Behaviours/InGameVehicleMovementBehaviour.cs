@@ -39,13 +39,13 @@ namespace UGP
             //rb.MoveRotation(rot);
         }
 
-        public void Aim()
+        public void Steer()
         {
             var dX = Input.GetAxis("Mouse X");
 
             transform.Rotate(new Vector3(0, dX, 0), Space.Self);
         }
-        public void Aim(Quaternion rot)
+        public void Steer(Quaternion rot)
         {
             transform.rotation = rot;
         }
@@ -131,6 +131,14 @@ namespace UGP
 
                 rb.AddForce(hoverVector);
             }
+
+            var y = transform.position.y;
+            if(y > TargetHeight)
+            {
+                var newPos = transform.position;
+                newPos.y = TargetHeight;
+                transform.position = newPos;
+            }
             #endregion
 
             //Steer(steerVector);
@@ -143,7 +151,7 @@ namespace UGP
             //if (Input.GetKeyDown(KeyCode.LeftAlt))
             //    ResetVehicleRotation();
 
-            Aim();
+            Steer();
 
             var accel = (accelerationVector + ThrusterPosition.forward);
             var strafe = (new Vector3(turnVehicle, 0, 0) * StrafeSpeed);
