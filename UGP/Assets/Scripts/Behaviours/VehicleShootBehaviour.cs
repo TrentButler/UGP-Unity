@@ -10,16 +10,12 @@ namespace UGP
     {
         public GameObject bulletModel;
         public Transform GunBarrel;
-        public float BulletTravelDist;
-        public float shotTimer;
-        public float shotCooldown;
-        public float bulletSpeed;
-        public bool hasFired;
+
+        public float WeaponRange;
+        public int RoundPerSecond;
 
         public float minXRot;
         public float maxXRot;
-
-
 
         #region OLD
         //[Command]
@@ -58,7 +54,7 @@ namespace UGP
         //}
         #endregion
 
-
+        //NEEDS WORK
         private void Aim()
         {
             var a = Input.GetAxis("Mouse Y");
@@ -71,15 +67,17 @@ namespace UGP
             GunBarrel.Rotate(new Vector3(a, 0.0f, 0.0f));
         }
 
-        private void CmdShoot()
+        private void CmdShoot(float dt)
         {
             //RAYCAST FORWARD FROM 'GunBarrel'
             RaycastHit hit;
-            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, BulletTravelDist))
+            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
             {
                 var n = hit.collider.name;
                 Debug.Log(n);
             }
+
+
 
             //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * BulletTravelDist, Color.red);
         }
@@ -91,8 +89,6 @@ namespace UGP
                 enabled = false;
                 return;
             }
-
-            shotCooldown = shotTimer;
         }
 
         private void Start()
@@ -102,9 +98,10 @@ namespace UGP
                 enabled = false;
                 return;
             }
-            shotCooldown = shotTimer;
         }
 
+
+        public float time = 0.0f;
         private void FixedUpdate()
         {
             if (!localPlayerAuthority)
@@ -112,16 +109,24 @@ namespace UGP
                 enabled = false;
                 return;
             }
-
+            
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
+                time += Time.deltaTime;
                 Debug.Log("LEFT MOUSE BUTTON PRESS");
-                CmdShoot();
+                CmdShoot(time);
             }
+            else
+            {
+                time = 0.0f;
+            }
+
+            Debug.Log(time);
+
 
             Aim();
 
-            Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * BulletTravelDist, Color.red);
+            Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
         }
     }
 }
