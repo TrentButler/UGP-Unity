@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace UGP
 {
+    [CreateAssetMenu(fileName = "Vehicle")]
     public class Vehicle : ScriptableObject, IDamageable, IRepairable
     {
         #region MemberVariables

@@ -18,6 +18,7 @@ namespace UGP
         public float BoostSpeed = 1.0f;
         public float JumpStrength = 1.0f;
         public float StrafeSpeed = 1.0f;
+        public float GravityFactor = 1.0f;
 
         public Transform ThrusterPosition;
         private Rigidbody rb;
@@ -44,6 +45,7 @@ namespace UGP
             var dX = Input.GetAxis("Mouse X");
 
             transform.Rotate(new Vector3(0, dX, 0), Space.Self);
+            //rb.rotation = transform.rotation;
         }
         public void Steer(Quaternion rot)
         {
@@ -52,9 +54,12 @@ namespace UGP
 
         public void Jump()
         {
-            Vector3 jumpVector = new Vector3(0, 1 * JumpStrength, 0);
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Vector3 jumpVector = new Vector3(0, 1 * JumpStrength, 0);
 
-            rb.AddForce(jumpVector);
+                rb.AddForce(jumpVector);
+            }
         }
 
         public void ResetVehicleRotation()
@@ -75,7 +80,7 @@ namespace UGP
 
             rb.isKinematic = false;
         }
-        
+
         private void KeepVehicleUpright()
         {
             //DETERMINE THE DELTA OF THE CURRENT X AND Z ROTATION OF THE VEHICLE
@@ -92,11 +97,10 @@ namespace UGP
             rb.rotation = rot;
             transform.rotation = rot;
         }
-        
-        public void Move()
+
+        public void UseBooster()
         {
-            var throttle = Input.GetAxis("Vertical");
-            var turnVehicle = Input.GetAxis("Horizontal");
+            //DEPLETE THE VEHICLE'S 'FUEL' VALUE
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
@@ -107,12 +111,14 @@ namespace UGP
             {
                 MaxSpeed = originalSpeed;
             }
+        }
 
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Jump();
-            }
+        public void Move()
+        {
+            var throttle = Input.GetAxis("Vertical");
+            var turnVehicle = Input.GetAxis("Horizontal");
 
+            Debug.Log(throttle);
 
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 steerVector = new Vector3(0.0f, turnVehicle * TurnSpeed, 0.0f);
@@ -121,6 +127,7 @@ namespace UGP
             //PERFORM A RAYCAST DOWNWARD, 
             //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
             //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
+
             RaycastHit hit;
             if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
             {
@@ -131,32 +138,42 @@ namespace UGP
 
                 rb.AddForce(hoverVector);
             }
-
-            var y = transform.position.y;
-            if(y > TargetHeight)
-            {
-                var newPos = transform.position;
-                newPos.y = TargetHeight;
-                transform.position = newPos;
-            }
             #endregion
 
-            //Steer(steerVector);
+            if (accelerationVector.magnitude > 0 || steerVector.magnitude > 0)
+            {
+                //if(Mathf.Abs(throttle) == 0)
+                //{
+                //    rb.isKinematic = true;
+                //}
+                //else
+                //{
+                //    rb.isKinematic = false;
+                //}
 
-            //if (Input.GetKeyDown(KeyCode.LeftAlt))
-            //    ResetVehicleRotation();
+                
 
-            //transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
+                //Steer(steerVector);
 
-            //if (Input.GetKeyDown(KeyCode.LeftAlt))
-            //    ResetVehicleRotation();
+                //if (Input.GetKeyDown(KeyCode.LeftAlt))
+                //    ResetVehicleRotation();
+
+                //transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
+
+                //if (Input.GetKeyDown(KeyCode.LeftAlt))
+                //    ResetVehicleRotation();
+                
+                UseBooster();
+                Jump();
+
+                //var accel = (accelerationVector + ThrusterPosition.forward);
+                var accel = (accelerationVector + ThrusterPosition.forward);
+                var strafe = (new Vector3(turnVehicle, 0, 0) * StrafeSpeed);
+
+                transform.Translate((accel + strafe) * Time.fixedDeltaTime);
+            }
 
             Steer();
-
-            var accel = (accelerationVector + ThrusterPosition.forward);
-            var strafe = (new Vector3(turnVehicle, 0, 0) * StrafeSpeed);
-
-            transform.Translate((accel + strafe) * Time.fixedDeltaTime);
         }
         #endregion
 
