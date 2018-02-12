@@ -10,11 +10,11 @@ namespace UGP
     {
         #region MemberVariables
         private float _health;
-        public float Health { get { return _health; } set { } }
+        public float Health { get { return _health; } set { _health = value; } }
         public float MaxHealth;
 
         private float _fuel;
-        public float Fuel { get { return _fuel; } set { } }
+        public float Fuel { get { return _fuel; } set { _fuel = value; } }
         public float MaxFuel;
 
         private bool _isDestroyed;

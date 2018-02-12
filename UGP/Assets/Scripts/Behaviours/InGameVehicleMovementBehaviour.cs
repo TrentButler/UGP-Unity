@@ -92,9 +92,9 @@ namespace UGP
 
             if (dX > 0.0f || dX < 0.0f || dZ > 0.0f || dZ < 0.0f)
                 rot[0] = Mathf.LerpAngle(dX, 0.0f, 1.0f);
-            rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
+                rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
 
-            rb.rotation = rot;
+            //rb.rotation = rot;
             transform.rotation = rot;
         }
 
