@@ -72,14 +72,15 @@ namespace UGP
             //PLAYER MOVE FORWARD WITHOUT BUTTON PRESS
 
             Vector3 moveForward = new Vector3(0.0f, 0.0f, v * WalkSpeed);
-            var move = (moveForward + transform.forward);
+
+            if(moveForward.magnitude > 0)
+            {
+                var move = (moveForward + transform.forward);
+                transform.Translate(move * Time.fixedDeltaTime);
+            }
 
             var YRot = new Vector3(0.0f, h * TurnSpeed, 0.0f);
-            //Debug.Log(move);
-            //Debug.Log(YRot);
-
-            transform.Rotate(YRot);
-            transform.Translate(move * Time.fixedDeltaTime);
+            transform.Rotate(YRot);            
         }
 
         private void LateUpdate()

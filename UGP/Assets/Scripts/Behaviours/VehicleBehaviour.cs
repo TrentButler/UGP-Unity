@@ -11,6 +11,7 @@ namespace UGP
     {
         public InGameVehicleMovementBehaviour vehicleMovement;
         public VehicleShootBehaviour shootBehaviour;
+        public Canvas crosshair;
 
         [SyncVar] public bool vehicleActive;
         public Transform seat;
@@ -60,15 +61,19 @@ namespace UGP
             {
                 case true:
                     {
+                        //Cursor.visible = false;
                         vehicleMovement.enabled = true;
                         shootBehaviour.enabled = true;
+                        crosshair.enabled = true;
                         break;
                     }
 
                 case false:
                     {
+                        //Cursor.visible = true;
                         vehicleMovement.enabled = false;
                         shootBehaviour.enabled = false;
+                        crosshair.enabled = false;
                         break;
                     }
             }

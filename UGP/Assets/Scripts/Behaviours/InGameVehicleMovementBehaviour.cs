@@ -118,7 +118,7 @@ namespace UGP
             var throttle = Input.GetAxis("Vertical");
             var turnVehicle = Input.GetAxis("Horizontal");
 
-            Debug.Log(throttle);
+            //Debug.Log(throttle);
 
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 steerVector = new Vector3(0.0f, turnVehicle * TurnSpeed, 0.0f);

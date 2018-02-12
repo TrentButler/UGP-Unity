@@ -51,23 +51,26 @@ namespace UGP
                 }
             });
 
-            var driving = player.isDriving;
-
-            if (driving)
+            if(player != null)
             {
-                vehicleCam.Follow = player.vehicle.transform;
-                vehicleCam.LookAt = player.vehicle.transform;
+                var driving = player.isDriving;
 
-                vehicleCam.gameObject.SetActive(true);
-                playerCam.gameObject.SetActive(false);
-            }
-            else
-            {
-                playerCam.Follow = player.playerMovement.transform;
-                playerCam.LookAt = player.playerMovement.transform;
+                if (driving)
+                {
+                    vehicleCam.Follow = player.vehicle.transform;
+                    vehicleCam.LookAt = player.vehicle.transform;
 
-                playerCam.gameObject.SetActive(true);
-                vehicleCam.gameObject.SetActive(false);
+                    vehicleCam.gameObject.SetActive(true);
+                    playerCam.gameObject.SetActive(false);
+                }
+                else
+                {
+                    playerCam.Follow = player.playerMovement.transform;
+                    playerCam.LookAt = player.playerMovement.transform;
+
+                    playerCam.gameObject.SetActive(true);
+                    vehicleCam.gameObject.SetActive(false);
+                }
             }
         }
     }
