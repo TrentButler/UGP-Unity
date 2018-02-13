@@ -1,7 +1,9 @@
-﻿namespace UGP
+﻿using UnityEngine;
+
+namespace UGP
 {
     public abstract class Ammo : Item
     {
-        public int Count;
+        [Range(0, 999)] public int Count;
     }
 }

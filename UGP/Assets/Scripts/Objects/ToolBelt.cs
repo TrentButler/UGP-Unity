@@ -12,8 +12,6 @@ namespace UGP
         public List<Med> medical = new List<Med>();
         public List<RepairKit> repairKits = new List<RepairKit>();
         public List<Item> misc = new List<Item>();
-        public AmmoBox ammo;
-
 
         public bool AddItem(Item i)
         {

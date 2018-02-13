@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 
 namespace UGP
 {
-
     //NEEDS WORK, 
     //FUNCTION(S) FOR HANDLING WHEN PLAYER SHOOTS A GIVEN AMMOTYPE
     //FUNCTION(S) FOR HANDLING WHEN PLAYER PICKSUP ANOTHER AMMOBOX
@@ -20,49 +16,20 @@ namespace UGP
         //SHOTGUN
         //SNIPER
         //ROCKET
-        public List<Ammo> ammunition = new List<Ammo>();
+
+        [Range(0, 999)] public int Assault;
+        [Range(0, 999)] public int Shotgun;
+        [Range(0, 999)] public int Sniper;
+        [Range(0, 999)] public int Rocket;
 
         public Item ItemGivenOnPickup(ICollector c)
         {
-            throw new System.NotImplementedException();
+            return this as AmmoBox;
         }
 
         public List<Item> ItemsGivenOnPickup(ICollector c)
         {
-            var items = new List<Item>();
-            ammunition.ForEach(x => items.Add(x));
-            c.TakeItems(items);
-            return items;
+            return null;
         }
     }
-    
-    #region AMMOBOX_INSPECTOR
-#if UNITY_EDITOR
-    [CustomEditor(typeof(AmmoBox))]
-    [CanEditMultipleObjects]
-    public class InspectorAmmoBox : Editor
-    {
-        AmmoBox myTarget;
-        private void OnEnable()
-        {
-            myTarget = (AmmoBox)target;
-        }
-
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-            foreach(var a in myTarget.ammunition)
-            {
-                EditorGUI.BeginChangeCheck();
-                var so = new SerializedObject(a);
-                var sp = so.FindProperty("Count");
-                sp.intValue = EditorGUILayout.IntSlider(a.name, sp.intValue, 0, 100);                
-                so.ApplyModifiedProperties();
-                EditorGUI.EndChangeCheck();
-            }
-            
-        }
-    }
-#endif
-    #endregion
 }

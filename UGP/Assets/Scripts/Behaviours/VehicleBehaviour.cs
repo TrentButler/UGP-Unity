@@ -15,7 +15,7 @@ namespace UGP
         public List<MeshRenderer> models;
         [Range(0.001f, 1.0f)] public float colorChangeSpeed;
         public Vehicle VehicleConfig;
-        private Vehicle _v;
+        [HideInInspector] public Vehicle _v;
         public InGameVehicleMovementBehaviour vehicleMovement;
         public VehicleShootBehaviour shootBehaviour;
         public Canvas vehicleUI;
@@ -48,7 +48,38 @@ namespace UGP
                     s.maxValue = _v.MaxFuel;
                 }
 
-            });            
+            });
+
+            var text = vehicleUI.GetComponentInChildren<Text>();
+
+            var _assault = _v.ammunition.Assault;
+            var _shotgun = _v.ammunition.Shotgun;
+            var _sniper = _v.ammunition.Sniper;
+            var _rocket = _v.ammunition.Rocket;
+
+            string sAssault = "ASSAULT: " + _assault;
+            string sShotgun = "SHOTGUN: " + _shotgun;
+            string sSniper = "SNIPER: " + _sniper;
+            string sRocket = "ROCKET: " + _rocket;
+
+            text.text = sAssault + "\n" + sShotgun + "\n"
+                + sSniper + "\n" + sRocket;
+        }
+
+        private void UpdateVehicle()
+        {
+            var health = _v.Health;
+            var fuel = _v.Fuel;
+
+            if(health <= 0.0f)
+            {
+                _v.Destroyed = true;
+            }
+
+            if(fuel <= 0.0f)
+            {
+                _v.FuelDepeleted = true;
+            }
         }
 
         public void SetVehicleActive(bool active)
@@ -125,6 +156,8 @@ namespace UGP
             _v = VehicleConfig;
             _v.Health = _v.MaxHealth;
             _v.Fuel = _v.MaxFuel;
+            _v.Destroyed = false;
+            _v.FuelDepeleted = false;
         }
 
         private void FixedUpdate()
@@ -140,10 +173,11 @@ namespace UGP
                 case true:
                     {
                         OnVehicleEnter();
-                        //Cursor.visible = false;
+                        Cursor.visible = false;
                         vehicleMovement.enabled = true;
                         shootBehaviour.enabled = true;
                         vehicleUI.enabled = true;
+                        UpdateVehicle();
                         UpdateUI();
                         break;
                     }
@@ -151,10 +185,11 @@ namespace UGP
                 case false:
                     {
                         OnVehicleExit();
-                        //Cursor.visible = true;
+                        Cursor.visible = true;
                         vehicleMovement.enabled = false;
                         shootBehaviour.enabled = false;
                         vehicleUI.enabled = false;
+                        UpdateVehicle();
                         break;
                     }
             }

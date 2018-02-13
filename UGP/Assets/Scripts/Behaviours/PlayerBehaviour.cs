@@ -9,7 +9,7 @@ namespace UGP
     public class PlayerBehaviour : NetworkBehaviour
     {
         public Player player;
-        private Player p;
+        [HideInInspector] public Player p;
 
         [SyncVar] public bool isDriving;
         public VehicleBehaviour vehicle;
@@ -33,15 +33,8 @@ namespace UGP
                 return;
             }
 
-            if (player != null)
-                p = player;
-
-            else
-            {
-                p = ScriptableObject.CreateInstance<Player>();
-                p.Health = 100;
-                p.MaxHealth = 100;
-            }
+            p = player;
+            p.Alive = true;
         }
 
         private void FixedUpdate()
@@ -61,8 +54,8 @@ namespace UGP
                 isDriving = true;
             }
 
-            var col1 = transform.Find("Model-Head").GetComponent<SphereCollider>();
-            var col2 = transform.Find("Model-Body").GetComponent<CapsuleCollider>();
+            var model1 = transform.Find("Model-Head");
+            var model2 = transform.Find("Model-Body");
             var rb = GetComponent<Rigidbody>();
 
             if (isDriving)
@@ -71,19 +64,24 @@ namespace UGP
                 playerMovement.enabled = false;
                 interaction.enabled = false;
 
+                var ammoBox = p.ammo;
+                vehicle._v.ammunition = ammoBox;
+
+
                 //DISABLE THE PLAYER COLLIDER(S) IF DRIVING
-                col1.enabled = false;
-                col2.enabled = false;
+                model1.gameObject.SetActive(false);
+                model2.gameObject.SetActive(false);
 
                 transform.position = vehicle.seat.position;
                 transform.rotation = vehicle.seat.rotation;
-                
+
                 rb.isKinematic = true;
-                
+
                 //NEEDS WORK
-                if(Input.GetKeyDown(KeyCode.F))
+                if (Input.GetKeyDown(KeyCode.F))
                 {
                     //GET OUT OF VEHICLE
+                    vehicle._v.ammunition = null;
                     vehicle.SetVehicleActive(false);
                     vehicle = null;
                     isDriving = false;
@@ -96,8 +94,8 @@ namespace UGP
                 interaction.enabled = true;
 
                 //ENABLE THE PLAYER COLLIDER(S) IF NOT DRIVING
-                col1.enabled = true;
-                col2.enabled = true;
+                model1.gameObject.SetActive(true);
+                model2.gameObject.SetActive(true);
 
                 rb.isKinematic = false;
             }

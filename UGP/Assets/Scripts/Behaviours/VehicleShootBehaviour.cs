@@ -7,8 +7,18 @@ using UnityEngine.UI;
 
 namespace UGP
 {
+    public enum Weapon
+    {
+        ASSAULT = 0, 
+        SHOTGUN = 1,
+        SNIPER = 2,
+        ROCKET = 3,
+    }
+
     public class VehicleShootBehaviour : NetworkBehaviour
     {
+        public Weapon w;
+
         public GameObject bulletModel;
         public Transform GunBarrel;
         public AudioSource audio;
@@ -21,25 +31,104 @@ namespace UGP
         private Canvas c;
         #endregion
 
-
         [Range(0.1f, 1.0f)] public float FireRate; //ROUNDS FIRED PER MINUTE
         public float WeaponRange;
         public float AimCooldown;
-
         public int roundsFired = 0;
-
         private Vector3 barrelLookAt;
+
+        private VehicleBehaviour v;
 
         private void CmdShoot()
         {
-            roundsFired += 1;
+            switch(w)
+            {
+                case Weapon.ASSAULT:
+                    {
+                        var assault = v._v.ammunition.Assault;
+                        if(assault > 0)
+                        {
+                            v._v.ammunition.Assault -= 1;
+                            //audio.Play();
+
+                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            Destroy(b, 4);
+                        }
+                        else
+                        {
+                            Debug.Log("OUT OF ASSAULT ROUNDS");
+                        }                        
+                        break;
+                    }
+
+                case Weapon.SHOTGUN:
+                    {
+                        var shotgun = v._v.ammunition.Shotgun;
+                        if(shotgun > 0)
+                        {
+                            v._v.ammunition.Shotgun -= 1;
+                            //audio.Play();
+
+                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            Destroy(b, 4);
+                        }
+                        else
+                        {
+                            Debug.Log("OUT OF SHOTGUN ROUNDS");
+                        }                        
+                        break;
+                    }
+
+                case Weapon.SNIPER:
+                    {
+                        var sniper = v._v.ammunition.Sniper;
+                        if(sniper > 0)
+                        {
+                            v._v.ammunition.Sniper -= 1;
+                            //audio.Play();
+
+                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            Destroy(b, 4);
+                        }
+                        else
+                        {
+                            Debug.Log("OUT OF SNIPER ROUNDS");
+                        }
+                        break;
+                    }
+
+                case Weapon.ROCKET:
+                    {
+                        var rocket = v._v.ammunition.Rocket;
+                        if (rocket > 0)
+                        {
+                            v._v.ammunition.Rocket -= 1;
+                            //audio.Play();
+
+                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            Destroy(b, 4);
+                        }
+                        else
+                        {
+                            Debug.Log("OUT OF ROCKETS");
+                        }
+                        break;
+                    }
+            }
+
+            #region OLD_SHOOT
+            //roundsFired += 1;
             //audio.Play();
 
-            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-            Destroy(b, 4);
+            //var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+            //b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+            //Destroy(b, 4);
 
-            Debug.Log("SHOT FIRED");
+            //Debug.Log("SHOT FIRED");
 
             //RAYCAST FORWARD FROM 'GunBarrel'
             //RaycastHit hit;
@@ -50,6 +139,7 @@ namespace UGP
             //}
 
             //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * BulletTravelDist, Color.red);
+            #endregion
         }
 
         //NEEDS WORK
@@ -142,6 +232,7 @@ namespace UGP
                 return;
             }
             c = crosshair.GetComponentInParent<Canvas>();
+            v = GetComponent<VehicleBehaviour>();
         }
         
         private void FixedUpdate()

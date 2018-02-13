@@ -22,6 +22,7 @@ namespace UGP
         public bool Alive { get { return _isAlive; } set { } }
 
         public ToolBelt toolBelt;
+        public AmmoBox ammo;
         #endregion 
 
         public void TakeItem(Item item)
