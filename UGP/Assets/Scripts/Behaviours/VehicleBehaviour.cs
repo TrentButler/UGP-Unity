@@ -158,6 +158,11 @@ namespace UGP
             _v.Fuel = _v.MaxFuel;
             _v.Destroyed = false;
             _v.FuelDepeleted = false;
+
+            models.ForEach(m =>
+            {
+                m.material.color = vColor;
+            });
         }
 
         private void FixedUpdate()
@@ -176,6 +181,7 @@ namespace UGP
                         Cursor.visible = false;
                         vehicleMovement.enabled = true;
                         shootBehaviour.enabled = true;
+                        vehicleUI.gameObject.SetActive(true);
                         vehicleUI.enabled = true;
                         UpdateVehicle();
                         UpdateUI();
@@ -188,6 +194,7 @@ namespace UGP
                         Cursor.visible = true;
                         vehicleMovement.enabled = false;
                         shootBehaviour.enabled = false;
+                        vehicleUI.gameObject.SetActive(false);
                         vehicleUI.enabled = false;
                         UpdateVehicle();
                         break;

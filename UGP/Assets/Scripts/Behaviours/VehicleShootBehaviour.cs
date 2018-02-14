@@ -31,7 +31,7 @@ namespace UGP
         private Canvas c;
         #endregion
 
-        [Range(0.1f, 1.0f)] public float FireRate; //ROUNDS FIRED PER MINUTE
+        [Range(0.1f, 2.0f)] public float FireRate; //ROUNDS FIRED PER MINUTE
         public float WeaponRange;
         public float AimCooldown;
         public int roundsFired = 0;
@@ -158,8 +158,11 @@ namespace UGP
                 if(aimTimer >= AimCooldown)
                 {
                     #region UI_CROSSHAIR
-                    var _w = c.GetComponent<RectTransform>().rect.width;
-                    var _h = c.GetComponent<RectTransform>().rect.height;
+
+                    var rectTrans = c.GetComponent<RectTransform>();
+
+                    var _w = rectTrans.rect.width;
+                    var _h = rectTrans.rect.height;
 
                     var center = new Vector3(_w / 2, (_h / 2) + crosshairYOffset, 0);
                     var p = crosshair.rectTransform.position;
@@ -193,10 +196,10 @@ namespace UGP
         {
             //NEEDS WORK
             //SINGLE-FIRE
-            if(Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                CmdShoot();
-            }
+            //if(Input.GetKeyDown(KeyCode.Mouse0))
+            //{
+            //    CmdShoot();
+            //}
 
             //AUTOMATIC FIRE
             //LIMIT THE RATE OF FIRE
@@ -231,8 +234,13 @@ namespace UGP
                 enabled = false;
                 return;
             }
-            c = crosshair.GetComponentInParent<Canvas>();
+            
             v = GetComponent<VehicleBehaviour>();
+            var vActive = v.vehicleActive;
+            if (vActive)
+            {
+                c = v.vehicleUI;
+            }
         }
         
         private void FixedUpdate()
@@ -247,6 +255,15 @@ namespace UGP
             Fire();
 
             Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+        }
+
+        private void LateUpdate()
+        {
+            var vActive = v.vehicleActive;
+            if(vActive)
+            {
+                c = v.vehicleUI;
+            }
         }
     }
 }
