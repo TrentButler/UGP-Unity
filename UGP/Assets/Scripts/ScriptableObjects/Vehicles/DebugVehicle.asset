@@ -8,10 +8,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: baaddc0e08b86fa4a8df12fcb9e9c2f3, type: 3}
-  m_Name: BigAmmoBox
+  m_Script: {fileID: 11500000, guid: 4811ae8adea9ef944a0a2fcf81a56c74, type: 3}
+  m_Name: DebugVehicle
   m_EditorClassIdentifier: 
-  Assault: 10
-  Shotgun: 10
-  Sniper: 10
-  Rocket: 10
+  MaxHealth: 100
+  MaxFuel: 1000
+  ammunition: {fileID: 0}

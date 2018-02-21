@@ -52,7 +52,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69251d46c1b58ba44847b88e3cf50e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Vehicle: {fileID: 1912099926934314, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+  VehiclePrefabs:
+  - {fileID: 1457986460428118, guid: 29e75839aa7e95a4eb8167ab5e142827, type: 2}
+  - {fileID: 1300853870094376, guid: 42cb79c11eccba742878ef0049f015f4, type: 2}
+  - {fileID: 1080952087413762, guid: 1e306e65860e17e4d87585674ac8f289, type: 2}
+  - {fileID: 1671974666754206, guid: 21c275f8ea735574a934595282b22cc3, type: 2}
+  OriginVehicleSpawn: {fileID: 0}
 --- !u!114 &114939143555023340
 MonoBehaviour:
   m_ObjectHideFlags: 1
