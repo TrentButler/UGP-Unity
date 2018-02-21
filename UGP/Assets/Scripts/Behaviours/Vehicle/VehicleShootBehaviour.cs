@@ -9,7 +9,7 @@ namespace UGP
 {
     public enum Weapon
     {
-        ASSAULT = 0, 
+        ASSAULT = 0,
         SHOTGUN = 1,
         SNIPER = 2,
         ROCKET = 3,
@@ -41,57 +41,132 @@ namespace UGP
 
         private void CmdShoot()
         {
-            switch(w)
+            switch (w)
             {
                 case Weapon.ASSAULT:
                     {
                         var assault = v._v.ammunition.Assault;
-                        if(assault > 0)
+                        if (assault > 0)
                         {
                             v._v.ammunition.Assault -= 1;
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            //NetworkServer.Spawn(b);
+
+                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>();
+
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
                             Destroy(b, 4);
+
+                            //RAYCAST FORWARD FROM 'GunBarrel'
+                            RaycastHit hit;
+                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
+                            {
+                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
+
+                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
+                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
+
+                                if (player)
+                                {
+                                    Debug.Log("HIT A PLAYER");
+                                }
+
+                                if (vehicle)
+                                {
+                                    Debug.Log("HIT A VEHICLE");
+                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
+                                }
+                            }
                         }
                         else
                         {
                             Debug.Log("OUT OF ASSAULT ROUNDS");
-                        }                        
+                        }
                         break;
                     }
 
                 case Weapon.SHOTGUN:
                     {
                         var shotgun = v._v.ammunition.Shotgun;
-                        if(shotgun > 0)
+                        if (shotgun > 0)
                         {
                             v._v.ammunition.Shotgun -= 1;
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            //NetworkServer.Spawn(b);
+
+                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SHOTGUNROUNDBEHAVIOUR
+
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
                             Destroy(b, 4);
+
+                            //RAYCAST FORWARD FROM 'GunBarrel'
+                            RaycastHit hit;
+                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
+                            {
+                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
+
+                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
+                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
+
+                                if (player)
+                                {
+                                    Debug.Log("HIT A PLAYER");
+                                }
+
+                                if (vehicle)
+                                {
+                                    Debug.Log("HIT A VEHICLE");
+                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
+                                }
+                            }
                         }
                         else
                         {
                             Debug.Log("OUT OF SHOTGUN ROUNDS");
-                        }                        
+                        }
                         break;
                     }
 
                 case Weapon.SNIPER:
                     {
                         var sniper = v._v.ammunition.Sniper;
-                        if(sniper > 0)
+                        if (sniper > 0)
                         {
                             v._v.ammunition.Sniper -= 1;
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            //NetworkServer.Spawn(b);
+
+                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SNIPERROUNDBEHAVIOUR
+
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
                             Destroy(b, 4);
+
+                            //RAYCAST FORWARD FROM 'GunBarrel'
+                            RaycastHit hit;
+                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
+                            {
+                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
+
+                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
+                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
+
+                                if (player)
+                                {
+                                    Debug.Log("HIT A PLAYER");
+                                }
+
+                                if (vehicle)
+                                {
+                                    Debug.Log("HIT A VEHICLE");
+                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
+                                }
+                            }
                         }
                         else
                         {
@@ -109,8 +184,33 @@ namespace UGP
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
+                            //NetworkServer.Spawn(b);
+
+                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //ROCKETROUNDBEHAVIOUR
+
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
                             Destroy(b, 4);
+
+                            //RAYCAST FORWARD FROM 'GunBarrel'
+                            RaycastHit hit;
+                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
+                            {
+                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
+
+                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
+                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
+
+                                if (player)
+                                {
+                                    Debug.Log("HIT A PLAYER");
+                                }
+
+                                if (vehicle)
+                                {
+                                    Debug.Log("HIT A VEHICLE");
+                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
+                                }
+                            }
                         }
                         else
                         {
@@ -151,11 +251,11 @@ namespace UGP
 
             var aimVector = new Vector3(h, v, 0);
 
-            if(aimVector.magnitude <= 0)
+            if (aimVector.magnitude <= 0)
             {
                 aimTimer += Time.deltaTime;
 
-                if(aimTimer >= AimCooldown)
+                if (aimTimer >= AimCooldown)
                 {
                     #region UI_CROSSHAIR
 
@@ -203,10 +303,10 @@ namespace UGP
 
             //AUTOMATIC FIRE
             //LIMIT THE RATE OF FIRE
-            if(Input.GetKey(KeyCode.Mouse0))
+            if (Input.GetKey(KeyCode.Mouse0))
             {
                 time += Time.deltaTime;
-                if(time > FireRate)
+                if (time > FireRate)
                 {
                     CmdShoot();
                     time = 0.0f;
@@ -234,7 +334,7 @@ namespace UGP
                 enabled = false;
                 return;
             }
-            
+
             v = GetComponent<VehicleBehaviour>();
             var vActive = v.vehicleActive;
             if (vActive)
@@ -242,7 +342,7 @@ namespace UGP
                 c = v.vehicleUI;
             }
         }
-        
+
         private void FixedUpdate()
         {
             if (!localPlayerAuthority)
@@ -260,7 +360,7 @@ namespace UGP
         private void LateUpdate()
         {
             var vActive = v.vehicleActive;
-            if(vActive)
+            if (vActive)
             {
                 c = v.vehicleUI;
             }

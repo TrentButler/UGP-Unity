@@ -1,6 +1,5 @@
-﻿using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -153,7 +152,7 @@ namespace UGP
             }
 
             vehicleActive = false;
-            _v = VehicleConfig;
+            _v = Instantiate(VehicleConfig);
             _v.Health = _v.MaxHealth;
             _v.Fuel = _v.MaxFuel;
             _v.Destroyed = false;

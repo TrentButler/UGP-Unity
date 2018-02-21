@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 4705154588075990}
   - component: {fileID: 54780582902589716}
   - component: {fileID: 136282688389147822}
+  - component: {fileID: 114991514579436634}
   m_Layer: 0
   m_Name: DebugBulletPrefab
   m_TagString: Untagged
@@ -313,7 +314,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1537869310021538}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.04, z: 3.7}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 4865153143659032}
@@ -350,7 +351,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: ea86e145187a84e408c506efb892295e, type: 2}
+  - {fileID: 2100000, guid: 86a0d96460c004d40beea218308d2f8b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -384,7 +385,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: ea86e145187a84e408c506efb892295e, type: 2}
+  - {fileID: 2100000, guid: 86a0d96460c004d40beea218308d2f8b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -425,7 +426,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1537869310021538}
   serializedVersion: 2
-  m_Mass: 0.5
+  m_Mass: 0.1
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
@@ -450,6 +451,18 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &114991514579436634
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1537869310021538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65bd76d0e0be80e4292504050830b36f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DamageDealt: 10
 --- !u!136 &136282688389147822
 CapsuleCollider:
   m_ObjectHideFlags: 1
