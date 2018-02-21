@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEditor.UI;
 namespace UGP
 {
     public class ChangeColorBehaviour : MonoBehaviour {
@@ -13,12 +15,23 @@ namespace UGP
         public NetworkPlayer Player;
         public bool Clicked;
         public PlayerState state;
-
+        public GameObject Panel;
+        public Transform PanelTest;
+        #region Colors
+            public float Red = 255;
+            public float Green = 128;
+            public float Blue = 255;
+        #endregion
+        #region Sliders
+        public Slider RedSlider;
+        public Slider GreenSlider;
+        public Slider BlueSlider;
+        #endregion
         // Use this for initialization
         void Start() {
+   
             Clicked = false;
-            //var carcolor = GetComponent<MeshRenderer>().material.color = Color.green;
-            //HoverCraft.GetComponent<MeshRenderer>().material.color = carcolor;
+        
 
         }
         void OnTriggerEnter(Collider vehicle)
@@ -35,12 +48,35 @@ namespace UGP
                 //SceneManager.LoadScene(0);
             }
         }
-
-    
-    public void OnclickChangeColor()
+        public void RedValueSlider()
         {
-            GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = Color.yellow;
-            HoverCraft.GetComponent<MeshRenderer>().material.color = Color.red;
+
+            Red = RedSlider.value;
+            GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = new Color(Red, Green, Blue);
+
+        }
+        public void GreenValueSlider()
+        {
+           
+
+            Green = GreenSlider.value;
+            GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = new Color(Red, Green, Blue);
+
+        }
+        public void BlueValueSlider()
+        {
+            
+
+            Blue = BlueSlider.value;
+            GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = new Color(Red, Green, Blue);
+
+
+        }
+        public void OnclickChangeColor()
+        {
+            Panel.SetActive(true);
+            
+            //GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = new Color(Red, Green, Blue);
         }
 
 
@@ -61,10 +97,13 @@ namespace UGP
         }
         // Update is called once per frame
         void Update() {
-            
+            RedValueSlider();
+            GreenValueSlider();
+            BlueValueSlider();
+            OnclickChangeColor();
             if (Clicked == true)
             {
-                GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = Color.yellow;
+                GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = new Color(Blue, Green, Red) ;
             }
 
         }
