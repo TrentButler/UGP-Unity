@@ -10,6 +10,8 @@ namespace UGP
     public class ChangeColorBehaviour : MonoBehaviour {
 
 
+        
+
         public Transform HoverCraft;
         public Collider DockEntrance;
         public NetworkPlayer Player;
@@ -23,6 +25,9 @@ namespace UGP
             public float Blue = 255;
         #endregion
         #region Sliders
+        public Slider GlossySliderValue;
+        public Slider MetallicSliderValue;
+        public Slider Smoothness;
         public Slider RedSlider;
         public Slider GreenSlider;
         public Slider BlueSlider;
@@ -47,6 +52,16 @@ namespace UGP
                 Debug.Log("hit");
                 //SceneManager.LoadScene(0);
             }
+        }
+        public void MetallicSlider()
+        {
+            var Metallic = MetallicSliderValue.value;
+            GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.SetFloat("_Metallic", Metallic);
+        }
+        public void GlossySlider()
+        {
+            var Gloss = GlossySliderValue.value;
+            GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.SetFloat("_Glossiness", Gloss);
         }
         public void RedValueSlider()
         {
@@ -101,6 +116,8 @@ namespace UGP
             GreenValueSlider();
             BlueValueSlider();
             OnclickChangeColor();
+            MetallicSlider();
+            GlossySlider();
             if (Clicked == true)
             {
                 GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = new Color(Blue, Green, Red) ;
