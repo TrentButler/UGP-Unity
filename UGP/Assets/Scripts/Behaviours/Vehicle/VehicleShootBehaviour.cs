@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-
 namespace UGP
 {
     public enum Weapon
@@ -243,6 +242,49 @@ namespace UGP
         }
 
         //NEEDS WORK
+        private void ClampCrosshairUI()
+        {
+            var rectTrans = c.GetComponent<RectTransform>();
+
+            //GET BOUNDS OF THE CANVAS
+            var _w = rectTrans.rect.width;
+            var _h = rectTrans.rect.height;
+
+            //GET BOUNDS OF CROSSHAIR UI ELEMENT
+            var _crosshairW = crosshair.rectTransform.rect.width;
+            var _crosshairH = crosshair.rectTransform.rect.height;
+
+            var xLimit = _w;
+            var yLimit = _h;
+
+            var clampedX = crosshair.rectTransform.position.x;
+            var clampedY = crosshair.rectTransform.position.y;
+
+            var currentPos = crosshair.rectTransform.position;
+
+            if (clampedX < 0)
+            {
+                clampedX = 0;
+            }
+            if (clampedY < 0)
+            {
+                clampedY = 0;
+            }
+
+            if (clampedX > xLimit)
+            {
+                clampedX = xLimit;
+            }
+            if (clampedY > yLimit)
+            {
+                clampedY = yLimit;
+            }
+
+            var clampedPos = new Vector3(clampedX, clampedY, 0.0f);
+            crosshair.rectTransform.position = clampedPos;
+        }
+
+        //NEEDS WORK
         private float aimTimer = 0;
         private void Aim()
         {
@@ -281,6 +323,8 @@ namespace UGP
             {
                 //MOVE THE UI CROSSHAIR BASED ON MOUSE INPUT
                 crosshair.rectTransform.position += (aimVector * crosshairSpeed);
+                ClampCrosshairUI();
+
                 aimTimer = 0;
             }
 
