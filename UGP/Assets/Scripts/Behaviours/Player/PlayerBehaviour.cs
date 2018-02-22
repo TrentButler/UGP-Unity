@@ -67,8 +67,6 @@ namespace UGP
                 var ammoBox = p.ammo;
                 vehicle._v.ammunition = ammoBox;
 
-                
-
                 animator.SetTrigger("EnterVehicle");
 
                 //DISABLE THE PLAYER COLLIDER(S) IF DRIVING
@@ -83,7 +81,6 @@ namespace UGP
 
                 transform.position = vehicle.seat.position;
                 transform.rotation = vehicle.seat.rotation;
-
                 
                 //rb.isKinematic = true;
 
@@ -103,6 +100,8 @@ namespace UGP
                 playerMovement.enabled = true;
                 interaction.enabled = true;
 
+                animator.SetTrigger("ExitVehicle");
+
                 //ENABLE THE PLAYER COLLIDER(S) IF NOT DRIVING
                 if (model1 != null)
                 {
@@ -112,7 +111,7 @@ namespace UGP
                 {
                     model2.gameObject.SetActive(true);
                 }
-                animator.SetTrigger("ExitVehicle");
+                
                 //rb.isKinematic = false;
             }
         }

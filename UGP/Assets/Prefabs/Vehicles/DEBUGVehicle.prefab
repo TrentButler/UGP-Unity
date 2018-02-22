@@ -268,9 +268,10 @@ GameObject:
   - component: {fileID: 4328668603776808}
   - component: {fileID: 33850070442315572}
   - component: {fileID: 23628603462743604}
+  - component: {fileID: 65201394274314018}
   m_Layer: 0
   m_Name: HovercraftProto01
-  m_TagString: Untagged
+  m_TagString: Vehicle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -457,6 +458,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &65201394274314018
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1909439080878852}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.9168396, y: 1.0770218, z: 3.985094}
+  m_Center: {x: 0, y: 0.18430175, z: -0.07098824}
 --- !u!82 &82707565670537792
 AudioSource:
   m_ObjectHideFlags: 1
@@ -934,7 +947,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vColor: {r: 0.5724139, g: 0, b: 1, a: 0}
   models:
-  - {fileID: 0}
+  - {fileID: 23628603462743604}
   colorChangeSpeed: 0.265
   VehicleConfig: {fileID: 11400000, guid: 00dd93e5a7108074fb385382df00968e, type: 2}
   _v: {fileID: 0}
