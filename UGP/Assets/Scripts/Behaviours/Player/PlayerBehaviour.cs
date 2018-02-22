@@ -82,7 +82,7 @@ namespace UGP
                 transform.position = vehicle.seat.position;
                 transform.rotation = vehicle.seat.rotation;
                 
-                //rb.isKinematic = true;
+                rb.isKinematic = true;
 
                 //NEEDS WORK
                 if (Input.GetKeyDown(KeyCode.F))
@@ -112,7 +112,7 @@ namespace UGP
                     model2.gameObject.SetActive(true);
                 }
                 
-                //rb.isKinematic = false;
+                rb.isKinematic = false;
             }
         }
     }
