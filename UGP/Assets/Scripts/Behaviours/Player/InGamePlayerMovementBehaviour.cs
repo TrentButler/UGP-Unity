@@ -14,6 +14,8 @@ namespace UGP
         public float TurnSpeed = 1.0f;
 
         public float JumpStrength = 1.0f;
+
+        public Animator Ani;
         private Rigidbody rb;
         #endregion
 
@@ -70,6 +72,8 @@ namespace UGP
 
             //NEEDS WORK
             //PLAYER MOVE FORWARD WITHOUT BUTTON PRESS
+
+            Ani.SetFloat("Forward", v);
 
             Vector3 moveForward = new Vector3(0.0f, 0.0f, v * WalkSpeed);
 
