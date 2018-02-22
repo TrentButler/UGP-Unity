@@ -57,7 +57,7 @@ namespace UGP
             var model1 = transform.Find("Model-Head");
             var model2 = transform.Find("Model-Body");
             var rb = GetComponent<Rigidbody>();
-
+            var animator = playerMovement.Ani;
             if (isDriving)
             {
                 vehicle.enabled = true;
@@ -67,15 +67,25 @@ namespace UGP
                 var ammoBox = p.ammo;
                 vehicle._v.ammunition = ammoBox;
 
+                
+
+                animator.SetTrigger("EnterVehicle");
 
                 //DISABLE THE PLAYER COLLIDER(S) IF DRIVING
-                model1.gameObject.SetActive(false);
-                model2.gameObject.SetActive(false);
+                if (model1 != null)
+                {
+                    model1.gameObject.SetActive(false);
+                }
+                if(model2 != null)
+                {
+                    model2.gameObject.SetActive(false);
+                }
 
                 transform.position = vehicle.seat.position;
                 transform.rotation = vehicle.seat.rotation;
 
-                rb.isKinematic = true;
+                
+                //rb.isKinematic = true;
 
                 //NEEDS WORK
                 if (Input.GetKeyDown(KeyCode.F))
@@ -94,10 +104,16 @@ namespace UGP
                 interaction.enabled = true;
 
                 //ENABLE THE PLAYER COLLIDER(S) IF NOT DRIVING
-                model1.gameObject.SetActive(true);
-                model2.gameObject.SetActive(true);
-
-                rb.isKinematic = false;
+                if (model1 != null)
+                {
+                    model1.gameObject.SetActive(true);
+                }
+                if (model2 != null)
+                {
+                    model2.gameObject.SetActive(true);
+                }
+                animator.SetTrigger("ExitVehicle");
+                //rb.isKinematic = false;
             }
         }
     }

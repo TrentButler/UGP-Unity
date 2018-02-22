@@ -64,7 +64,7 @@ namespace UGP
         {
             var player = FindObjectsOfType<PlayerMovementBehaviour>();
 
-            var upforce = new Vector3(0, Time.deltaTime * DoorTimer,0);
+            var upforce = new Vector3(0, Time.deltaTime * DoorTimer, 0);
 
             if (other.tag == "ChairCollider")
             {
@@ -77,7 +77,7 @@ namespace UGP
                 IsSitting = true;
                 Ani.SetFloat("Forward", 0);
             }
-            if(other.tag == "ToolCollider")
+            if (other.tag == "ToolCollider")
             {
                 state = PlayerState.standing;
                 transform.position = other.GetComponent<Transform>().position;
@@ -117,7 +117,7 @@ namespace UGP
 
         void FixedUpdate()
         {
-            if(IsSitting)
+            if (IsSitting)
                 if (Input.GetKeyDown(KeyCode.F))
                 {
                     state = PlayerState.move;
@@ -149,14 +149,14 @@ namespace UGP
                     IsViewing = false;
                     CanMove = true;
                     rb.isKinematic = false;
-                 
+
                 }
             if (state == PlayerState.move)
             {
                 IsStanding = false;
                 IsSitting = false;
             }
-           
+
 
             if (CanMove == true)
             {
@@ -164,7 +164,7 @@ namespace UGP
                 state = PlayerState.move;
                 //if (!isLocalPlayer)
                 //{
-                  
+
                 //    return;
                 //}
                 //OnStartLocalPlayer();
