@@ -14,15 +14,6 @@ namespace UGP
 
         private PlayerBehaviour localPlayer;
 
-
-        private void Debug()
-        {
-            if(Input.GetKeyDown(KeyCode.Backslash))
-            {
-                return;
-            }
-        }
-
         private void Awake()
         {
             if (!localPlayerAuthority)
@@ -43,46 +34,50 @@ namespace UGP
 
         void FixedUpdate()
         {
-            Debug();
-
             if (!localPlayerAuthority)
             {
                 enabled = false;
                 return;
             }
-            
-            var players = GameObject.FindObjectsOfType<PlayerBehaviour>().ToList(); //GATHER EACH PLAYER
 
             //DO A SEARCH FOR THE LOCAL PLAYER IF THE VARIABLE 'localPlayer' IS NULL
-            players.ForEach(p =>
+            if (localPlayer == null)
             {
-                if (p.localPlayerAuthority)
+                var players = GameObject.FindObjectsOfType<PlayerBehaviour>().ToList(); //GATHER EACH PLAYER
+
+                players.ForEach(p =>
                 {
-                    localPlayer = p;
-                }
-            });
-
-            var driving = localPlayer.isDriving;
-
-            if (driving)
-            {
-                //ENABLE THE VEHICLE CAMERA, DISABLE THE PLAYER CAMERA
-                vehicleCam.gameObject.SetActive(true);
-                playerCam.gameObject.SetActive(false);
-
-                //ASSIGN THE CAMERA'S FOLLOW AND LOOK AT TARGETS TO THE TRANSFORM FROM 'localPlayer.vehicle'
-                vehicleCam.Follow = localPlayer.vehicle.transform;
-                vehicleCam.LookAt = localPlayer.vehicle.transform;
+                    if (p.localPlayerAuthority)
+                    {
+                        localPlayer = p;
+                    }
+                });
             }
+
             else
             {
-                //ENABLE THE PLAYER CAMERA, DISABLE THE VEHICLE CAMERA
-                playerCam.gameObject.SetActive(true);
-                vehicleCam.gameObject.SetActive(false);
+                var driving = localPlayer.isDriving;
 
-                //ASSIGN THE CAMERA'S FOLLOW AND LOOK AT TARGETS TO THE TRANSFORM FROM 'playerMovement'
-                playerCam.Follow = localPlayer.playerMovement.transform;
-                playerCam.LookAt = localPlayer.playerMovement.transform;
+                if (driving)
+                {
+                    //ENABLE THE VEHICLE CAMERA, DISABLE THE PLAYER CAMERA
+                    vehicleCam.gameObject.SetActive(true);
+                    playerCam.gameObject.SetActive(false);
+
+                    //ASSIGN THE CAMERA'S FOLLOW AND LOOK AT TARGETS TO THE TRANSFORM FROM 'localPlayer.vehicle'
+                    vehicleCam.Follow = localPlayer.vehicle.transform;
+                    vehicleCam.LookAt = localPlayer.vehicle.transform;
+                }
+                else
+                {
+                    //ENABLE THE PLAYER CAMERA, DISABLE THE VEHICLE CAMERA
+                    playerCam.gameObject.SetActive(true);
+                    vehicleCam.gameObject.SetActive(false);
+
+                    //ASSIGN THE CAMERA'S FOLLOW AND LOOK AT TARGETS TO THE TRANSFORM FROM 'playerMovement'
+                    playerCam.Follow = localPlayer.playerMovement.transform;
+                    playerCam.LookAt = localPlayer.playerMovement.transform;
+                }
             }
 
         }
