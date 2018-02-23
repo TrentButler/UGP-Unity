@@ -23,6 +23,7 @@ namespace UGP
 
         public Animator Ani;
         private Rigidbody rb;
+        public CharacterController controller;
         #endregion
 
         private void Start()
@@ -36,9 +37,9 @@ namespace UGP
             VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCameraBase>().Follow = transform;
             VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCameraBase>().LookAt = transform;
             OriginalSpeed = WalkSpeed;
-            rb = GetComponent<Rigidbody>();
-            if (!rb)
-                rb = gameObject.AddComponent<Rigidbody>();
+            //rb = GetComponent<Rigidbody>();
+            //if (!rb)
+            //    rb = gameObject.AddComponent<Rigidbody>();
         }
 
         private void FixedUpdate()
@@ -58,12 +59,15 @@ namespace UGP
             if (moveForward.magnitude > 0)
             {
                 var move = (moveForward + transform.forward);
-                transform.Translate(move * Time.fixedDeltaTime);
+                //transform.Translate(move * Time.fixedDeltaTime);
+                //rb.AddForce(move);
+                controller.SimpleMove(move);
             }
 
             if (YRot.magnitude > 0)
             {
                 transform.Rotate(YRot);
+                //rb.rotation = transform.rotation;
             }
             Sprint();
             Jump();
@@ -94,13 +98,13 @@ namespace UGP
         }
         public void Jump()
         {
-
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Vector3 jumpVector = new Vector3(0, 1 * JumpStrength, 0);
                 Ani.SetTrigger("Jump");
 
-                rb.AddForce(jumpVector);
+                //rb.AddForce(jumpVector);
+                controller.Move(jumpVector);
             }
         }
 

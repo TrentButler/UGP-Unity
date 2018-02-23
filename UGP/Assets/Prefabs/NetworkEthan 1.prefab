@@ -598,11 +598,12 @@ GameObject:
   - component: {fileID: 4638143768296796}
   - component: {fileID: 33172412062931090}
   - component: {fileID: 136753844077430272}
-  - component: {fileID: 54905144361458490}
   - component: {fileID: 95905526460971278}
   - component: {fileID: 114518871825252388}
   - component: {fileID: 114153212481609568}
   - component: {fileID: 114721461959790736}
+  - component: {fileID: 143311102346195562}
+  - component: {fileID: 114058634848459702}
   m_Layer: 9
   m_Name: NetworkEthan 1
   m_TagString: Player
@@ -2172,7 +2173,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1421246846284334}
-  m_LocalRotation: {x: 0.19256215, y: -0, z: -0, w: 0.9812848}
+  m_LocalRotation: {x: 0.19256212, y: -0, z: -0, w: 0.9812848}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
@@ -2186,7 +2187,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1754175842738178}
-  m_LocalRotation: {x: 0.14482872, y: -0, z: -0, w: 0.9894568}
+  m_LocalRotation: {x: 0.1448287, y: -0, z: -0, w: 0.9894568}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
@@ -2957,21 +2958,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1392983841283542}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!54 &54905144361458490
-Rigidbody:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1392983841283542}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 999
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 80
-  m_CollisionDetection: 0
 --- !u!95 &95218621887414876
 Animator:
   serializedVersion: 3
@@ -3017,6 +3003,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8b78ac948f05a46a6d8339a503172b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114058634848459702
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1392983841283542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1590678366, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Animator: {fileID: 95905526460971278}
+  m_ParameterSendBits: 1023
+  param0: 
+  param1: 
+  param2: 
+  param3: 
+  param4: 
+  param5: 
 --- !u!114 &114094043949325362
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3372,6 +3377,7 @@ MonoBehaviour:
   JumpStrength: 165.66
   isGrounded: 0
   Ani: {fileID: 95905526460971278}
+  controller: {fileID: 143311102346195562}
 --- !u!114 &114537226018690176
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3560,8 +3566,8 @@ MonoBehaviour:
   m_Script: {fileID: -1768714887, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TransformSyncMode: 1
-  m_SendInterval: 0.25
+  m_TransformSyncMode: 4
+  m_SendInterval: 0.033333335
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
   m_SyncSpin: 0
@@ -4016,3 +4022,20 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.0039598644, y: 0.009504706, z: 0.00036117435}
     m_Extent: {x: 1.0002878, y: 0.29783744, z: 0.71543396}
   m_DirtyAABB: 0
+--- !u!143 &143311102346195562
+CharacterController:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1392983841283542}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 1, z: 0}
