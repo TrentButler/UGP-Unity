@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 4328668603776808}
   - component: {fileID: 33850070442315572}
   - component: {fileID: 23628603462743604}
-  - component: {fileID: 65201394274314018}
+  - component: {fileID: 65906811335488660}
   m_Layer: 0
   m_Name: HovercraftProto01
   m_TagString: Vehicle
@@ -365,7 +365,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1912099926934314}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.887265, y: 1.8116803, z: 11.584341}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4328668603776808}
@@ -458,7 +458,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65201394274314018
+--- !u!65 &65906811335488660
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -695,11 +695,13 @@ MonoBehaviour:
     type: 2}
   GunBarrel: {fileID: 4052162712709280}
   audio: {fileID: 82707565670537792}
+  particle: {fileID: 198680365885440132}
   crosshair: {fileID: 114873082903652948}
-  crosshairYOffset: 40
+  crosshairXOffset: 0
+  crosshairYOffset: 147
   crosshairSpeed: 1.5
-  crosshairWorldOffset: {x: 0, y: 0, z: 25}
-  FireRate: 1.25
+  crosshairWorldOffset: {x: 0, y: 0, z: 58}
+  FireRate: 0.5
   WeaponRange: 180
   AimCooldown: 4
   roundsFired: 0
@@ -844,6 +846,8 @@ MonoBehaviour:
   BoostSpeed: 80
   JumpStrength: 1500
   StrafeSpeed: 10
+  currentVehicleThrottle: 0
+  currentVehicleStrafe: 0
   currentFuelConsumption: 0
   fuelBurnRate: 0.001
   ThrusterPosition: {fileID: 4658260266104964}
@@ -945,7 +949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beadd3ee7ea545e4fa493e0e7908fab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vColor: {r: 1, g: 0.42647058, b: 0.9841786, a: 0.322}
+  vColor: {r: 1, g: 0.42647058, b: 0.9841786, a: 1}
   models:
   - {fileID: 23628603462743604}
   colorChangeSpeed: 0.265
@@ -954,6 +958,7 @@ MonoBehaviour:
   vehicleMovement: {fileID: 114507939287104346}
   shootBehaviour: {fileID: 114119439211231952}
   vehicleUI: {fileID: 223255173832801424}
+  vehicleCamOffset: {x: 0, y: 0, z: 0}
   vehicleActive: 0
   seat: {fileID: 4126962040237516}
 --- !u!114 &114846417567106178

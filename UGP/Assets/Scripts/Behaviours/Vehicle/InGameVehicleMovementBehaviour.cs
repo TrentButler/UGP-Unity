@@ -19,6 +19,9 @@ namespace UGP
         public float JumpStrength = 1.0f;
         public float StrafeSpeed = 1.0f;
 
+        [HideInInspector] public float currentVehicleThrottle;
+        [HideInInspector] public float currentVehicleStrafe;
+
         public float currentFuelConsumption;
         [Range(0.001f, 1.0f)] public float fuelBurnRate;
         private float originalFuelBurnRate;
@@ -111,6 +114,9 @@ namespace UGP
             var strafeVehicle = Input.GetAxis("Horizontal");
 
             var fuelEmpty = v._v.FuelDepeleted;
+
+            currentVehicleThrottle = throttle;
+            currentVehicleStrafe = strafeVehicle;
 
             if(!fuelEmpty)
             {

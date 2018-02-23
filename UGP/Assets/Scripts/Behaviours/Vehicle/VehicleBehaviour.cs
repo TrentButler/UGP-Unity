@@ -18,6 +18,7 @@ namespace UGP
         public InGameVehicleMovementBehaviour vehicleMovement;
         public VehicleShootBehaviour shootBehaviour;
         public Canvas vehicleUI;
+        public Vector3 vehicleCamOffset;
 
         [SyncVar] public bool vehicleActive;
         public Transform seat;
