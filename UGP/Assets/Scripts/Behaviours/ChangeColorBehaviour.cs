@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEditor.UI;
+using UnityEngine.UI;
 namespace UGP
 {
     public class ChangeColorBehaviour : MonoBehaviour {
