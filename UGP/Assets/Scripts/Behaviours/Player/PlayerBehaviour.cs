@@ -13,6 +13,8 @@ namespace UGP
 
         [SyncVar] public bool isDriving;
         public VehicleBehaviour vehicle;
+        public float TimeToExitVehicle;
+        private float exitTimer = 0.0f;
         public InGamePlayerMovementBehaviour playerMovement;
         public PlayerInteractionBehaviour interaction;
 
@@ -33,10 +35,11 @@ namespace UGP
                 return;
             }
 
-            p = player;
+            p = Instantiate(player);
             p.Alive = true;
+            p.Health = p.MaxHealth;
         }
-
+        
         private void FixedUpdate()
         {
             if (!localPlayerAuthority)
@@ -56,8 +59,11 @@ namespace UGP
 
             var model1 = transform.Find("Model-Head");
             var model2 = transform.Find("Model-Body");
+
             var rb = GetComponent<Rigidbody>();
+
             var animator = playerMovement.Ani;
+
             if (isDriving)
             {
                 vehicle.enabled = true;
@@ -85,13 +91,23 @@ namespace UGP
                 rb.isKinematic = true;
 
                 //NEEDS WORK
-                if (Input.GetKeyDown(KeyCode.F))
+                if (Input.GetKey(KeyCode.F))
+                {
+                    exitTimer += Time.fixedDeltaTime; //INCREMENT TIME WHILE THE 'F' KEY IS HELD
+                }
+                else
+                {
+                    exitTimer = 0; //RESET TIMER
+                }
+
+                if(exitTimer >= TimeToExitVehicle)
                 {
                     //GET OUT OF VEHICLE
                     vehicle._v.ammunition = null;
                     vehicle.SetVehicleActive(false);
                     vehicle = null;
                     isDriving = false;
+                    exitTimer = 0.0f; //RESET THE TIMER
                 }
             }
             else

@@ -56,20 +56,24 @@ namespace UGP
             var dZ = 0 - rot[2];
 
             if (dX > 0.0f || dX < 0.0f || dZ > 0.0f || dZ < 0.0f)
+            {
                 rot[0] = Mathf.LerpAngle(dX, 0.0f, Time.fixedDeltaTime);
-            rot[2] = Mathf.LerpAngle(dZ, 0.0f, Time.fixedDeltaTime);
+                rot[2] = Mathf.LerpAngle(dZ, 0.0f, Time.fixedDeltaTime);
+            }   
 
-            //rb.rotation = rot;
             transform.rotation = rot;
         }
-
 
         public void Steer()
         {
             var dX = Input.GetAxis("Mouse X");
 
-            transform.Rotate(new Vector3(0, dX, 0), Space.Self);
-            //rb.rotation = transform.rotation;
+            Vector3 mouseYRot = new Vector3(0, dX, 0);
+            
+            if(mouseYRot.magnitude > 0)
+            {
+                transform.Rotate(mouseYRot, Space.Self);
+            }
         }
 
         public void Jump()
@@ -137,27 +141,6 @@ namespace UGP
 
                 if (accelerationVector.magnitude > 0 || steerVector.magnitude > 0)
                 {
-                    //if(Mathf.Abs(throttle) == 0)
-                    //{
-                    //    rb.isKinematic = true;
-                    //}
-                    //else
-                    //{
-                    //    rb.isKinematic = false;
-                    //}
-
-
-
-                    //Steer(steerVector);
-
-                    //if (Input.GetKeyDown(KeyCode.LeftAlt))
-                    //    ResetVehicleRotation();
-
-                    //transform.Translate((accelerationVector + ThrusterPosition.forward) * Time.fixedDeltaTime);
-
-                    //if (Input.GetKeyDown(KeyCode.LeftAlt))
-                    //    ResetVehicleRotation();
-
                     UseBooster();
                     Jump();
 
