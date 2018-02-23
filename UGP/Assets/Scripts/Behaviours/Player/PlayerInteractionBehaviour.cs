@@ -31,6 +31,10 @@ namespace UGP
             }
         }
 
+        public void NewEvent()
+        {
+
+        }
         private void OnTriggerEnter(Collider other)
         {
         }

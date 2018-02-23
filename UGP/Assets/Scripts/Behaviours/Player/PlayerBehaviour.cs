@@ -34,18 +34,16 @@ namespace UGP
 
         private void Awake()
         {
-            if (!localPlayerAuthority)
-            {
-                enabled = false;
+            if (!isLocalPlayer)
+            {                
                 return;
             }
         }
 
         private void Start()
         {
-            if (!localPlayerAuthority)
-            {
-                enabled = false;
+            if (!isLocalPlayer)
+            {             
                 return;
             }
 
@@ -56,12 +54,8 @@ namespace UGP
         
         private void FixedUpdate()
         {
-            if (!localPlayerAuthority)
-            {
-                enabled = false;
+            if (!isLocalPlayer)
                 return;
-            }
-
             if (vehicle == null)
             {
                 isDriving = false;
