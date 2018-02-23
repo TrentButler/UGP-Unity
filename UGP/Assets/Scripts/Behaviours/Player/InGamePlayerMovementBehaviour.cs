@@ -29,10 +29,11 @@ namespace UGP
             var dZ = 0 - rot[2];
 
             if (dX > 0.0f || dX < 0.0f || dZ > 0.0f || dZ < 0.0f)
+            {
                 rot[0] = Mathf.LerpAngle(dX, 0.0f, 1.0f);
-            rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
+                rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
+            }   
 
-            rb.rotation = rot;
             transform.rotation = rot;
         }
 
@@ -47,7 +48,7 @@ namespace UGP
 
         private void Start()
         {
-            if(!localPlayerAuthority)
+            if (!localPlayerAuthority)
             {
                 enabled = false;
                 return;
@@ -70,21 +71,21 @@ namespace UGP
             var h = Input.GetAxis("Horizontal");
             var v = Input.GetAxis("Vertical");
 
-            //NEEDS WORK
-            //PLAYER MOVE FORWARD WITHOUT BUTTON PRESS
-
             Ani.SetFloat("Forward", v);
 
             Vector3 moveForward = new Vector3(0.0f, 0.0f, v * WalkSpeed);
+            Vector3 YRot = new Vector3(0.0f, h * TurnSpeed, 0.0f);
 
-            if(moveForward.magnitude > 0)
+            if (moveForward.magnitude > 0)
             {
                 var move = (moveForward + transform.forward);
                 transform.Translate(move * Time.fixedDeltaTime);
             }
 
-            var YRot = new Vector3(0.0f, h * TurnSpeed, 0.0f);
-            transform.Rotate(YRot);            
+            if (YRot.magnitude > 0)
+            {
+                transform.Rotate(YRot);
+            }
         }
 
         private void LateUpdate()

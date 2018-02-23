@@ -12,6 +12,7 @@ namespace UGP
         public Cinemachine.CinemachineVirtualCamera vehicleCam;
         public Cinemachine.CinemachineFreeLook playerCam;
 
+        private PlayerBehaviour localPlayer;
 
         private void Awake()
         {
@@ -30,7 +31,7 @@ namespace UGP
                 return;
             }
         }
-        
+
         void FixedUpdate()
         {
             if (!localPlayerAuthority)
@@ -39,39 +40,46 @@ namespace UGP
                 return;
             }
 
-            var players = GameObject.FindObjectsOfType<PlayerBehaviour>().ToList();
-
-            PlayerBehaviour player = null;
-
-            players.ForEach(p =>
+            //DO A SEARCH FOR THE LOCAL PLAYER IF THE VARIABLE 'localPlayer' IS NULL
+            if (localPlayer == null)
             {
-                if (p.localPlayerAuthority)
+                var players = GameObject.FindObjectsOfType<PlayerBehaviour>().ToList(); //GATHER EACH PLAYER
+
+                players.ForEach(p =>
                 {
-                    player = p;
-                }
-            });
+                    if (p.localPlayerAuthority)
+                    {
+                        localPlayer = p;
+                    }
+                });
+            }
 
-            if(player != null)
+            else
             {
-                var driving = player.isDriving;
+                var driving = localPlayer.isDriving;
 
                 if (driving)
                 {
-                    vehicleCam.Follow = player.vehicle.transform;
-                    vehicleCam.LookAt = player.vehicle.transform;
-
+                    //ENABLE THE VEHICLE CAMERA, DISABLE THE PLAYER CAMERA
                     vehicleCam.gameObject.SetActive(true);
                     playerCam.gameObject.SetActive(false);
+
+                    //ASSIGN THE CAMERA'S FOLLOW AND LOOK AT TARGETS TO THE TRANSFORM FROM 'localPlayer.vehicle'
+                    vehicleCam.Follow = localPlayer.vehicle.transform;
+                    vehicleCam.LookAt = localPlayer.vehicle.transform;
                 }
                 else
                 {
-                    playerCam.Follow = player.playerMovement.transform;
-                    playerCam.LookAt = player.playerMovement.transform;
-
+                    //ENABLE THE PLAYER CAMERA, DISABLE THE VEHICLE CAMERA
                     playerCam.gameObject.SetActive(true);
                     vehicleCam.gameObject.SetActive(false);
+
+                    //ASSIGN THE CAMERA'S FOLLOW AND LOOK AT TARGETS TO THE TRANSFORM FROM 'playerMovement'
+                    playerCam.Follow = localPlayer.playerMovement.transform;
+                    playerCam.LookAt = localPlayer.playerMovement.transform;
                 }
             }
+
         }
     }
 }

@@ -40,11 +40,11 @@ GameObject:
   - component: {fileID: 54268982992075102}
   - component: {fileID: 95989185690586526}
   - component: {fileID: 136808761375314190}
-  - component: {fileID: 114239850393288846}
-  - component: {fileID: 114529239014292940}
   - component: {fileID: 114340112629364850}
   - component: {fileID: 114885410642140828}
   - component: {fileID: 114101476956855250}
+  - component: {fileID: 114239850393288846}
+  - component: {fileID: 114529239014292940}
   m_Layer: 0
   m_Name: DebugPlayerPrefab
   m_TagString: Untagged
@@ -356,6 +356,7 @@ MonoBehaviour:
   p: {fileID: 0}
   isDriving: 0
   vehicle: {fileID: 0}
+  TimeToExitVehicle: 1
   playerMovement: {fileID: 114885410642140828}
   interaction: {fileID: 114101476956855250}
 --- !u!114 &114529239014292940
