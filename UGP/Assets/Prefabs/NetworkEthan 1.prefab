@@ -2632,6 +2632,7 @@ MonoBehaviour:
   p: {fileID: 0}
   isDriving: 0
   vehicle: {fileID: 0}
+  TimeToExitVehicle: 0.5
   playerMovement: {fileID: 114518871825252388}
   interaction: {fileID: 114026362928600470}
 --- !u!114 &114518871825252388
@@ -2646,9 +2647,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WalkSpeed: 2
-  RunSpeed: 1
+  RunSpeed: 2.25
   TurnSpeed: 2.5
-  JumpStrength: 1
+  JumpStrength: 165.66
   Ani: {fileID: 95905526460971278}
 --- !u!114 &114721461959790736
 MonoBehaviour:

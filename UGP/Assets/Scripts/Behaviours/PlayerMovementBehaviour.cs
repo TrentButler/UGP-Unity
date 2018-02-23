@@ -30,6 +30,7 @@ namespace UGP
         public float JumpStrength = 1.0f;
         public float TurnSpeed = 1.0f;
 
+
         private bool CanMove;
         public bool IsSitting = false;
         public bool IsStanding = false;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.Networking;
 using UnityEngine.SceneManagement;
 
 namespace UGP
@@ -9,7 +10,7 @@ namespace UGP
     {
         public PlayerMovementBehaviour playerstater;
         public PlayerState state;
-
+        public Network Net;
 
         public bool opengaragedoor;
         public Transform GarageDoor;
@@ -62,7 +63,8 @@ namespace UGP
                 var maxHeight = GarageDoor.position;
                 maxHeight.y = MaxHeight.y;
                 GarageDoor.position = maxHeight;
-                SceneManager.LoadScene(2);
+                SceneManager.LoadScene("03.GarageTestTrack");
+                
             }
             if (GarageDoor.position.y <= MinHeight.y)
             {
