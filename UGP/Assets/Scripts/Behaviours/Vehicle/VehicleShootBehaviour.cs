@@ -22,8 +22,11 @@ namespace UGP
         public Transform GunBarrel;
         public AudioSource audio;
 
+        public ParticleSystem particle;
+
         #region CROSSHAIR_UI
         public Image crosshair;
+        public float crosshairXOffset;
         public float crosshairYOffset;
         public float crosshairSpeed;
         public Vector3 crosshairWorldOffset;
@@ -293,39 +296,65 @@ namespace UGP
 
             var aimVector = new Vector3(h, v, 0);
 
-            if (aimVector.magnitude <= 0)
+            var vehicleThrottle = GetComponent<InGameVehicleMovementBehaviour>().currentVehicleThrottle;
+            var vehicleStrafe = GetComponent<InGameVehicleMovementBehaviour>().currentVehicleStrafe;
+            Vector3 moveVector = new Vector3(vehicleStrafe, 0, vehicleThrottle);
+            
+            if(moveVector.magnitude <= 0)
             {
-                aimTimer += Time.deltaTime;
+                //crosshairWorldOffset.z = 58.0f;
+                crosshairYOffset = 82.0f;
 
-                if (aimTimer >= AimCooldown)
+                if (aimVector.magnitude <= 0)
                 {
-                    #region UI_CROSSHAIR
+                    aimTimer += Time.deltaTime;
 
-                    var rectTrans = c.GetComponent<RectTransform>();
+                    if (aimTimer >= AimCooldown)
+                    {
+                        #region UI_CROSSHAIR
 
-                    var _w = rectTrans.rect.width;
-                    var _h = rectTrans.rect.height;
+                        var rectTrans = c.GetComponent<RectTransform>();
 
-                    var center = new Vector3(_w / 2, (_h / 2) + crosshairYOffset, 0);
-                    var p = crosshair.rectTransform.position;
+                        var _w = rectTrans.rect.width;
+                        var _h = rectTrans.rect.height;
 
-                    var lerpX = Mathf.Lerp(p.x, center.x, Time.deltaTime);
-                    var lerpY = Mathf.Lerp(p.y, center.y, Time.deltaTime);
+                        var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
+                        var p = crosshair.rectTransform.position;
 
-                    var lerpPos = new Vector3(lerpX, lerpY, 0);
+                        var lerpX = Mathf.Lerp(p.x, center.x, Time.deltaTime);
+                        var lerpY = Mathf.Lerp(p.y, center.y, Time.deltaTime);
 
-                    //RETURN CROSSHAIR TO CENTER OVER TIME
-                    crosshair.rectTransform.position = lerpPos;
-                    #endregion
+                        var lerpPos = new Vector3(lerpX, lerpY, 0);
+
+                        //RETURN CROSSHAIR TO CENTER OVER TIME
+                        crosshair.rectTransform.position = lerpPos;
+                        #endregion
+                    }
+                }
+                else
+                {
+                    //MOVE THE UI CROSSHAIR BASED ON MOUSE INPUT
+                    crosshair.rectTransform.position += (aimVector * crosshairSpeed);
+                    ClampCrosshairUI();
+
+                    aimTimer = 0;
                 }
             }
             else
             {
-                //MOVE THE UI CROSSHAIR BASED ON MOUSE INPUT
-                crosshair.rectTransform.position += (aimVector * crosshairSpeed);
-                ClampCrosshairUI();
+                //CENTER THE CROSSHAIR WHEN VEHICLE IS MOVING
+                //crosshairWorldOffset.z = 11.8f;
+                crosshairYOffset = 91.0f;
 
-                aimTimer = 0;
+
+                var rectTrans = c.GetComponent<RectTransform>();
+
+                var _w = rectTrans.rect.width;
+                var _h = rectTrans.rect.height;
+
+                var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
+
+                crosshair.rectTransform.position = center;
             }
 
             //CREATE A LOOK AT VECTOR FOR THE GUNBARREL

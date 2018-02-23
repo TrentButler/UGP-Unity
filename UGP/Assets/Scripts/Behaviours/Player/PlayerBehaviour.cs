@@ -18,6 +18,20 @@ namespace UGP
         public InGamePlayerMovementBehaviour playerMovement;
         public PlayerInteractionBehaviour interaction;
 
+        private void ExitVehicle()
+        {
+            //NEEDS WORK
+
+            if (Input.GetKey(KeyCode.F))
+            {
+                exitTimer += Time.fixedDeltaTime; //INCREMENT TIME WHILE THE 'F' KEY IS HELD
+            }
+            else
+            {
+                exitTimer = 0; //RESET TIMER
+            }
+        }
+
         private void Awake()
         {
             if (!localPlayerAuthority)
@@ -70,9 +84,6 @@ namespace UGP
                 playerMovement.enabled = false;
                 interaction.enabled = false;
 
-                var ammoBox = p.ammo;
-                vehicle._v.ammunition = ammoBox;
-
                 animator.SetTrigger("EnterVehicle");
 
                 //DISABLE THE PLAYER COLLIDER(S) IF DRIVING
@@ -90,15 +101,7 @@ namespace UGP
                 
                 rb.isKinematic = true;
 
-                //NEEDS WORK
-                if (Input.GetKey(KeyCode.F))
-                {
-                    exitTimer += Time.fixedDeltaTime; //INCREMENT TIME WHILE THE 'F' KEY IS HELD
-                }
-                else
-                {
-                    exitTimer = 0; //RESET TIMER
-                }
+                ExitVehicle(); //EXIT THE VEHICLE
 
                 if(exitTimer >= TimeToExitVehicle)
                 {

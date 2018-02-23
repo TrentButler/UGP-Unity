@@ -7,11 +7,10 @@ namespace UGP
 {
     [System.Serializable]
     [CreateAssetMenu(fileName = "Player", menuName = "Player", order = 0)]
-    public class Player : ScriptableObject, ICollector, IDamageable, IHealable
+    public class Player : ScriptableObject, IDamageable, IHealable
     {
         //EVERYTHING THAT MAKES UP THE PLAYER
         //  - HEALTH
-        //  - TOOLBELT
 
         #region MemberVariables
         private float _health;
@@ -20,21 +19,7 @@ namespace UGP
 
         private bool _isAlive;
         public bool Alive { get { return _isAlive; } set { } }
-
-        public ToolBelt toolBelt;
-        public AmmoBox ammo;
         #endregion 
-
-        public void TakeItem(Item item)
-        {
-            toolBelt.AddItem(item);
-        }
-
-        public void TakeItems(List<Item> items)
-        {
-            var i = items;
-            i.ForEach(item => { toolBelt.AddItem(item); });
-        }
 
         public void TakeDamage(float damageTaken)
         {

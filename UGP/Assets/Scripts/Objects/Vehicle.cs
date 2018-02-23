@@ -58,5 +58,23 @@ namespace UGP
             if (_fuel <= 0.0f)
                 _fuelDepleted = true;
         }
+
+        public void Reload(AmmoBox otherBox)
+        {
+            if (otherBox != null)
+            {
+                ammunition.Assault += otherBox.Assault;
+                otherBox.Assault = 0; // ASSIGN ZERO TO THIS AMMOBOX
+
+                ammunition.Shotgun += otherBox.Shotgun;
+                otherBox.Shotgun = 0;
+
+                ammunition.Sniper += otherBox.Sniper;
+                otherBox.Sniper = 0;
+
+                ammunition.Rocket += otherBox.Rocket;
+                otherBox.Rocket = 0;
+            }
+        }
     }
 }
