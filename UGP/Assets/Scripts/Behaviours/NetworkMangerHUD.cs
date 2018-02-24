@@ -1,49 +1,113 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Net;
+using System.Net.Sockets;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class NetworkMangerHUD : NetworkBehaviour
+public class NetworkMangerHUD : MonoBehaviour
 {
+
+    #region NetworkStuff
     public Network Net;
     public NetworkPlayer NetPlayer;
 
+
+    #endregion
+
+    #region Canvas
+    public GameObject ToggleNetworkCanvas;
+    public Button ToggleOn;
+    public Text IP_DISPLAY;
+    public Text PORT_DISPLAY;
+
+    #endregion
+
+    #region Strings
     private string IpValue;
     private string PortValue;
-    public string UIIP;
-    public string UIPORTVALUE;
-    public Text UITextIP;
-    public Text UITextPort;
-    public void CheckPlayerIP()
+
+
+    #endregion
+
+    #region Text
+
+    public InputField IPInputField;
+    public InputField PortInputField;
+    #endregion
+
+
+
+
+
+    public void NetworkHUDOn()
     {
-
-        IpValue.Insert(0, NetPlayer.ipAddress);
-        
-
-        IpValue.Equals(NetPlayer.ipAddress);
-        PortValue.Equals(NetPlayer.port);
-     
+        ToggleNetworkCanvas.SetActive(true);
     }
-    public void ConnectToServer()
+    public void NetworkHUDOFF()
     {
-        Network.Connect(IpValue, PortValue);
-        NetworkClient.GetTotalConnectionStats();   
+        ToggleNetworkCanvas.SetActive(false);
+    }
+    public void ButtonAssign()
+    {
+        Button btn = ToggleOn.GetComponent<Button>();
+        btn.onClick.AddListener(TaskOnClick);
+        ToggleOn.enabled = true;
     }
 
-	// Use this for initialization
-	void Start ()
+    void TaskOnClick()
     {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-        IpValue = UITextIP.text;
-        PortValue = UITextPort.text;
-        CheckPlayerIP();
+        if (ToggleOn == true)
+        {
+            ToggleNetworkCanvas.SetActive(true);
+        }
+        if (ToggleOn == false)
+        {
+            ToggleNetworkCanvas.SetActive(false);
+        }
+        Debug.Log("You have opened the Online Menu!");
+
+    }
+
+    //public void CheckPlayerIP()
+    //{
+    //    var test = UnityEngine.Networking.NetworkManager.singleton.networkAddress.ToString();
+
+    //    test = IpValue;
+    //    Text text = IP_DISPLAY.GetComponent<Text>();
+    //    IpValue = text.text;
+    //    IP_DISPLAY.text = IPInputField.text;
+    //    PORT_DISPLAY.text = PortInputField.text;
+    //    IpValue = IPInputField.text;
+    //    Debug.Log(test);
+
+    //}
+
+    //public void ConnectToServer()
+    //{
+    //    Network.Connect(IpValue, PortValue);
+    //    NetworkClient.GetTotalConnectionStats();
+    //}
+
+    // Use this for initialization
+    void Start()
+{
+    NetworkHUDOFF();
+}
+
+// Update is called once per frame
+void Update()
+{
+        var test = UnityEngine.Networking.NetworkManager.singleton.networkAddress.ToString();
+        //CheckPlayerIP();
+
+        Debug.Log(test);
+
+        ButtonAssign();
 
 
-	}
+
+
+}
 }
