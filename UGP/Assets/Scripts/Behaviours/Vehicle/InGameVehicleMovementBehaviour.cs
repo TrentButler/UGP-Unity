@@ -126,7 +126,7 @@ namespace UGP
                 //Debug.Log(throttle);
 
                 Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
-                Vector3 steerVector = new Vector3(0.0f, strafeVehicle * TurnSpeed, 0.0f);
+                Vector3 strafeVector = new Vector3(0.0f, strafeVehicle * TurnSpeed, 0.0f);
 
                 #region HOVERVECTORCALCULATION
                 //PERFORM A RAYCAST DOWNWARD, 
@@ -145,7 +145,7 @@ namespace UGP
                 }
                 #endregion
 
-                if (accelerationVector.magnitude > 0 || steerVector.magnitude > 0)
+                if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
                 {
                     UseBooster();
                     Jump();
@@ -164,18 +164,16 @@ namespace UGP
 
         private void Awake()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
         }
 
         private void Start()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
 
@@ -192,9 +190,8 @@ namespace UGP
         //NEEDS WORK
         void FixedUpdate()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
 
@@ -203,9 +200,8 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
 

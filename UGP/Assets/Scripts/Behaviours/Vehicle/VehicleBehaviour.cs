@@ -10,6 +10,7 @@ namespace UGP
     //NEEDS WORK
     public class VehicleBehaviour : NetworkBehaviour
     {
+        public GameObject VirtualCamera;
         public Color vColor;
         public List<MeshRenderer> models;
         [Range(0.001f, 1.0f)] public float colorChangeSpeed;
@@ -84,11 +85,6 @@ namespace UGP
 
         public void SetVehicleActive(bool active)
         {
-            if (!localPlayerAuthority)
-            {
-                enabled = false;
-                return;
-            }
             vehicleActive = active;
         }
 
@@ -135,9 +131,9 @@ namespace UGP
 
         private void Awake()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
+                VirtualCamera.SetActive(false);
                 return;
             }
 
@@ -146,13 +142,13 @@ namespace UGP
 
         private void Start()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
+                VirtualCamera.SetActive(false);
                 return;
             }
 
-            vehicleActive = false;
+            //vehicleActive = false;
             _v = Instantiate(VehicleConfig);
             _v.Health = _v.MaxHealth;
             _v.Fuel = _v.MaxFuel;
@@ -167,9 +163,9 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
+                VirtualCamera.SetActive(false);
                 return;
             }
 
@@ -177,10 +173,11 @@ namespace UGP
             {
                 case true:
                     {
+                        VirtualCamera.SetActive(true);
                         OnVehicleEnter();
                         Cursor.visible = false;
                         vehicleMovement.enabled = true;
-                        shootBehaviour.enabled = true;
+                        //shootBehaviour.enabled = true;
                         vehicleUI.gameObject.SetActive(true);
                         vehicleUI.enabled = true;
                         UpdateVehicle();
@@ -190,10 +187,11 @@ namespace UGP
 
                 case false:
                     {
+                        VirtualCamera.SetActive(false);
                         OnVehicleExit();
                         Cursor.visible = true;
                         vehicleMovement.enabled = false;
-                        shootBehaviour.enabled = false;
+                        //shootBehaviour.enabled = false;
                         vehicleUI.gameObject.SetActive(false);
                         vehicleUI.enabled = false;
                         UpdateVehicle();

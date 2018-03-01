@@ -23,8 +23,6 @@ GameObject:
   - component: {fileID: 124830621274023974}
   - component: {fileID: 81111837101871442}
   - component: {fileID: 114103956305944322}
-  - component: {fileID: 114077689052140248}
-  - component: {fileID: 114322264504307690}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -38,8 +36,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1597246590299836}
-  m_LocalRotation: {x: 0.0418894, y: 0, z: 0, w: 0.99912226}
-  m_LocalPosition: {x: 104.84782, y: 0.71, z: 116.62358}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -88,38 +86,6 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1597246590299836}
   m_Enabled: 1
---- !u!114 &114077689052140248
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1597246590299836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SceneId:
-    m_Value: 0
-  m_AssetId:
-    i0: 116
-    i1: 240
-    i2: 217
-    i3: 214
-    i4: 157
-    i5: 11
-    i6: 211
-    i7: 228
-    i8: 59
-    i9: 214
-    i10: 50
-    i11: 189
-    i12: 111
-    i13: 77
-    i14: 178
-    i15: 26
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 1
 --- !u!114 &114103956305944322
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -150,19 +116,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: Cinemachine.CinemachineBrain+VcamEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &114322264504307690
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1597246590299836}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3995708d0869e0e4da3b26bd861dd71a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  vehicleCam: {fileID: 0}
-  playerCam: {fileID: 0}
 --- !u!124 &124830621274023974
 Behaviour:
   m_ObjectHideFlags: 1

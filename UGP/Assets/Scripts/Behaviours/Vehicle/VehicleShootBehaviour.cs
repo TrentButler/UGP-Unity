@@ -142,7 +142,7 @@ namespace UGP
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            //NetworkServer.Spawn(b);
+                            NetworkServer.Spawn(b);
 
                             var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SNIPERROUNDBEHAVIOUR
 
@@ -303,7 +303,7 @@ namespace UGP
             if(moveVector.magnitude <= 0)
             {
                 //crosshairWorldOffset.z = 58.0f;
-                crosshairYOffset = 82.0f;
+                //crosshairYOffset = 82.0f;
 
                 if (aimVector.magnitude <= 0)
                 {
@@ -344,7 +344,7 @@ namespace UGP
             {
                 //CENTER THE CROSSHAIR WHEN VEHICLE IS MOVING
                 //crosshairWorldOffset.z = 11.8f;
-                crosshairYOffset = 91.0f;
+                //crosshairYOffset = 91.0f;
 
 
                 var rectTrans = c.GetComponent<RectTransform>();
@@ -393,18 +393,16 @@ namespace UGP
 
         private void Awake()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
         }
 
         private void Start()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
 
@@ -418,9 +416,8 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
 
@@ -432,6 +429,11 @@ namespace UGP
 
         private void LateUpdate()
         {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
             var vActive = v.vehicleActive;
             if (vActive)
             {
