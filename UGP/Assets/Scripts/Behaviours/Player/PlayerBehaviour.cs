@@ -8,6 +8,8 @@ namespace UGP
 {
     public class PlayerBehaviour : NetworkBehaviour
     {
+        public GameObject VirtualCamera;
+        public GameObject model;
         public Player player;
         [HideInInspector] public Player p;
 
@@ -35,7 +37,8 @@ namespace UGP
         private void Awake()
         {
             if (!isLocalPlayer)
-            {                
+            {
+                VirtualCamera.SetActive(false);
                 return;
             }
         }
@@ -43,7 +46,8 @@ namespace UGP
         private void Start()
         {
             if (!isLocalPlayer)
-            {             
+            {
+                VirtualCamera.SetActive(false);
                 return;
             }
 
@@ -55,7 +59,11 @@ namespace UGP
         private void FixedUpdate()
         {
             if (!isLocalPlayer)
+            {
+                VirtualCamera.SetActive(false);
                 return;
+            }
+
             if (vehicle == null)
             {
                 isDriving = false;
@@ -64,43 +72,26 @@ namespace UGP
             {
                 isDriving = true;
             }
-
-            var model1 = transform.Find("Model-Head");
-            var model2 = transform.Find("Model-Body");
-
-            var rb = GetComponent<Rigidbody>();
-
+            
             var animator = playerMovement.Ani;
 
             if (isDriving)
             {
+                VirtualCamera.SetActive(false);
                 vehicle.enabled = true;
                 playerMovement.enabled = false;
                 interaction.enabled = false;
 
-                animator.SetTrigger("EnterVehicle");
-
-                //DISABLE THE PLAYER COLLIDER(S) IF DRIVING
-                if (model1 != null)
-                {
-                    model1.gameObject.SetActive(false);
-                }
-                if(model2 != null)
-                {
-                    model2.gameObject.SetActive(false);
-                }
+                animator.SetTrigger("EnterVehicle"); 
 
                 transform.position = vehicle.seat.position;
                 transform.rotation = vehicle.seat.rotation;
-                
-                rb.isKinematic = true;
 
                 ExitVehicle(); //EXIT THE VEHICLE
 
                 if(exitTimer >= TimeToExitVehicle)
                 {
                     //GET OUT OF VEHICLE
-                    vehicle._v.ammunition = null;
                     vehicle.SetVehicleActive(false);
                     vehicle = null;
                     isDriving = false;
@@ -109,23 +100,12 @@ namespace UGP
             }
             else
             {
+                VirtualCamera.SetActive(true);
                 vehicle = null;
                 playerMovement.enabled = true;
                 interaction.enabled = true;
 
                 animator.SetTrigger("ExitVehicle");
-
-                //ENABLE THE PLAYER COLLIDER(S) IF NOT DRIVING
-                if (model1 != null)
-                {
-                    model1.gameObject.SetActive(true);
-                }
-                if (model2 != null)
-                {
-                    model2.gameObject.SetActive(true);
-                }
-                
-                rb.isKinematic = false;
             }
         }
     }
