@@ -21,6 +21,7 @@ namespace UGP
         private float JumpTimer = 1.0f;
         public bool isGrounded;
 
+        public GameObject MapCanvas;
         public Animator Ani;
         private Rigidbody rb;
         public CharacterController controller;
@@ -33,7 +34,7 @@ namespace UGP
                 VirtualCamera.SetActive(false);
                 return;
             }
-
+            MapCanvas.SetActive(false);
             VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCameraBase>().Follow = transform;
             VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCameraBase>().LookAt = transform;
             OriginalSpeed = WalkSpeed;
@@ -70,7 +71,9 @@ namespace UGP
                 //rb.rotation = transform.rotation;
             }
             Sprint();
+            Crouch();
             Jump();
+            ToggleMap();
         }
 
         private void LateUpdate()
@@ -82,6 +85,18 @@ namespace UGP
             KeepPlayerUpright();
         }
 
+        public void ToggleMap()
+        {
+            if (Input.GetKey(KeyCode.M))
+            {
+                MapCanvas.SetActive(true);
+            }
+            else
+            {
+                MapCanvas.SetActive(false);
+            }
+            
+        }
         public void Sprint()
         {
             if (Input.GetKey(KeyCode.LeftShift))
@@ -94,6 +109,19 @@ namespace UGP
             {
                 WalkSpeed = OriginalSpeed;
                 Ani.SetBool("Sprinting", false);
+            }
+        }
+        public void Crouch()
+        {
+            if (Input.GetKey(KeyCode.C))
+            {
+                WalkSpeed = 1.5f;
+                Ani.SetBool("Crouch", true);
+            }
+            else
+            {
+                WalkSpeed = OriginalSpeed;
+                Ani.SetBool("Crouch", false);
             }
         }
         public void Jump()
