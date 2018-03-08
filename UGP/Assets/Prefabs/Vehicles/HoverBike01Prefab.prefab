@@ -491,7 +491,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4575659506539710}
   - component: {fileID: 95215110745309064}
-  - component: {fileID: 65699496451218920}
   m_Layer: 0
   m_Name: HoverBike01
   m_TagString: Vehicle
@@ -563,6 +562,7 @@ GameObject:
   - component: {fileID: 54255806531050144}
   - component: {fileID: 114332724383662726}
   - component: {fileID: 114994459253701014}
+  - component: {fileID: 65277702150668030}
   m_Layer: 0
   m_Name: HoverBike01Prefab
   m_TagString: Vehicle
@@ -673,7 +673,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1380178584847990}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.88, z: -0.373}
+  m_LocalPosition: {x: 0, y: 2.1, z: -0.373}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4605721573728704}
@@ -725,7 +725,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1880974320060866}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12.56, y: -6.21, z: 0}
+  m_LocalPosition: {x: 12.56, y: 6.85, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4575659506539710}
@@ -1415,18 +1415,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65699496451218920
+--- !u!65 &65277702150668030
 BoxCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1728650740275310}
+  m_GameObject: {fileID: 1880974320060866}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 3.5929308, y: 2.1808634, z: 6.923917}
-  m_Center: {x: -0.08000088, y: 0.9530425, z: 0.13627005}
+  m_Size: {x: 3.6793275, y: 2.0126207, z: 6.963686}
+  m_Center: {x: 0.12027097, y: 1.0404664, z: 0.22643769}
 --- !u!82 &82519773369395234
 AudioSource:
   m_ObjectHideFlags: 1
@@ -2027,7 +2027,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1880974320060866}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bf963e9850229c40a60eb8074b37573, type: 3}
   m_Name: 

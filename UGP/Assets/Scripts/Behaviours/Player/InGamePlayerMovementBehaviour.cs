@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace UGP
 {
@@ -20,8 +21,9 @@ namespace UGP
         private float SprintTimer = 1.0f;
         private float JumpTimer = 1.0f;
         public bool isGrounded;
-
+        public NetworkPlayer Player;
         public GameObject MapCanvas;
+        public GameObject SettingMenu;
         public Animator Ani;
         private Rigidbody rb;
         public CharacterController controller;
@@ -74,6 +76,7 @@ namespace UGP
             Crouch();
             Jump();
             ToggleMap();
+            ToggleSettings();
         }
 
         private void LateUpdate()
@@ -85,6 +88,28 @@ namespace UGP
             KeepPlayerUpright();
         }
 
+        public void ToggleSettings()
+        {
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                SettingMenu.SetActive(true);
+            }
+            else
+            {
+                SettingMenu.SetActive(false);
+            }
+           
+        }
+        public void ReturnMenu()
+        {
+            NetworkManager.Shutdown();
+            
+            SceneManager.LoadScene("69.OfflineScene");
+        }
+        public void Exit()
+        {
+            Application.Quit();
+        }
         public void ToggleMap()
         {
             if (Input.GetKey(KeyCode.M))
