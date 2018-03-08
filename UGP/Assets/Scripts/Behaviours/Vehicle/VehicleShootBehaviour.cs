@@ -41,7 +41,7 @@ namespace UGP
 
         private VehicleBehaviour v;
 
-        private void CmdShoot()
+        [Command] private void CmdShoot()
         {
             switch (w)
             {
@@ -395,6 +395,11 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    return;
+                }
+
                 return;
             }
         }
@@ -403,6 +408,18 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    v = GetComponent<VehicleBehaviour>();
+                    var vactive = v.vehicleActive;
+
+                    if (vactive)
+                    {
+                        c = v.vehicleUI;
+                    }
+                    return;
+                }
+
                 return;
             }
 
@@ -418,6 +435,15 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    Aim();
+                    Fire();
+
+                    Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+                    return;
+                }
+
                 return;
             }
 
@@ -431,6 +457,16 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    var vactive = v.vehicleActive;
+                    if (vactive)
+                    {
+                        c = v.vehicleUI;
+                    }
+                    return;
+                }
+
                 return;
             }
 
