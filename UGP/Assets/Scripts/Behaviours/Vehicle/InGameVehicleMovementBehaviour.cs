@@ -162,10 +162,27 @@ namespace UGP
         }
         #endregion
 
+
+        public override void OnStartClient()
+        {
+            rb = GetComponent<Rigidbody>();
+            v = GetComponent<VehicleBehaviour>();
+
+            if (!rb)
+                rb = gameObject.AddComponent<Rigidbody>();
+
+            originalSpeed = MaxSpeed;
+            originalFuelBurnRate = fuelBurnRate;
+        }
+
         private void Awake()
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    return;
+                }
                 return;
             }
         }
@@ -174,6 +191,19 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    rb = GetComponent<Rigidbody>();
+                    v = GetComponent<VehicleBehaviour>();
+
+                    if (!rb)
+                        rb = gameObject.AddComponent<Rigidbody>();
+
+                    originalSpeed = MaxSpeed;
+                    originalFuelBurnRate = fuelBurnRate;
+                    return;
+                }
+
                 return;
             }
 
@@ -192,6 +222,12 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    Move();
+                    return;
+                }
+
                 return;
             }
 
@@ -202,6 +238,11 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    KeepVehicleUpright();
+                }
+
                 return;
             }
 
