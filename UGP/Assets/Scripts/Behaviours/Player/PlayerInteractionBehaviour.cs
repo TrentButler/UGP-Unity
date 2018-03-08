@@ -15,18 +15,16 @@ namespace UGP
 
         private void Awake()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
         }
 
         private void Start()
         {
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
         }
@@ -35,36 +33,42 @@ namespace UGP
         {
 
         }
-        private void OnTriggerEnter(Collider other)
+
+        [Command] private void CmdEnterVehicle(NetworkIdentity identity)
         {
+            var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
+            var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
+
+            var vehicleNetworkIdentity = identity;
+
+            //INVOKE THESE FUNCTIONS ON THE SERVER
+            vehicleNetworkIdentity.AssignClientAuthority(localPlayerConn);
+            //localPlayerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
 
         private void OnTriggerStay(Collider other)
         {
-
-            //CHECK FOR THE LOCAL PLAYER??????
-            if (!localPlayerAuthority)
+            if (!isLocalPlayer)
             {
-                enabled = false;
                 return;
             }
 
             if (other.tag == "Vehicle")
             {
                 var v = other.GetComponentInParent<VehicleBehaviour>();
-
                 var vActive = v.vehicleActive;
-
-
+                var vehicleIdentity = v.GetComponent<NetworkIdentity>();
                 if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
                 {
                     Debug.Log("PRESS F TO ENTER VEHICLE");
+
                     //F KEY PRESS TO ENTER THE VEHICLE
                     if (Input.GetKeyDown(KeyCode.F))
                     {
-                        p.vehicle = v;
-                        v.SetVehicleActive(true);
                         //GET IN THE VEHICLE
+                        p.vehicle = v;
+                        CmdEnterVehicle(vehicleIdentity);
+                        v.SetVehicleActive(true);
                     }
                 }
             }
