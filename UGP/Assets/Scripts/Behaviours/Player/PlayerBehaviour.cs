@@ -72,17 +72,17 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                //if(isClient)
-                //{
-                //    if (isDriving)
-                //    {
-                //        model.SetActive(false);
-                //    }
-                //    else
-                //    {
-                //        model.SetActive(true);
-                //    }
-                //}
+                if (isClient)
+                {
+                    if (isDriving)
+                    {
+                        model.SetActive(false);
+                    }
+                    else
+                    {
+                        model.SetActive(true);
+                    }
+                }
 
                 VirtualCamera.SetActive(false);
                 return;

@@ -58,6 +58,7 @@ namespace UGP
                 var v = other.GetComponentInParent<VehicleBehaviour>();
                 var vActive = v.vehicleActive;
                 var vehicleIdentity = v.GetComponent<NetworkIdentity>();
+
                 if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
                 {
                     Debug.Log("PRESS F TO ENTER VEHICLE");
@@ -73,6 +74,5 @@ namespace UGP
                 }
             }
         }
-
     }
 }

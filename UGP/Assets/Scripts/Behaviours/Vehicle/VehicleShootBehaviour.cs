@@ -54,7 +54,7 @@ namespace UGP
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            //NetworkServer.Spawn(b);
+                            NetworkServer.Spawn(b);
 
                             var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>();
 
@@ -98,7 +98,7 @@ namespace UGP
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            //NetworkServer.Spawn(b);
+                            NetworkServer.Spawn(b);
 
                             var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SHOTGUNROUNDBEHAVIOUR
 
@@ -186,7 +186,7 @@ namespace UGP
                             //audio.Play();
 
                             var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            //NetworkServer.Spawn(b);
+                            NetworkServer.Spawn(b);
 
                             var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //ROCKETROUNDBEHAVIOUR
 
@@ -435,7 +435,7 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if(hasAuthority && !isServer)
                 {
                     Aim();
                     Fire();
