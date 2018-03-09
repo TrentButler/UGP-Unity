@@ -10,23 +10,23 @@ public class NetworkMangerHUD : MonoBehaviour
 {
 
     #region NetworkStuff
-    public Network Net;
-    public NetworkPlayer NetPlayer;
-    private NetworkServerSimple ServerSim;
-
+    public NetworkManager Serverinfo;
+    private NetworkServer Server;
+    private NetworkServerSimple ServerSimp;
+    private string con;
+    
     #endregion
 
     #region Canvas
     public GameObject ToggleNetworkCanvas;
     public Button ToggleOn;
     public Text IP_DISPLAY;
-    public Text PORT_DISPLAY;
+    public Text PlayID;
 
     #endregion
 
     #region Strings
     private string IpValue;
-    private string PortValue;
 
 
     #endregion
@@ -41,15 +41,31 @@ public class NetworkMangerHUD : MonoBehaviour
 
     public void StartServer()
     {
-       
+        Serverinfo.StartHost();
+        
+    }
+    public void ServerInfo()
+    {
+
+       var id = ServerSimp.serverHostId.ToString();
+        id = PlayID.text;
+        //var IP = Serverinfo.networkAddress.ToString();
+        
+        var IP = ServerSimp.connections.ToString();
+        IpValue = IP;
+        IpValue = IP_DISPLAY.text;
+        Debug.Log(IpValue);
+        Debug.Log(id);
     }
     public void UpdateServer()
     {
-
+        ServerSimp.Update();
+        ServerSimp.UpdateConnections();
+        
     }
     public void CloseServer()
     {
-
+        Serverinfo.StopServer();
     }
 
     public void NetworkHUDOn()
