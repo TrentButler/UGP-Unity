@@ -72,7 +72,8 @@ namespace UGP
             vehicleActive = active;
         }
 
-        [Command(channel = 2)] private void CmdUpdateVehicle()
+        [Command(channel = 2)]
+        private void CmdUpdateVehicle()
         {
             var health = _v.Health;
             var fuel = _v.Fuel;
@@ -88,7 +89,8 @@ namespace UGP
             }
         }
 
-        [Command(channel = 2)] public void CmdOnVehicleEnter()
+        [Command(channel = 2)]
+        public void CmdOnVehicleEnter()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
@@ -108,7 +110,8 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
-        [Command(channel = 2)] public void CmdOnVehicleExit()
+        [Command(channel = 2)]
+        public void CmdOnVehicleExit()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
@@ -143,8 +146,8 @@ namespace UGP
         private void Awake()
         {
             if (!isLocalPlayer)
-            {   
-                if(hasAuthority || isServer)
+            {
+                if (hasAuthority || isServer)
                 {
                     return;
                 }
@@ -157,7 +160,7 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if (hasAuthority)
                 {
                     vehicleActive = false;
                     _v = Instantiate(VehicleConfig);
@@ -194,47 +197,9 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if (hasAuthority)
                 {
-                    switch (vehicleActive)
-                    {
-                        case true:
-                            {
-                                VirtualCamera.SetActive(true);
-                                CmdOnVehicleEnter();
-                                Cursor.visible = false;
-                                vehicleMovement.enabled = true;
-                                //shootBehaviour.enabled = true;
-                                vehicleUI.gameObject.SetActive(true);
-                                vehicleUI.enabled = true;
-                                CmdUpdateVehicle();
-                                UpdateUI();
-                                break;
-                            }
-
-                        case false:
-                            {
-                                VirtualCamera.SetActive(false);
-                                CmdOnVehicleExit();
-                                Cursor.visible = true;
-                                vehicleMovement.enabled = false;
-                                //shootBehaviour.enabled = false;
-                                vehicleUI.gameObject.SetActive(false);
-                                vehicleUI.enabled = false;
-                                CmdUpdateVehicle();
-                                break;
-                            }
-                    }
-                    return;
-                } 
-
-                VirtualCamera.SetActive(false);
-                return;
-            }
-
-            switch (vehicleActive)
-            {
-                case true:
+                    if (vehicleActive)
                     {
                         VirtualCamera.SetActive(true);
                         CmdOnVehicleEnter();
@@ -245,10 +210,8 @@ namespace UGP
                         vehicleUI.enabled = true;
                         CmdUpdateVehicle();
                         UpdateUI();
-                        break;
                     }
-
-                case false:
+                    else
                     {
                         VirtualCamera.SetActive(false);
                         CmdOnVehicleExit();
@@ -258,10 +221,37 @@ namespace UGP
                         vehicleUI.gameObject.SetActive(false);
                         vehicleUI.enabled = false;
                         CmdUpdateVehicle();
-                        break;
                     }
+                    return;
+                }
+
+                VirtualCamera.SetActive(false);
+                return;
+            }
+
+            if (vehicleActive)
+            {
+                VirtualCamera.SetActive(true);
+                CmdOnVehicleEnter();
+                Cursor.visible = false;
+                vehicleMovement.enabled = true;
+                //shootBehaviour.enabled = true;
+                vehicleUI.gameObject.SetActive(true);
+                vehicleUI.enabled = true;
+                CmdUpdateVehicle();
+                UpdateUI();
+            }
+            else
+            {
+                VirtualCamera.SetActive(false);
+                CmdOnVehicleExit();
+                Cursor.visible = true;
+                vehicleMovement.enabled = false;
+                //shootBehaviour.enabled = false;
+                vehicleUI.gameObject.SetActive(false);
+                vehicleUI.enabled = false;
+                CmdUpdateVehicle();
             }
         }
     }
-
 }
