@@ -30,6 +30,8 @@ namespace UGP
         private Rigidbody rb;
         private VehicleBehaviour v;
 
+        public bool rotateVehicle = false;
+
         #region VehicleMovement
         public void ResetVehicleRotation()
         {
@@ -62,7 +64,7 @@ namespace UGP
             {
                 rot[0] = Mathf.LerpAngle(dX, 0.0f, Time.fixedDeltaTime);
                 rot[2] = Mathf.LerpAngle(dZ, 0.0f, Time.fixedDeltaTime);
-            }   
+            }
 
             transform.rotation = rot;
             rb.MoveRotation(transform.rotation);
@@ -73,8 +75,8 @@ namespace UGP
             var dX = Input.GetAxis("Mouse X");
 
             Vector3 mouseYRot = new Vector3(0, dX, 0);
-            
-            if(mouseYRot.magnitude > 0)
+
+            if (mouseYRot.magnitude > 0)
             {
                 transform.Rotate(mouseYRot, Space.Self);
             }
@@ -119,7 +121,7 @@ namespace UGP
             currentVehicleThrottle = throttle;
             currentVehicleStrafe = strafeVehicle;
 
-            if(!fuelEmpty)
+            if (!fuelEmpty)
             {
                 currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * fuelBurnRate;
                 v._v.UseFuel(currentFuelConsumption);
@@ -159,10 +161,18 @@ namespace UGP
                 }
 
                 Steer();
+
+                if(Input.GetKey(KeyCode.LeftAlt))
+                {
+                    rotateVehicle = true;
+                }
+                else
+                {
+                    rotateVehicle = false;
+                }
             }
         }
         #endregion
-
 
         public override void OnStartClient()
         {
@@ -180,7 +190,7 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if (hasAuthority)
                 {
                     return;
                 }
@@ -192,7 +202,7 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if (hasAuthority)
                 {
                     rb = GetComponent<Rigidbody>();
                     v = GetComponent<VehicleBehaviour>();
@@ -223,7 +233,7 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if (hasAuthority)
                 {
                     Move();
                     return;
@@ -239,15 +249,21 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if (hasAuthority)
                 {
-                    KeepVehicleUpright();
+                    if (rotateVehicle)
+                    {
+                        KeepVehicleUpright();
+                    }
                 }
 
                 return;
             }
 
-            KeepVehicleUpright();
+            if (rotateVehicle)
+            {
+                KeepVehicleUpright();
+            }
         }
     }
 }
