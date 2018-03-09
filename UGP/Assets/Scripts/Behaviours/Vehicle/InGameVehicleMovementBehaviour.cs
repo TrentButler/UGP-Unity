@@ -65,6 +65,7 @@ namespace UGP
             }   
 
             transform.rotation = rot;
+            rb.MoveRotation(transform.rotation);
         }
 
         public void Steer()
@@ -234,7 +235,7 @@ namespace UGP
             Move();
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             if (!isLocalPlayer)
             {
