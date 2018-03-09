@@ -12,7 +12,7 @@ public class NetworkMangerHUD : MonoBehaviour
     #region NetworkStuff
     public Network Net;
     public NetworkPlayer NetPlayer;
-
+    private NetworkServerSimple ServerSim;
 
     #endregion
 
@@ -39,7 +39,18 @@ public class NetworkMangerHUD : MonoBehaviour
 
 
 
+    public void StartServer()
+    {
+       
+    }
+    public void UpdateServer()
+    {
 
+    }
+    public void CloseServer()
+    {
+
+    }
 
     public void NetworkHUDOn()
     {
