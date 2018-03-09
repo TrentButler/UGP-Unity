@@ -72,7 +72,7 @@ namespace UGP
             vehicleActive = active;
         }
 
-        [Command] private void CmdUpdateVehicle()
+        [Command(channel = 2)] private void CmdUpdateVehicle()
         {
             var health = _v.Health;
             var fuel = _v.Fuel;
@@ -88,7 +88,7 @@ namespace UGP
             }
         }
 
-        [Command] public void CmdOnVehicleEnter()
+        [Command(channel = 2)] public void CmdOnVehicleEnter()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
@@ -108,7 +108,7 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
-        [Command] public void CmdOnVehicleExit()
+        [Command(channel = 2)] public void CmdOnVehicleExit()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
