@@ -137,6 +137,7 @@ namespace UGP
             _v.Fuel = _v.MaxFuel;
             _v.Destroyed = false;
             _v.FuelDepeleted = false;
+            vehicleActive = false;
         }
 
         private void Awake()
@@ -158,7 +159,7 @@ namespace UGP
             {
                 if(hasAuthority)
                 {
-                    //vehicleActive = false;
+                    vehicleActive = false;
                     _v = Instantiate(VehicleConfig);
                     _v.Health = _v.MaxHealth;
                     _v.Fuel = _v.MaxFuel;
@@ -176,7 +177,7 @@ namespace UGP
                 return;
             }
 
-            //vehicleActive = false;
+            vehicleActive = false;
             _v = Instantiate(VehicleConfig);
             _v.Health = _v.MaxHealth;
             _v.Fuel = _v.MaxFuel;
