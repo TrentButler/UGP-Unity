@@ -75,6 +75,11 @@ namespace UGP
             }
         }
 
+        public void ResetServer()
+        {
+            NetworkServer.Reset();
+        }
+
         private void Start()
         {
             spawnOnPlayerCount = false;
