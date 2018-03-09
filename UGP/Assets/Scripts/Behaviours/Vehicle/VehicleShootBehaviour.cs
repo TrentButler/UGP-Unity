@@ -41,7 +41,7 @@ namespace UGP
 
         private VehicleBehaviour v;
 
-        [Command] private void CmdShoot()
+        [Command(channel = 3)] private void CmdShoot()
         {
             switch (w)
             {
