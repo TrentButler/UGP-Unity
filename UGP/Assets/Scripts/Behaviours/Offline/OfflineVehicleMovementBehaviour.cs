@@ -23,6 +23,7 @@ namespace UGP
         #endregion
 
         public float MaxSpeed = 1.0f;
+        public float VehicleDecelerateRate = 1.0f;
         public float StrafeSpeed = 1.0f;
         public float VehicleSteerSpeed = 1.0f;
         public float BoostSpeed = 1.0f;
@@ -169,12 +170,13 @@ namespace UGP
 
         public void ApplyBreak()
         {
-            if (Input.GetKey(KeyCode.C)) //SLOW DOWN TO A STOP
+            if (Input.GetKey(KeyCode.C)) 
             {
+                //SLOW DOWN TO A STOP, PREVENT VEHICLE FROM ACCELERATING OR STRAFING
                 MaxSpeed = 0.0f;
-                StrafeSpeed = 0.0f;
+                StrafeSpeed = 0.0f; 
                 rb.MoveRotation(transform.rotation);
-                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, Time.fixedDeltaTime);
+                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.fixedDeltaTime); 
             }
             else
             {
@@ -220,9 +222,13 @@ namespace UGP
                 UseBooster();
 
                 var cam_transform = Camera.main.transform;
-                var move_direction = cam_transform.TransformDirection(((accelerationVector) + strafeVector));
+                var move_direction = cam_transform.TransformDirection((accelerationVector + strafeVector));
 
-                rb.AddForce(move_direction, ForceMode.Impulse);
+                rb.AddForce(move_direction, ForceMode.VelocityChange);
+            }
+            else
+            {
+                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
             }
 
             Steer();

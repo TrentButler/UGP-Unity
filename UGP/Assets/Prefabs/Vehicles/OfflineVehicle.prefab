@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 4171440838571980}
   - component: {fileID: 114687323460929386}
   - component: {fileID: 114704528443347612}
-  - component: {fileID: 114239743966509612}
+  - component: {fileID: 114411193902878120}
   m_Layer: 0
   m_Name: cm
   m_TagString: Untagged
@@ -757,8 +757,9 @@ MonoBehaviour:
   EvasionHoverStrength: 50
   maxVehicleRotation: {x: 0, y: 360, z: 25}
   minVehicleRotation: {x: 0, y: -360, z: -25}
-  vehicleRotateSpeed: 1
+  vehicleRotateSpeed: 1.5
   MaxSpeed: 10
+  VehicleDecelerateRate: 3
   StrafeSpeed: 2.5
   VehicleSteerSpeed: 1
   BoostSpeed: 80
@@ -781,17 +782,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &114239743966509612
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1633396186642166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e8b78ac948f05a46a6d8339a503172b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114308871694633438
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -819,6 +809,17 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114411193902878120
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1633396186642166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8b78ac948f05a46a6d8339a503172b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114549566559263052
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -917,7 +918,7 @@ MonoBehaviour:
   crosshairSpeed: 1.5
   crosshairWorldOffset: {x: 0, y: 0, z: 58}
   c: {fileID: 223814511612180112}
-  FireRate: 0.5
+  FireRate: 0.1
   WeaponRange: 200
   AimCooldown: 2
   roundsFired: 0
@@ -997,7 +998,7 @@ MonoBehaviour:
   m_YDamping: 0.001
   m_ZDamping: 0.015
   m_PitchDamping: 0
-  m_YawDamping: 0.5
+  m_YawDamping: 0
   m_RollDamping: 0
 --- !u!114 &114742788220518604
 MonoBehaviour:
