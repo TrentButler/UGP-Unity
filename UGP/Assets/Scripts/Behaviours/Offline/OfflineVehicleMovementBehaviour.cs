@@ -6,26 +6,34 @@ namespace UGP
 {
     public class OfflineVehicleMovementBehaviour : MonoBehaviour
     {
-        public Vector3 currenthovervector;
+        #region VehicleHover
+        public Vector3 CurrentHoverVector;
+        public float TargetHeight = 4.0f;
+        public float EvasionHoverHeight = 1.0f;
+        public float HoverStrength = 1.0f;
+        public float EvasionHoverStrength = 1.0f; 
+        private float originalHoverStrength;
+        private float originalTargetHeight;
+        #endregion
 
+        #region VehicleOrientation
         public Vector3 maxVehicleRotation;
         public Vector3 minVehicleRotation;
         public float vehicleRotateSpeed;
-
-        public float hoverStrength = 1.0f;
-        public float TargetHeight = 4.0f;
-
-        public float JumpStrength = 1.0f;
+        #endregion
 
         public float MaxSpeed = 1.0f;
-        private float originalSpeed;
         public float StrafeSpeed = 1.0f;
-        private float originalStrafeSpeed;
-        public float RotateSpeed = 1.0f;
+        public float VehicleSteerSpeed = 1.0f;
         public float BoostSpeed = 1.0f;
+        private float originalSpeed;
+        private float originalStrafeSpeed;
         
         public Transform ThrusterPosition;
         private Rigidbody rb;
+
+        [HideInInspector] public float currentVehicleThrottle;
+        [HideInInspector] public float currentVehicleStrafe;
 
         #region VehicleMovement
         public void ResetVehicleRotation()
@@ -120,18 +128,27 @@ namespace UGP
 
             if (mouseYRot.magnitude > 0)
             {
-                transform.Rotate(mouseYRot * RotateSpeed, Space.Self);
+                transform.Rotate(mouseYRot * VehicleSteerSpeed, Space.Self);
             }
             rb.MoveRotation(transform.rotation);
         }
 
-        public void Jump()
+        //NEEDS WORK
+        //HOLDING THE 'Break' BUTTON WHILE HOLDING THE 'Hover' BUTTON GIVES THE DESIRED RESULT
+        //SEPERATE THIS, SO ONLY THE 'Hover' BUTTON IS NEEDED TO 'HOVER' IN PLACE
+        public void Hover()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Space))
             {
-                Vector3 jumpVector = new Vector3(0, 1 * JumpStrength, 0);
-
-                rb.AddForce(jumpVector);
+                rb.useGravity = false;
+                TargetHeight = EvasionHoverHeight;
+                HoverStrength = EvasionHoverStrength;
+            }
+            else
+            {
+                rb.useGravity = true;
+                TargetHeight = originalTargetHeight;
+                HoverStrength = originalHoverStrength;
             }
         }
 
@@ -156,6 +173,7 @@ namespace UGP
             {
                 MaxSpeed = 0.0f;
                 StrafeSpeed = 0.0f;
+                rb.MoveRotation(transform.rotation);
                 rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, Time.fixedDeltaTime);
             }
             else
@@ -172,6 +190,9 @@ namespace UGP
             var throttle = Input.GetAxis("Vertical");
             var strafeVehicle = Input.GetAxis("Horizontal");
 
+            currentVehicleThrottle = throttle;
+            currentVehicleStrafe = strafeVehicle;
+
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
 
@@ -184,10 +205,10 @@ namespace UGP
             if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
             {
                 var vertForce = (TargetHeight - hit.distance) / TargetHeight;
-                Vector3 hoverVector = Vector3.up * vertForce * hoverStrength;
+                Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
 
                 //Debug.Log(hoverVector); //DELETE THIS
-                currenthovervector = hoverVector;
+                CurrentHoverVector = hoverVector;
 
                 rb.AddForce(hoverVector);
                 //rb.AddForceAtPosition(hoverVector, point.position);
@@ -197,16 +218,16 @@ namespace UGP
             if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
             {
                 UseBooster();
-                Jump();
 
                 var cam_transform = Camera.main.transform;
                 var move_direction = cam_transform.TransformDirection(((accelerationVector) + strafeVector));
 
                 rb.AddForce(move_direction, ForceMode.Impulse);
             }
-            
-            ApplyBreak();
+
             Steer();
+            Hover();
+            ApplyBreak();   
         }
         #endregion
 
@@ -219,6 +240,8 @@ namespace UGP
 
             originalSpeed = MaxSpeed;
             originalStrafeSpeed = StrafeSpeed;
+            originalTargetHeight = TargetHeight;
+            originalHoverStrength = HoverStrength;
         }
 
         void FixedUpdate()
