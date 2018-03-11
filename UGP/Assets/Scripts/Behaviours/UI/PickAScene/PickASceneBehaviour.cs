@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 namespace UGP
@@ -19,11 +21,11 @@ namespace UGP
 
         public GameObject Button;
         public GameObject Panel;
+        public ScenesInBuildScriptableObject scenesInBuild;
 
         public List<string> GetScenes()
         {
             //GET THE DIRECTORY 'Assets/Scenes' 
-
             var path = Directory.GetCurrentDirectory() + "\\Assets\\Scenes";
 
             var raw_scenes = Directory.GetFiles(path).ToList();
@@ -65,6 +67,11 @@ namespace UGP
             return ordered_scenes;
         }
 
+        public void DumpScenesInBuildToSO()
+        {
+            scenesInBuild.scenes = GetScenes();
+        }
+
         private void LoadScene(string sceneName)
         {
             SceneManager.LoadScene(sceneName);
@@ -73,7 +80,7 @@ namespace UGP
         // Use this for initialization
         void Start()
         {
-            var allScenes = GetScenes();
+            var allScenes = scenesInBuild.scenes;
 
             allScenes.ForEach(scene =>
             {
@@ -87,4 +94,27 @@ namespace UGP
             });
         }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(PickASceneBehaviour))]
+    public class InspectorPickASceneBehaviour : Editor
+    {
+        GUIStyle header = new GUIStyle();
+
+        public override void OnInspectorGUI()
+        {
+            var mytarget = target as PickASceneBehaviour;
+            base.OnInspectorGUI();
+            GUILayout.Space(10);
+            if (GUILayout.Button("SAVE SCENES IN BUILD"))
+            {
+                mytarget.DumpScenesInBuildToSO();
+            }
+        }
+    }
+
+
+#endif
+
+
 }
