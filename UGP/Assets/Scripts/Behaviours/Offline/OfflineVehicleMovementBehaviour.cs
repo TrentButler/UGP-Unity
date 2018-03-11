@@ -79,7 +79,8 @@ namespace UGP
             //COMPARE EACH ROTATION AMOUNT TO THE MIN/MAX ROTATION
             //IF ANY ROTATION IS PAST THE BOUNDARY, 
             //LERP BETWEEN THE VALUES
-            var currentRot = transform.rotation;
+            //var currentRot = transform.rotation;
+            var currentRot = rb.rotation;
             var currentX = currentRot[0];
             var currentY = currentRot[1];
             var currentZ = currentRot[2];
@@ -118,9 +119,13 @@ namespace UGP
             currentRot[1] = currentY;
             currentRot[2] = currentZ;
 
-            transform.rotation = currentRot;
+            //transform.rotation = currentRot;
+            rb.rotation = currentRot;
         }
 
+        //NEEDS WORK
+        //WHEN VEHICLE COLLIDES WITH SOMETHING, IT WILL ROTATE WITHOUT USER INPUT
+        //VEHICLE COLLIES WITH WALL, VEHICLE ROTATES ON Y-AXIS INFINITELY
         public void Steer()
         {
             var dX = Input.GetAxis("Mouse X");
@@ -129,24 +134,42 @@ namespace UGP
 
             if (mouseYRot.magnitude > 0)
             {
-                transform.Rotate(mouseYRot * VehicleSteerSpeed, Space.Self);
+                rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
+                //transform.Rotate(mouseYRot * VehicleSteerSpeed, Space.Self);
+                var new_rotation = Quaternion.Euler(mouseYRot * VehicleSteerSpeed);
+
+                rb.MoveRotation(rb.rotation * new_rotation);
             }
-            rb.MoveRotation(transform.rotation);
-        }
+            else
+            {
+                rb.constraints = RigidbodyConstraints.FreezeRotationY; //FREEZE THE Y-AXIS ROTATION
+            }
+        }        
 
         //NEEDS WORK
-        //HOLDING THE 'Break' BUTTON WHILE HOLDING THE 'Hover' BUTTON GIVES THE DESIRED RESULT
-        //SEPERATE THIS, SO ONLY THE 'Hover' BUTTON IS NEEDED TO 'HOVER' IN PLACE
+        //ZEROING OUT 'MaxSpeed' AND 'StrafeSpeed' NOT WORKING
         public void Hover()
         {
             if (Input.GetKey(KeyCode.Space))
             {
+                //INCREASE THE 'TargetHeight' AND THE 'HoverStrength'
+                //PREVENT VEHICLE ACCELERATION OR STRAFING
+                MaxSpeed = 0.0f;
+                StrafeSpeed = 0.0f;
                 rb.useGravity = false;
                 TargetHeight = EvasionHoverHeight;
                 HoverStrength = EvasionHoverStrength;
+
+                var current_velocity = rb.velocity;
+                current_velocity[0] = 0.0f;
+                current_velocity[2] = 0.0f;
+                rb.velocity = current_velocity;
             }
             else
             {
+                //RETURN THE 'TargetHeight' AND THE 'HoverStrength' TO THEIR ORIGINAL VALUES
+                MaxSpeed = originalSpeed;
+                StrafeSpeed = originalStrafeSpeed;
                 rb.useGravity = true;
                 TargetHeight = originalTargetHeight;
                 HoverStrength = originalHoverStrength;
@@ -175,7 +198,7 @@ namespace UGP
                 //SLOW DOWN TO A STOP, PREVENT VEHICLE FROM ACCELERATING OR STRAFING
                 MaxSpeed = 0.0f;
                 StrafeSpeed = 0.0f; 
-                rb.MoveRotation(transform.rotation);
+                //rb.MoveRotation(transform.rotation);
                 rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.fixedDeltaTime); 
             }
             else
@@ -186,7 +209,6 @@ namespace UGP
         }
 
         //NEEDS WORK
-        //WHEN APPLYING A FORCE BACKWARDS (S KEY PRESS), VEHICLE MOVES UPWARD/BACKWARD TOWARD THE CAMERA
         public void Move()
         {
             var throttle = Input.GetAxis("Vertical");
@@ -221,9 +243,18 @@ namespace UGP
             {
                 UseBooster();
 
+                //GET THE TRANSFORM OF THE VEHICLE CAMERA
                 var cam_transform = Camera.main.transform;
+                var cam_rotation = cam_transform.rotation;
+
+                cam_rotation[0] = 0.0f; //ZERO OUT THE X-AXIS ROTATION
+                cam_rotation[2] = 0.0f; //ZERO OUT THE Z-AXIS ROTATION
+                cam_transform.rotation = cam_rotation;
+
+                //DERIVE A MOVEMENT DIRECTION BY USING THE CAMERA'S TRANSFORM
                 var move_direction = cam_transform.TransformDirection((accelerationVector + strafeVector));
 
+                //APPLY FORCES
                 rb.AddForce(move_direction, ForceMode.VelocityChange);
             }
             else
