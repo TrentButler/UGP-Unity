@@ -122,7 +122,7 @@ namespace UGP
             //transform.rotation = currentRot;
             rb.rotation = currentRot;
         }
-
+        
         //NEEDS WORK
         //WHEN VEHICLE COLLIDES WITH SOMETHING, IT WILL ROTATE WITHOUT USER INPUT
         //VEHICLE COLLIES WITH WALL, VEHICLE ROTATES ON Y-AXIS INFINITELY
@@ -179,7 +179,6 @@ namespace UGP
         public void UseBooster()
         {
             //DEPLETE THE VEHICLE'S 'FUEL' VALUE
-
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 //BOOST
@@ -197,15 +196,15 @@ namespace UGP
             {
                 //SLOW DOWN TO A STOP, PREVENT VEHICLE FROM ACCELERATING OR STRAFING
                 MaxSpeed = 0.0f;
-                StrafeSpeed = 0.0f; 
-                //rb.MoveRotation(transform.rotation);
-                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.fixedDeltaTime); 
+                StrafeSpeed = 0.0f;
+
+                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.fixedDeltaTime);
             }
-            else
-            {
-                MaxSpeed = originalSpeed;
-                StrafeSpeed = originalStrafeSpeed;
-            }
+            //else
+            //{
+            //    MaxSpeed = originalSpeed;
+            //    StrafeSpeed = originalStrafeSpeed;
+            //}
         }
 
         //NEEDS WORK
@@ -216,6 +215,11 @@ namespace UGP
 
             currentVehicleThrottle = throttle;
             currentVehicleStrafe = strafeVehicle;
+            
+            Steer();
+            Hover();
+            UseBooster();
+            ApplyBreak();
 
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
@@ -241,8 +245,6 @@ namespace UGP
 
             if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
             {
-                UseBooster();
-
                 //GET THE TRANSFORM OF THE VEHICLE CAMERA
                 var cam_transform = Camera.main.transform;
                 var cam_rotation = cam_transform.rotation;
@@ -255,16 +257,14 @@ namespace UGP
                 var move_direction = cam_transform.TransformDirection((accelerationVector + strafeVector));
 
                 //APPLY FORCES
-                rb.AddForce(move_direction, ForceMode.VelocityChange);
+                rb.AddForce(move_direction, ForceMode.Impulse);
             }
             else
             {
                 rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
             }
-
-            Steer();
-            Hover();
-            ApplyBreak();   
+            
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
         }
         #endregion
 
