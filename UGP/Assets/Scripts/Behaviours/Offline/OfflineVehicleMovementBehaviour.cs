@@ -6,7 +6,7 @@ namespace UGP
 {
     public class OfflineVehicleMovementBehaviour : MonoBehaviour
     {
-        bool steer;
+        
         #region VehicleHover
         public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
