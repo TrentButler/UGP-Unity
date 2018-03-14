@@ -70,11 +70,26 @@ namespace UGP
         public void DumpScenesInBuildToSO()
         {
             scenesInBuild.scenes = GetScenes();
+            AssetDatabase.SaveAssets();
         }
 
         private void LoadScene(string sceneName)
         {
             SceneManager.LoadScene(sceneName);
+        }
+
+        private bool active = false;
+        public void ToggleUI()
+        {
+            if (active == true)
+            {
+                active = false;
+            }
+
+            else
+            {
+                active = true;
+            }
         }
 
         // Use this for initialization
@@ -92,6 +107,15 @@ namespace UGP
                 button.GetComponent<OnButtonClick>().data = scene;
                 button.GetComponent<OnButtonClick>().onClick += LoadScene;
             });
+        }
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Delete))
+            {
+                //TOGGLE THE CANVAS
+                ToggleUI();
+            }
+            Panel.SetActive(active);
         }
     }
 
