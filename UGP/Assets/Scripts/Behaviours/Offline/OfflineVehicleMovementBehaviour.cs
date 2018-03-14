@@ -6,6 +6,7 @@ namespace UGP
 {
     public class OfflineVehicleMovementBehaviour : MonoBehaviour
     {
+        bool steer;
         #region VehicleHover
         public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
@@ -15,7 +16,8 @@ namespace UGP
         private float originalHoverStrength;
         private float originalTargetHeight;
         #endregion
-
+        public string InputHorizontal = "Horizontal";
+        public string InputVertical = "Vertical"; 
         #region VehicleOrientation
         public Vector3 maxVehicleRotation;
         public Vector3 minVehicleRotation;
@@ -128,7 +130,7 @@ namespace UGP
         //VEHICLE COLLIES WITH WALL, VEHICLE ROTATES ON Y-AXIS INFINITELY
         public void Steer()
         {
-            var dX = Input.GetAxis("Mouse X");
+            var dX = Input.GetAxis(InputHorizontal);
 
             Vector3 mouseYRot = new Vector3(0, dX, 0);
 
@@ -254,8 +256,7 @@ namespace UGP
                 cam_transform.rotation = cam_rotation;
 
                 //DERIVE A MOVEMENT DIRECTION BY USING THE CAMERA'S TRANSFORM
-                var move_direction = cam_transform.TransformDirection((accelerationVector + strafeVector));
-
+                var move_direction = transform.TransformDirection((accelerationVector + strafeVector));                
                 //APPLY FORCES
                 rb.AddForce(move_direction, ForceMode.Impulse);
             }
