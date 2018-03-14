@@ -9,28 +9,40 @@ namespace UGP
     //NEEDS WORK
     public class InGameVehicleMovementBehaviour : NetworkBehaviour
     {
-        public float MaxSpeed = 1.0f;
-        private float originalSpeed;
-        public float TurnSpeed = 1.0f;
-        public float hoverStrength = 1.0f;
+        #region VehicleHover
+        public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
+        public float EvasionHoverHeight = 20.0f;
+        public float HoverStrength = 1.0f;
+        public float EvasionHoverStrength = 50.0f;
+        private float originalHoverStrength;
+        private float originalTargetHeight;
+        #endregion
 
-        public float BoostSpeed = 1.0f;
-        public float JumpStrength = 1.0f;
+        #region VehicleOrientation
+        public Vector3 maxVehicleRotation;
+        public Vector3 minVehicleRotation;
+        public float vehicleRotateSpeed;
+        #endregion
+
+        public float MaxSpeed = 1.0f;
+        public float VehicleDecelerateRate = 3.0f;
         public float StrafeSpeed = 1.0f;
+        public float VehicleSteerSpeed = 1.0f;
+        public float BoostSpeed = 1.0f;
+        private float originalSpeed;
+        private float originalStrafeSpeed;
+
+        public Transform ThrusterPosition;
+        private Rigidbody rb;
 
         [HideInInspector] public float currentVehicleThrottle;
         [HideInInspector] public float currentVehicleStrafe;
 
+        private VehicleBehaviour v;
         public float currentFuelConsumption;
         [Range(0.001f, 1.0f)] public float fuelBurnRate;
         private float originalFuelBurnRate;
-
-        public Transform ThrusterPosition;
-        private Rigidbody rb;
-        private VehicleBehaviour v;
-
-        public bool rotateVehicle = false;
 
         #region VehicleMovement
         public void ResetVehicleRotation()
@@ -67,9 +79,61 @@ namespace UGP
             }
 
             transform.rotation = rot;
-            rb.MoveRotation(transform.rotation);
         }
 
+        private void CheckVehicleRotation()
+        {
+            //GET THE VEHICLE'S CURRENT ROTATION
+            //COMPARE EACH ROTATION AMOUNT TO THE MIN/MAX ROTATION
+            //IF ANY ROTATION IS PAST THE BOUNDARY, 
+            //LERP BETWEEN THE VALUES
+            //var currentRot = transform.rotation;
+            var currentRot = rb.rotation;
+            var currentX = currentRot[0];
+            var currentY = currentRot[1];
+            var currentZ = currentRot[2];
+
+            //CHECK THE X ROTATION
+            if (currentX > maxVehicleRotation.x)
+            {
+                currentX = Mathf.LerpAngle(currentX, maxVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+            if (currentX < minVehicleRotation.x)
+            {
+                currentX = Mathf.LerpAngle(currentX, minVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+
+            //CHECK THE Y ROTATION
+            if (currentY > maxVehicleRotation.y)
+            {
+                currentY = Mathf.LerpAngle(currentY, maxVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+            if (currentY < minVehicleRotation.y)
+            {
+                currentY = Mathf.LerpAngle(currentY, minVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+
+            //CHECK THE Z ROTATION
+            if (currentZ > maxVehicleRotation.z)
+            {
+                currentZ = Mathf.LerpAngle(currentZ, maxVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+            if (currentZ < minVehicleRotation.z)
+            {
+                currentZ = Mathf.LerpAngle(currentZ, minVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+
+            currentRot[0] = currentX;
+            currentRot[1] = currentY;
+            currentRot[2] = currentZ;
+
+            //transform.rotation = currentRot;
+            rb.rotation = currentRot;
+        }
+
+        //NEEDS WORK
+        //WHEN VEHICLE COLLIDES WITH SOMETHING, IT WILL ROTATE WITHOUT USER INPUT
+        //VEHICLE COLLIES WITH WALL, VEHICLE ROTATES ON Y-AXIS INFINITELY
         public void Steer()
         {
             var dX = Input.GetAxis("Mouse X");
@@ -78,24 +142,51 @@ namespace UGP
 
             if (mouseYRot.magnitude > 0)
             {
-                transform.Rotate(mouseYRot, Space.Self);
+                rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
+                //transform.Rotate(mouseYRot * VehicleSteerSpeed, Space.Self);
+                var new_rotation = Quaternion.Euler(mouseYRot * VehicleSteerSpeed);
+
+                rb.MoveRotation(rb.rotation * new_rotation);
+            }
+            else
+            {
+                rb.constraints = RigidbodyConstraints.FreezeRotationY; //FREEZE THE Y-AXIS ROTATION
             }
         }
 
-        public void Jump()
+        //NEEDS WORK
+        //ZEROING OUT 'MaxSpeed' AND 'StrafeSpeed' NOT WORKING
+        public void Hover()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKey(KeyCode.Space))
             {
-                Vector3 jumpVector = new Vector3(0, 1 * JumpStrength, 0);
+                //INCREASE THE 'TargetHeight' AND THE 'HoverStrength'
+                //PREVENT VEHICLE ACCELERATION OR STRAFING
+                MaxSpeed = 0.0f;
+                StrafeSpeed = 0.0f;
+                rb.useGravity = false;
+                TargetHeight = EvasionHoverHeight;
+                HoverStrength = EvasionHoverStrength;
 
-                rb.AddForce(jumpVector);
+                var current_velocity = rb.velocity;
+                current_velocity[0] = 0.0f;
+                current_velocity[2] = 0.0f;
+                rb.velocity = current_velocity;
+            }
+            else
+            {
+                //RETURN THE 'TargetHeight' AND THE 'HoverStrength' TO THEIR ORIGINAL VALUES
+                MaxSpeed = originalSpeed;
+                StrafeSpeed = originalStrafeSpeed;
+                rb.useGravity = true;
+                TargetHeight = originalTargetHeight;
+                HoverStrength = originalHoverStrength;
             }
         }
 
         public void UseBooster()
         {
             //DEPLETE THE VEHICLE'S 'FUEL' VALUE
-
             if (Input.GetKey(KeyCode.LeftShift))
             {
                 //BOOST
@@ -111,11 +202,28 @@ namespace UGP
             }
         }
 
+        public void ApplyBreak()
+        {
+            if (Input.GetKey(KeyCode.C))
+            {
+                //SLOW DOWN TO A STOP, PREVENT VEHICLE FROM ACCELERATING OR STRAFING
+                MaxSpeed = 0.0f;
+                StrafeSpeed = 0.0f;
+
+                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.fixedDeltaTime);
+            }
+            //else
+            //{
+            //    MaxSpeed = originalSpeed;
+            //    StrafeSpeed = originalStrafeSpeed;
+            //}
+        }
+
+        //NEEDS WORK
         public void Move()
         {
             var throttle = Input.GetAxis("Vertical");
             var strafeVehicle = Input.GetAxis("Horizontal");
-
             var fuelEmpty = v._v.FuelDepeleted;
 
             currentVehicleThrottle = throttle;
@@ -123,54 +231,59 @@ namespace UGP
 
             if (!fuelEmpty)
             {
+                Steer();
+                Hover();
+                UseBooster();
+                ApplyBreak();
+
                 currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * fuelBurnRate;
                 v._v.UseFuel(currentFuelConsumption);
 
-                //Debug.Log(throttle);
-
                 Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
-                Vector3 strafeVector = new Vector3(0.0f, strafeVehicle * TurnSpeed, 0.0f);
+                Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
 
                 #region HOVERVECTORCALCULATION
                 //PERFORM A RAYCAST DOWNWARD, 
                 //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
                 //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
-
                 RaycastHit hit;
+                //var world_point = transform.TransformPoint(point.position);
                 if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
                 {
                     var vertForce = (TargetHeight - hit.distance) / TargetHeight;
-                    Vector3 hoverVector = Vector3.up * vertForce * hoverStrength;
+                    Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
 
                     //Debug.Log(hoverVector); //DELETE THIS
+                    CurrentHoverVector = hoverVector;
 
                     rb.AddForce(hoverVector);
+                    //rb.AddForceAtPosition(hoverVector, point.position);
                 }
                 #endregion
 
                 if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
                 {
-                    UseBooster();
-                    Jump();
+                    //GET THE TRANSFORM OF THE VEHICLE CAMERA
+                    var cam_transform = v.VirtualCamera.transform;
+                    var cam_rotation = cam_transform.rotation;
 
-                    //var accel = (accelerationVector + ThrusterPosition.forward);
-                    var accel = (accelerationVector + ThrusterPosition.forward);
-                    var strafe = (new Vector3(strafeVehicle, 0, 0) * StrafeSpeed);
+                    cam_rotation[0] = 0.0f; //ZERO OUT THE X-AXIS ROTATION
+                    cam_rotation[2] = 0.0f; //ZERO OUT THE Z-AXIS ROTATION
+                    cam_transform.rotation = cam_rotation;
 
-                    transform.Translate((accel + strafe) * Time.fixedDeltaTime);
-                }
+                    //DERIVE A MOVEMENT DIRECTION BY USING THE CAMERA'S TRANSFORM
+                    var move_direction = cam_transform.TransformDirection((accelerationVector + strafeVector));
 
-                Steer();
-
-                if(Input.GetKey(KeyCode.LeftAlt))
-                {
-                    rotateVehicle = true;
+                    //APPLY FORCES
+                    rb.AddForce(move_direction, ForceMode.Impulse);
                 }
                 else
                 {
-                    rotateVehicle = false;
+                    rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
                 }
             }
+
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
         }
         #endregion
 
@@ -183,7 +296,9 @@ namespace UGP
                 rb = gameObject.AddComponent<Rigidbody>();
 
             originalSpeed = MaxSpeed;
-            originalFuelBurnRate = fuelBurnRate;
+            originalStrafeSpeed = StrafeSpeed;
+            originalTargetHeight = TargetHeight;
+            originalHoverStrength = HoverStrength;
         }
 
         private void Awake()
@@ -225,7 +340,9 @@ namespace UGP
                 rb = gameObject.AddComponent<Rigidbody>();
 
             originalSpeed = MaxSpeed;
-            originalFuelBurnRate = fuelBurnRate;
+            originalStrafeSpeed = StrafeSpeed;
+            originalTargetHeight = TargetHeight;
+            originalHoverStrength = HoverStrength;
         }
 
         //NEEDS WORK
@@ -251,19 +368,14 @@ namespace UGP
             {
                 if (hasAuthority)
                 {
-                    if (rotateVehicle)
-                    {
-                        KeepVehicleUpright();
-                    }
+                    CheckVehicleRotation();
+                    return;
                 }
 
                 return;
             }
 
-            if (rotateVehicle)
-            {
-                KeepVehicleUpright();
-            }
+            CheckVehicleRotation();
         }
     }
 }

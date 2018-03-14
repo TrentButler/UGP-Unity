@@ -1660,7 +1660,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1997021132650470}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bf963e9850229c40a60eb8074b37573, type: 3}
   m_Name: 
@@ -2312,18 +2312,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ac80ab8acfb9a444bb90aea26ce12a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSpeed: 20
-  TurnSpeed: 2.5
-  hoverStrength: 17
-  TargetHeight: 3
-  BoostSpeed: 80
-  JumpStrength: 1500
+  CurrentHoverVector: {x: 0, y: 0, z: 0}
+  TargetHeight: 5
+  EvasionHoverHeight: 20
+  HoverStrength: 14
+  EvasionHoverStrength: 50
+  maxVehicleRotation: {x: 5, y: 360, z: 10}
+  minVehicleRotation: {x: 0, y: -360, z: -10}
+  vehicleRotateSpeed: 1
+  MaxSpeed: 50
+  VehicleDecelerateRate: 3
   StrafeSpeed: 10
+  VehicleSteerSpeed: 1.25
+  BoostSpeed: 100
+  ThrusterPosition: {fileID: 0}
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
   currentFuelConsumption: 0
   fuelBurnRate: 0.001
-  ThrusterPosition: {fileID: 4548483180197650}
 --- !u!198 &198048309798009892
 ParticleSystem:
   m_ObjectHideFlags: 1

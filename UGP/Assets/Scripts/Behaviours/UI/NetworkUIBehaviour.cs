@@ -23,15 +23,15 @@ namespace UGP
                 canvas.SetActive(false);
             }
 
-            var connections = NetworkServer.connections.ToList();
-            connections.ForEach(connection =>
-            {
-                string dump = "";
-                var ip = connection.address.ToString();
-                dump += ip;
-                dump += "\n";
-                t.text = dump;
-            });
+            //var connections = NetworkServer.connections.ToList();
+            //connections.ForEach(connection =>
+            //{
+            //    string dump = "";
+            //    var ip = connection.address.ToString();
+            //    dump += ip;
+            //    dump += "\n";
+            //    t.text = dump;
+            //});
         }
     }
 }
