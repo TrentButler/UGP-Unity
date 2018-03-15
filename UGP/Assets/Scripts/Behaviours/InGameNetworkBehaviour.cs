@@ -19,6 +19,65 @@ namespace UGP
         [HideInInspector] public float vehiclePositionOffset; 
         private bool spawnOnPlayerCount;
 
+        #region ServerCamera
+        private GameObject server_camera;
+        public float cameraSpeed = 2.5f;
+        public float cameraTranslationSpeed = 10.0f;
+
+        private void FreeLookCamera()
+        {
+            var h = Input.GetAxis("Horizontal");
+            var v = Input.GetAxis("Vertical");
+
+            var move_vector = new Vector3(h, 0, v);
+            server_camera.transform.Translate(move_vector);
+
+            #region MouseLook
+            //CALCULATE AN MOUSE DELTA
+            //DERIVE AN DIRECTION
+            //LERP BETWEEN THE CURRENT CAMERA ROTATION TO AN NEW CAMERA ROTATION
+            if (Input.GetMouseButton(1))
+            {
+                var deltaX = Input.GetAxis("Mouse X"); //GET THE MOUSE DELTA X
+                var deltaY = Input.GetAxis("Mouse Y"); //GET THE MOUSE DELTA Y
+
+                Vector3 rotX = new Vector3(-deltaY, 0, 0);
+                Vector3 rotY = new Vector3(0, deltaX, 0);
+
+                Quaternion rot = Quaternion.Euler(rotX); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
+                server_camera.transform.rotation = Quaternion.Slerp(server_camera.transform.rotation, server_camera.transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+
+                rot = Quaternion.Euler(rotY); //CREATE A QUATERNION ROTATION FROM A EULER ANGLE ROTATION
+                server_camera.transform.rotation = Quaternion.Slerp(server_camera.transform.rotation, server_camera.transform.rotation * rot, 1.0f); //INTERPOLATE BETWEEN THE CURRENT ROTATION AND THE NEW ROTATION
+            }
+
+            //TRANSLATE THE CAMERA BASED ON CLICKDRAG DELTA
+            if (Input.GetMouseButton(2))
+            {
+                var dX = Input.GetAxis("Mouse X"); //GET THE DELTA MOUSE X
+                var dY = Input.GetAxis("Mouse Y"); //GET THE DELTA MOUSE Y
+
+                Vector3 trans = new Vector3(-(dX * cameraTranslationSpeed), -(dY * cameraTranslationSpeed), 0); //DERIVE A TRANSLATION VECTOR
+                server_camera.transform.Translate(trans); //APPLY THE TRANSLATION TO THE CAMERA'S TRANSFORM
+            }
+
+            //RESET THE CAMERA'S ROTATION
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                var currentRot = server_camera.transform.rotation;
+                currentRot[0] = 0.0f;
+                currentRot[2] = 0.0f;
+
+                server_camera.transform.rotation = currentRot;
+            }
+
+            //MOVE THE CAMERA EITHER FORWARD OR BACKWARD FROM MOUSE SCROLL
+            var scrollDelta = Input.GetAxis("Mouse ScrollWheel"); //GET THE MOUSE SCROLL DELTA
+            Vector3 translation = new Vector3(0, 0, scrollDelta * cameraSpeed); //DERIVE A TRANSLATION VECTOR
+            server_camera.transform.Translate(translation); //TRANSLATE THE CAMERA'S TRANSFORM
+            #endregion
+        }
+        #endregion
         private void SpawnVehiclesOnPlayerCount()
         {
             //SPAWN A VEHICLE FOR EACH PLAYER THAT IS CONNECTED
@@ -75,10 +134,19 @@ namespace UGP
             }
         }
 
+        public void ResetServer()
+        {
+            NetworkServer.Reset();
+        }
+
         private void Start()
         {
             spawnOnPlayerCount = false;
             vehiclePositionOffset = 20;
+            if(isServer)
+            {
+                server_camera = Camera.main.gameObject;
+            }
         }
 
         private void FixedUpdate()
@@ -86,6 +154,11 @@ namespace UGP
             if(spawnOnPlayerCount)
             {
                 SpawnVehiclesOnPlayerCount();
+            }
+
+            if(isServer)
+            {
+                FreeLookCamera();
             }
         }
     }
