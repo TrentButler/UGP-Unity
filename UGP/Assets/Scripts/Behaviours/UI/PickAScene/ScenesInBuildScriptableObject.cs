@@ -7,7 +7,7 @@ namespace UGP
     [CreateAssetMenu(fileName = "AllScenesInBuild", menuName = "ScenesInBuild")]
     public class ScenesInBuildScriptableObject : ScriptableObject
     {
-        public List<string> scenes;
+        public string scenes;
     }
 }
 

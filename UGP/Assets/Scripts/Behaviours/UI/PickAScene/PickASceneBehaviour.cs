@@ -23,7 +23,7 @@ namespace UGP
         public GameObject Panel;
         public ScenesInBuildScriptableObject scenesInBuild;
 
-        public List<string> GetScenes()
+        public string GetScenes()
         {
             //GET THE DIRECTORY 'Assets/Scenes' 
             var path = Directory.GetCurrentDirectory() + "\\Assets\\Scenes";
@@ -64,15 +64,23 @@ namespace UGP
             }
 
             var ordered_scenes = s.OrderBy(x => int.Parse(x.Substring(0, 2))).ToList();
-            return ordered_scenes;
+
+            string _s = "";
+            ordered_scenes.ForEach(scene =>
+            {
+                _s += scene;
+                _s += "@";
+            });
+
+
+            return _s;
         }
 
         public void DumpScenesInBuildToSO()
         {
             SerializedObject serializedObject = new UnityEditor.SerializedObject(scenesInBuild);
-            UnityEditor.SerializedProperty serializedProperty_scenes = serializedObject.FindProperty("scenes");
-            
-            scenesInBuild.scenes = GetScenes();
+            SerializedProperty serializedProperty_scenes = serializedObject.FindProperty("scenes");
+            serializedProperty_scenes.stringValue = GetScenes();
             serializedProperty_scenes.serializedObject.ApplyModifiedProperties();
             AssetDatabase.SaveAssets();
         }
@@ -99,7 +107,21 @@ namespace UGP
         // Use this for initialization
         void Start()
         {
-            var allScenes = scenesInBuild.scenes;
+            var raw_scenes = scenesInBuild.scenes;
+            var allScenes = new List<string>();
+
+            var s = "";
+            for (int i = 0; i < raw_scenes.Length; i++)
+            {
+                if(raw_scenes[i] == '@')
+                {
+                    allScenes.Add(s);
+                    s = "";
+                    continue;
+                }
+                s += raw_scenes[i];
+            }
+
 
             allScenes.ForEach(scene =>
             {
