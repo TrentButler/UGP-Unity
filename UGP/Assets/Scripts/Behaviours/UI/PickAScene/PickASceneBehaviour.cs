@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Scripting;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -76,17 +77,10 @@ namespace UGP
             return _s;
         }
 
-        public void DumpScenesInBuildToSO()
-        {
-            SerializedObject serializedObject = new UnityEditor.SerializedObject(scenesInBuild);
-            SerializedProperty serializedProperty_scenes = serializedObject.FindProperty("scenes");
-            serializedProperty_scenes.stringValue = GetScenes();
-            serializedProperty_scenes.serializedObject.ApplyModifiedProperties();
-            AssetDatabase.SaveAssets();
-        }
-
         private void LoadScene(string sceneName)
         {
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            Destroy(netManager);
             SceneManager.LoadScene(sceneName);
         }
 
@@ -153,6 +147,15 @@ namespace UGP
     {
         GUIStyle header = new GUIStyle();
 
+        public void DumpScenesInBuildToSO(ScenesInBuildScriptableObject s, string scenes)
+        {
+            var serializedObject = new SerializedObject(s);
+            var serializedProperty_scenes = serializedObject.FindProperty("scenes");
+            serializedProperty_scenes.stringValue = scenes;
+            serializedProperty_scenes.serializedObject.ApplyModifiedProperties();
+            AssetDatabase.SaveAssets();
+        }
+
         public override void OnInspectorGUI()
         {
             var mytarget = target as PickASceneBehaviour;
@@ -160,7 +163,7 @@ namespace UGP
             GUILayout.Space(10);
             if (GUILayout.Button("SAVE SCENES IN BUILD"))
             {
-                mytarget.DumpScenesInBuildToSO();
+                DumpScenesInBuildToSO(mytarget.scenesInBuild, mytarget.GetScenes());
             }
         }
     }
