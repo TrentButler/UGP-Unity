@@ -20,6 +20,27 @@ namespace UGP
         public InGamePlayerMovementBehaviour playerMovement;
         public PlayerInteractionBehaviour interaction;
 
+        [Command] private void CmdExitVehicle(NetworkIdentity identity)
+        {
+            var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
+            var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
+
+            var vehicleNetworkIdentity = identity;
+
+            //INVOKE THESE FUNCTIONS ON THE SERVER
+            vehicleNetworkIdentity.RemoveClientAuthority(localPlayerConn);
+            //localPlayerNetworkIdentity.AssignClientAuthority(localPlayerConn);
+        }
+
+        [ClientRpc] public void RpcDisablePlayerModel()
+        {
+            model.SetActive(false);
+        }
+        [ClientRpc] public void RpcEnablePlayerModel()
+        {
+            model.SetActive(true);
+        }
+
         private void ExitVehicle()
         {
             //NEEDS WORK
@@ -60,6 +81,18 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if (isClient)
+                {
+                    if (isDriving)
+                    {
+                        model.SetActive(false);
+                    }
+                    else
+                    {
+                        model.SetActive(true);
+                    }
+                }
+
                 VirtualCamera.SetActive(false);
                 return;
             }
@@ -81,6 +114,8 @@ namespace UGP
                 vehicle.enabled = true;
                 playerMovement.enabled = false;
                 interaction.enabled = false;
+                RpcDisablePlayerModel();
+                animator.SetFloat("Forward", 0.0f);
 
                 animator.SetTrigger("EnterVehicle"); 
 
@@ -93,6 +128,8 @@ namespace UGP
                 {
                     //GET OUT OF VEHICLE
                     vehicle.SetVehicleActive(false);
+                    var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
+                    CmdExitVehicle(vehicleIdentity);
                     vehicle = null;
                     isDriving = false;
                     exitTimer = 0.0f; //RESET THE TIMER
@@ -104,6 +141,7 @@ namespace UGP
                 vehicle = null;
                 playerMovement.enabled = true;
                 interaction.enabled = true;
+                RpcEnablePlayerModel();
 
                 animator.SetTrigger("ExitVehicle");
             }
