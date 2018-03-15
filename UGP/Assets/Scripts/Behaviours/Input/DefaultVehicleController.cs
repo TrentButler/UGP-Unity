@@ -10,29 +10,29 @@ namespace UGP
         #region VehicleHover
         public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
-        public float EvasionHoverHeight = 1.0f;
-        public float HoverStrength = 1.0f;
-        public float EvasionHoverStrength = 1.0f;
+        public float EvasionHoverHeight = 20.0f;
+        public float HoverStrength = 14.0f;
+        public float EvasionHoverStrength = 50.0f;
         private float originalHoverStrength;
         private float originalTargetHeight;
         #endregion
-        public string InputHorizontal = "Horizontal";
-        public string InputVertical = "Vertical";
+
         #region VehicleOrientation
         public Vector3 maxVehicleRotation;
         public Vector3 minVehicleRotation;
-        public float vehicleRotateSpeed;
+        public float vehicleRotateSpeed = 1.5f;
         #endregion
 
-        public float MaxSpeed = 1.0f;
-        public float VehicleDecelerateRate = 1.0f;
-        public float StrafeSpeed = 1.0f;
+        public float MaxSpeed = 50.0f;
+        public float VehicleDecelerateRate = 3.0f;
+        public float StrafeSpeed = 5.0f;
         public float VehicleSteerSpeed = 1.0f;
-        public float BoostSpeed = 1.0f;
+        public float BoostSpeed = 100.0f;
         private float originalSpeed;
         private float originalStrafeSpeed;
 
-        public Transform ThrusterPosition;
+        public bool isTesting = false;
+        
         private Rigidbody rb;
 
         [HideInInspector] public float currentVehicleThrottle;
@@ -41,20 +41,11 @@ namespace UGP
         #region VehicleMovement
         public void ResetVehicleRotation()
         {
-            var x = Mathf.Abs(transform.up.x);
-            var y = Mathf.Abs(transform.up.y);
-            var z = Mathf.Abs(transform.up.z);
-
-            rb.isKinematic = true;
-
             var currRot = transform.rotation; //GET THE CURRENT ROTATION OF THE VEHICLE
             currRot[0] = 0.0f; //RESET THE X ROTATION OF THE VEHICLE
             currRot[2] = 0.0f; //RESET THE Z ROTATION OF THE VEHICLE
 
             rb.rotation = currRot;
-            transform.rotation = currRot;
-
-            rb.isKinematic = false;
         }
 
         private void KeepVehicleUpright()
@@ -124,32 +115,7 @@ namespace UGP
             //transform.rotation = currentRot;
             rb.rotation = currentRot;
         }
-
-        //NEEDS WORK
-        //WHEN VEHICLE COLLIDES WITH SOMETHING, IT WILL ROTATE WITHOUT USER INPUT
-        //VEHICLE COLLIES WITH WALL, VEHICLE ROTATES ON Y-AXIS INFINITELY
-        public void Steer()
-        {
-            var dX = Input.GetAxis(InputHorizontal);
-
-            Vector3 mouseYRot = new Vector3(0, dX, 0);
-
-            if (mouseYRot.magnitude > 0)
-            {
-                rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
-                //transform.Rotate(mouseYRot * VehicleSteerSpeed, Space.Self);
-                var new_rotation = Quaternion.Euler(mouseYRot * VehicleSteerSpeed);
-
-                rb.MoveRotation(rb.rotation * new_rotation);
-            }
-            else
-            {
-                rb.constraints = RigidbodyConstraints.FreezeRotationY; //FREEZE THE Y-AXIS ROTATION
-            }
-        }
-
-        //NEEDS WORK
-        //ZEROING OUT 'MaxSpeed' AND 'StrafeSpeed' NOT WORKING
+        
         public void Hover()
         {
             if (Input.GetKey(KeyCode.Space))
@@ -169,6 +135,10 @@ namespace UGP
             }
             else
             {
+                if(isTesting)
+                {
+                    return;
+                }
                 //RETURN THE 'TargetHeight' AND THE 'HoverStrength' TO THEIR ORIGINAL VALUES
                 MaxSpeed = originalSpeed;
                 StrafeSpeed = originalStrafeSpeed;
@@ -188,6 +158,10 @@ namespace UGP
             }
             else
             {
+                if (isTesting)
+                {
+                    return;
+                }
                 MaxSpeed = originalSpeed;
             }
         }
@@ -208,8 +182,8 @@ namespace UGP
             //    StrafeSpeed = originalStrafeSpeed;
             //}
         }
+        #endregion
 
-        //NEEDS WORK
         public override void Move(float x, float y)
         {
             var throttle = y;
@@ -218,7 +192,6 @@ namespace UGP
             currentVehicleThrottle = throttle;
             currentVehicleStrafe = strafeVehicle;
 
-            Steer();
             Hover();
             UseBooster();
             ApplyBreak();
@@ -267,7 +240,31 @@ namespace UGP
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
         }
-        #endregion
+
+        public override void Rotate(float xRot, float yRot, float zRot)
+        {
+            var mouseYRot = new Vector3(0, xRot, 0);
+            var mouseXZRot = new Vector3(yRot, 0, xRot);
+
+            if (mouseYRot.magnitude > 0)
+            {
+                if (Input.GetKey(KeyCode.LeftAlt))
+                {
+                    rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
+                    var z_rotation = Quaternion.Euler(mouseXZRot * VehicleSteerSpeed);
+                    rb.MoveRotation(rb.rotation * z_rotation);
+                    return;
+                }
+
+                rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
+                var new_rotation = Quaternion.Euler(mouseYRot * VehicleSteerSpeed);
+                rb.MoveRotation(rb.rotation * new_rotation);
+            }
+            else
+            {
+                rb.constraints = RigidbodyConstraints.FreezeRotationY; //FREEZE THE Y-AXIS ROTATION
+            }
+        }
 
         private void Start()
         {

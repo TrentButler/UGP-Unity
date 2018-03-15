@@ -21,6 +21,7 @@ namespace UGP
                     var _h = Input.GetAxis(InputHorizontal);
                     var _v = Input.GetAxis(InputVertical);
                     ic.Move(_h, _v);
+                    ic.Rotate(_h, _v, 0.0f);
                     return;
                 }
 
@@ -30,6 +31,7 @@ namespace UGP
             var h = Input.GetAxis(InputHorizontal);
             var v = Input.GetAxis(InputVertical);
             ic.Move(h, v);
+            ic.Rotate(h, v, 0.0f);
         }
     }
 }
