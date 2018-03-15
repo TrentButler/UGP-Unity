@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
+using UnityEngine.Scripting;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 namespace UGP
@@ -19,11 +22,11 @@ namespace UGP
 
         public GameObject Button;
         public GameObject Panel;
+        public ScenesInBuildScriptableObject scenesInBuild;
 
-        public List<string> GetScenes()
+        public string GetScenes()
         {
             //GET THE DIRECTORY 'Assets/Scenes' 
-
             var path = Directory.GetCurrentDirectory() + "\\Assets\\Scenes";
 
             var raw_scenes = Directory.GetFiles(path).ToList();
@@ -62,18 +65,57 @@ namespace UGP
             }
 
             var ordered_scenes = s.OrderBy(x => int.Parse(x.Substring(0, 2))).ToList();
-            return ordered_scenes;
+
+            string _s = "";
+            ordered_scenes.ForEach(scene =>
+            {
+                _s += scene;
+                _s += "@";
+            });
+
+
+            return _s;
         }
 
         private void LoadScene(string sceneName)
         {
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            Destroy(netManager);
             SceneManager.LoadScene(sceneName);
+        }
+
+        public bool active = false;
+        public void ToggleUI()
+        {
+            if (active == true)
+            {
+                active = false;
+            }
+
+            else
+            {
+                active = true;
+            }
         }
 
         // Use this for initialization
         void Start()
         {
-            var allScenes = GetScenes();
+            var raw_scenes = scenesInBuild.scenes;
+            var allScenes = new List<string>();
+
+            var s = "";
+            for (int i = 0; i < raw_scenes.Length; i++)
+            {
+                if(raw_scenes[i] == '@')
+                {
+                    allScenes.Add(s);
+                    s = "";
+                    continue;
+                }
+                s += raw_scenes[i];
+            }
+
 
             allScenes.ForEach(scene =>
             {
@@ -86,5 +128,44 @@ namespace UGP
                 button.GetComponent<OnButtonClick>().onClick += LoadScene;
             });
         }
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.Delete))
+            {
+                //TOGGLE THE CANVAS
+                ToggleUI();
+            }
+
+            Panel.SetActive(active);
+        }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(PickASceneBehaviour))]
+    public class InspectorPickASceneBehaviour : Editor
+    {
+        GUIStyle header = new GUIStyle();
+
+        public void DumpScenesInBuildToSO(ScenesInBuildScriptableObject s, string scenes)
+        {
+            var serializedObject = new SerializedObject(s);
+            var serializedProperty_scenes = serializedObject.FindProperty("scenes");
+            serializedProperty_scenes.stringValue = scenes;
+            serializedProperty_scenes.serializedObject.ApplyModifiedProperties();
+            AssetDatabase.SaveAssets();
+        }
+
+        public override void OnInspectorGUI()
+        {
+            var mytarget = target as PickASceneBehaviour;
+            base.OnInspectorGUI();
+            GUILayout.Space(10);
+            if (GUILayout.Button("SAVE SCENES IN BUILD"))
+            {
+                DumpScenesInBuildToSO(mytarget.scenesInBuild, mytarget.GetScenes());
+            }
+        }
+    }
+#endif
 }

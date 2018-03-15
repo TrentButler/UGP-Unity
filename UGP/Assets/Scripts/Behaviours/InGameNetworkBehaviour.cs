@@ -26,6 +26,12 @@ namespace UGP
 
         private void FreeLookCamera()
         {
+            var h = Input.GetAxis("Horizontal");
+            var v = Input.GetAxis("Vertical");
+
+            var move_vector = new Vector3(h, 0, v);
+            server_camera.transform.Translate(move_vector);
+
             #region MouseLook
             //CALCULATE AN MOUSE DELTA
             //DERIVE AN DIRECTION

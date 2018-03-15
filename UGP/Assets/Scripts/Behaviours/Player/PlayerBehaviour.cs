@@ -32,6 +32,15 @@ namespace UGP
             //localPlayerNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
 
+        [Command] public void CmdDisablePlayerModel()
+        {
+            model.SetActive(false);
+        }
+        [Command] public void CmdEnablePlayerModel()
+        {
+            model.SetActive(true);
+        }
+
         private void ExitVehicle()
         {
             //NEEDS WORK
@@ -105,7 +114,7 @@ namespace UGP
                 vehicle.enabled = true;
                 playerMovement.enabled = false;
                 interaction.enabled = false;
-                model.SetActive(false);
+                CmdDisablePlayerModel();
                 animator.SetFloat("Forward", 0.0f);
 
                 animator.SetTrigger("EnterVehicle"); 
@@ -132,7 +141,7 @@ namespace UGP
                 vehicle = null;
                 playerMovement.enabled = true;
                 interaction.enabled = true;
-                model.SetActive(true);
+                CmdEnablePlayerModel();
 
                 animator.SetTrigger("ExitVehicle");
             }

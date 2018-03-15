@@ -16,7 +16,7 @@ namespace UGP
         [Range(0.001f, 1.0f)] public float colorChangeSpeed;
         public Vehicle VehicleConfig;
         [HideInInspector] public Vehicle _v;
-        public InGameVehicleMovementBehaviour vehicleMovement;
+        public DefaultVehicleController ic;
         public VehicleShootBehaviour shootBehaviour;
         public Canvas vehicleUI;
         public Vector3 vehicleCamOffset;
@@ -67,13 +67,7 @@ namespace UGP
                 + sSniper + "\n" + sRocket;
         }
 
-        public void SetVehicleActive(bool active)
-        {
-            vehicleActive = active;
-        }
-
-        [Command(channel = 2)]
-        private void CmdUpdateVehicle()
+        [Command] private void CmdUpdateVehicle()
         {
             var health = _v.Health;
             var fuel = _v.Fuel;
@@ -89,8 +83,12 @@ namespace UGP
             }
         }
 
-        [Command(channel = 2)]
-        public void CmdOnVehicleEnter()
+        public void SetVehicleActive(bool active)
+        {
+            vehicleActive = active;
+        }
+
+        [Command] public void CmdOnVehicleEnter()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
@@ -110,8 +108,7 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
-        [Command(channel = 2)]
-        public void CmdOnVehicleExit()
+        [Command] public void CmdOnVehicleExit()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
@@ -132,7 +129,6 @@ namespace UGP
             });
         }
 
-
         public override void OnStartClient()
         {
             _v = Instantiate(VehicleConfig);
@@ -141,19 +137,6 @@ namespace UGP
             _v.Destroyed = false;
             _v.FuelDepeleted = false;
             vehicleActive = false;
-        }
-
-        private void Awake()
-        {
-            if (!isLocalPlayer)
-            {
-                if (hasAuthority || isServer)
-                {
-                    return;
-                }
-                VirtualCamera.SetActive(false);
-                return;
-            }
         }
 
         private void Start()
@@ -204,7 +187,7 @@ namespace UGP
                         VirtualCamera.SetActive(true);
                         CmdOnVehicleEnter();
                         Cursor.visible = false;
-                        vehicleMovement.enabled = true;
+                        ic.enabled = true;
                         //shootBehaviour.enabled = true;
                         vehicleUI.gameObject.SetActive(true);
                         vehicleUI.enabled = true;
@@ -216,7 +199,7 @@ namespace UGP
                         VirtualCamera.SetActive(false);
                         CmdOnVehicleExit();
                         Cursor.visible = true;
-                        vehicleMovement.enabled = false;
+                        ic.enabled = false;
                         //shootBehaviour.enabled = false;
                         vehicleUI.gameObject.SetActive(false);
                         vehicleUI.enabled = false;
@@ -234,7 +217,7 @@ namespace UGP
                 VirtualCamera.SetActive(true);
                 CmdOnVehicleEnter();
                 Cursor.visible = false;
-                vehicleMovement.enabled = true;
+                ic.enabled = true;
                 //shootBehaviour.enabled = true;
                 vehicleUI.gameObject.SetActive(true);
                 vehicleUI.enabled = true;
@@ -246,7 +229,7 @@ namespace UGP
                 VirtualCamera.SetActive(false);
                 CmdOnVehicleExit();
                 Cursor.visible = true;
-                vehicleMovement.enabled = false;
+                ic.enabled = false;
                 //shootBehaviour.enabled = false;
                 vehicleUI.gameObject.SetActive(false);
                 vehicleUI.enabled = false;
