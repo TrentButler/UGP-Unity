@@ -69,7 +69,11 @@ namespace UGP
 
         public void DumpScenesInBuildToSO()
         {
+            SerializedObject serializedObject = new UnityEditor.SerializedObject(scenesInBuild);
+            UnityEditor.SerializedProperty serializedProperty_scenes = serializedObject.FindProperty("scenes");
+            
             scenesInBuild.scenes = GetScenes();
+            serializedProperty_scenes.serializedObject.ApplyModifiedProperties();
             AssetDatabase.SaveAssets();
         }
 
@@ -108,6 +112,7 @@ namespace UGP
                 button.GetComponent<OnButtonClick>().onClick += LoadScene;
             });
         }
+
         private void Update()
         {
             if(Input.GetKeyDown(KeyCode.Delete))
@@ -115,6 +120,7 @@ namespace UGP
                 //TOGGLE THE CANVAS
                 ToggleUI();
             }
+
             Panel.SetActive(active);
         }
     }
@@ -136,9 +142,5 @@ namespace UGP
             }
         }
     }
-
-
 #endif
-
-
 }
