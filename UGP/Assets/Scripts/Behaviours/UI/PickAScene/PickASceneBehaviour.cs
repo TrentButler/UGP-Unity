@@ -90,7 +90,7 @@ namespace UGP
             SceneManager.LoadScene(sceneName);
         }
 
-        private bool active = false;
+        public bool active = false;
         public void ToggleUI()
         {
             if (active == true)
