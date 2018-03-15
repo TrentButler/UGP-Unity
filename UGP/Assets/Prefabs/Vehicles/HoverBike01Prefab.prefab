@@ -884,7 +884,7 @@ Transform:
   m_GameObject: {fileID: 1978491074197374}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.8, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4635698420635970}
   - {fileID: 4831071348594596}
@@ -2689,14 +2689,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentHoverVector: {x: 0, y: 0, z: 0}
   TargetHeight: 5
-  EvasionHoverHeight: 20
+  EvasionHoverHeight: 8
   HoverStrength: 20
   EvasionHoverStrength: 50
-  MaxSpeed: 50
+  MaxSpeed: 20
   VehicleDecelerateRate: 3
-  StrafeSpeed: 2
+  StrafeSpeed: 0.5
   VehicleSteerSpeed: 2
-  BoostSpeed: 100
+  BoostSpeed: 80
   isTesting: 0
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
