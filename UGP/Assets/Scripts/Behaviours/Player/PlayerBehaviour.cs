@@ -17,10 +17,15 @@ namespace UGP
         public VehicleBehaviour vehicle;
         public float TimeToExitVehicle;
         private float exitTimer = 0.0f;
-        public InGamePlayerMovementBehaviour playerMovement;
+        public InputController ic;
         public PlayerInteractionBehaviour interaction;
 
-        [Command] private void CmdExitVehicle(NetworkIdentity identity)
+        private Animator ani;
+
+        [HideInInspector] public bool needsToEnterVehicle;
+
+        [Command]
+        private void CmdExitVehicle(NetworkIdentity identity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
@@ -32,11 +37,13 @@ namespace UGP
             //localPlayerNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
 
-        [Command] public void CmdDisablePlayerModel()
+        [Command]
+        public void CmdDisablePlayerModel()
         {
             model.SetActive(false);
         }
-        [Command] public void CmdEnablePlayerModel()
+        [Command]
+        public void CmdEnablePlayerModel()
         {
             model.SetActive(true);
         }
@@ -75,8 +82,11 @@ namespace UGP
             p = Instantiate(player);
             p.Alive = true;
             p.Health = p.MaxHealth;
+
+            ani = GetComponent<Animator>();
+            needsToEnterVehicle = false;
         }
-        
+
         private void FixedUpdate()
         {
             if (!isLocalPlayer)
@@ -85,11 +95,11 @@ namespace UGP
                 {
                     if (isDriving)
                     {
-                        model.SetActive(false);
+                        CmdDisablePlayerModel();
                     }
                     else
                     {
-                        model.SetActive(true);
+                        CmdEnablePlayerModel();
                     }
                 }
 
@@ -105,28 +115,37 @@ namespace UGP
             {
                 isDriving = true;
             }
-            
-            var animator = playerMovement.Ani;
 
             if (isDriving)
             {
                 VirtualCamera.SetActive(false);
                 vehicle.enabled = true;
-                playerMovement.enabled = false;
+                ic.enabled = false;
                 interaction.enabled = false;
                 CmdDisablePlayerModel();
-                animator.SetFloat("Forward", 0.0f);
+                ani.SetFloat("Walk", 0.0f);
 
-                animator.SetTrigger("EnterVehicle"); 
+                ani.SetTrigger("EnterVehicle");
 
                 transform.position = vehicle.seat.position;
                 transform.rotation = vehicle.seat.rotation;
 
                 ExitVehicle(); //EXIT THE VEHICLE
 
-                if(exitTimer >= TimeToExitVehicle)
+                if (exitTimer >= TimeToExitVehicle)
                 {
                     //GET OUT OF VEHICLE
+                    vehicle.ani.SetTrigger("OpenDoor");
+
+                    var get_out_position = transform.position;
+                    get_out_position.x = get_out_position.x + 1.5f;
+                    //get_out_position.y += 0.1f;
+                    //get_out_position.z += 0.1f;
+
+                    GetComponent<CharacterController>().SimpleMove(get_out_position);
+
+                    vehicle.ani.SetTrigger("CloseDoor");
+
                     vehicle.SetVehicleActive(false);
                     var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
                     CmdExitVehicle(vehicleIdentity);
@@ -139,11 +158,11 @@ namespace UGP
             {
                 VirtualCamera.SetActive(true);
                 vehicle = null;
-                playerMovement.enabled = true;
+                ic.enabled = true;
                 interaction.enabled = true;
                 CmdEnablePlayerModel();
 
-                animator.SetTrigger("ExitVehicle");
+                ani.SetTrigger("ExitVehicle");
             }
         }
     }

@@ -32,9 +32,9 @@ public class MainMenuBehaviour : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        NetworkHud = GameObject.FindGameObjectWithTag("NetworkManager");
-        NetworkHud.SetActive(false);
-        MultiplayerHUD.SetActive(false);
+        //NetworkHud = GameObject.FindGameObjectWithTag("NetworkManager");
+        //NetworkHud.SetActive(false);
+        //MultiplayerHUD.SetActive(false);
 	}
 	
 	// Update is called once per frame
