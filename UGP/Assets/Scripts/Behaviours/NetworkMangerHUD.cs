@@ -18,7 +18,7 @@ public class NetworkMangerHUD : MonoBehaviour
     #endregion
 
     #region Canvas
-    public GameObject ToggleNetworkCanvas;
+    //public GameObject ToggleNetworkCanvas;
     public Button ToggleOn;
     public Text IP_DISPLAY;
     public Text PlayID;
@@ -70,28 +70,28 @@ public class NetworkMangerHUD : MonoBehaviour
 
     public void NetworkHUDOn()
     {
-        ToggleNetworkCanvas.SetActive(true);
+        //ToggleNetworkCanvas.SetActive(true);
     }
     public void NetworkHUDOFF()
     {
-        ToggleNetworkCanvas.SetActive(false);
+        //ToggleNetworkCanvas.SetActive(false);
     }
     public void ButtonAssign()
     {
-        Button btn = ToggleOn.GetComponent<Button>();
-        btn.onClick.AddListener(TaskOnClick);
-        ToggleOn.enabled = true;
+        //Button btn = ToggleOn.GetComponent<Button>();
+        //btn.onClick.AddListener(TaskOnClick);
+        //ToggleOn.enabled = true;
     }
 
     void TaskOnClick()
     {
         if (ToggleOn == true)
         {
-            ToggleNetworkCanvas.SetActive(true);
+            //ToggleNetworkCanvas.SetActive(true);
         }
         if (ToggleOn == false)
         {
-            ToggleNetworkCanvas.SetActive(false);
+           //ToggleNetworkCanvas.SetActive(false);
         }
         Debug.Log("You have opened the Online Menu!");
 
@@ -129,7 +129,7 @@ void Update()
         var test = UnityEngine.Networking.NetworkManager.singleton.networkAddress.ToString();
         //CheckPlayerIP();
 
-        Debug.Log(test);
+        //Debug.Log(test);
 
         ButtonAssign();
 

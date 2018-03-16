@@ -34,7 +34,7 @@ namespace UGP
 
         }
 
-        [Command] private void CmdEnterVehicle(NetworkIdentity identity)
+        [Command] public void CmdEnterVehicle(NetworkIdentity identity)
         {
             var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
@@ -59,17 +59,20 @@ namespace UGP
                 var vActive = v.vehicleActive;
                 var vehicleIdentity = v.GetComponent<NetworkIdentity>();
 
+                if(vActive)
+                {
+                    return;
+                }
+
                 if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
                 {
-                    Debug.Log("PRESS F TO ENTER VEHICLE");
+                    Debug.Log("PRESS F TO OPEN VEHICLE DOOR");
 
                     //F KEY PRESS TO ENTER THE VEHICLE
                     if (Input.GetKeyDown(KeyCode.F))
                     {
-                        //GET IN THE VEHICLE
-                        p.vehicle = v;
-                        CmdEnterVehicle(vehicleIdentity);
-                        v.SetVehicleActive(true);
+                        //OPEN VEHICLE DOOR
+                        v.ani.SetTrigger("OpenDoor");
                     }
                 }
             }

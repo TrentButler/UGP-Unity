@@ -77,6 +77,11 @@ namespace UGP
             return _s;
         }
 
+        public void CloseApplication()
+        {
+            Application.Quit();
+        }
+
         private void LoadScene(string sceneName)
         {
             var netManager = GameObject.FindGameObjectWithTag("NetworkManager");

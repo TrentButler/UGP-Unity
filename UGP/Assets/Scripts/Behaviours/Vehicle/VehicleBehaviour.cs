@@ -19,10 +19,11 @@ namespace UGP
         public DefaultVehicleController ic;
         public VehicleShootBehaviour shootBehaviour;
         public Canvas vehicleUI;
-        public Vector3 vehicleCamOffset;
 
         [SyncVar] public bool vehicleActive;
+
         public Transform seat;
+        public Animator ani;
 
         //NEEDS WORK
         private void UpdateUI()

@@ -18,9 +18,10 @@ namespace UGP
         #endregion
 
         #region VehicleOrientation
-        //public Vector3 maxVehicleRotation;
-        //public Vector3 minVehicleRotation;
-        //public float vehicleRotateSpeed = 1.5f;
+        public Vector3 maxVehicleRotation;
+        public Vector3 minVehicleRotation;
+        public float vehicleRotateSpeed = 1.5f;
+        private bool isRotating = false;
         #endregion
 
         public float MaxSpeed = 50.0f;
@@ -32,6 +33,7 @@ namespace UGP
         private float originalStrafeSpeed;
 
         public bool isTesting = false;
+        public Vector3 Downforce;
 
         private Rigidbody rb;
 
@@ -66,55 +68,55 @@ namespace UGP
             transform.rotation = rot;
         }
 
-        //private void CheckVehicleRotation()
-        //{
-        //    //GET THE VEHICLE'S CURRENT ROTATION
-        //    //COMPARE EACH ROTATION AMOUNT TO THE MIN/MAX ROTATION
-        //    //IF ANY ROTATION IS PAST THE BOUNDARY, 
-        //    //LERP BETWEEN THE VALUES
-        //    //var currentRot = transform.rotation;
-        //    var currentRot = rb.rotation;
-        //    var currentX = currentRot[0];
-        //    var currentY = currentRot[1];
-        //    var currentZ = currentRot[2];
+        private void CheckVehicleRotation()
+        {
+            //GET THE VEHICLE'S CURRENT ROTATION
+            //COMPARE EACH ROTATION AMOUNT TO THE MIN/MAX ROTATION
+            //IF ANY ROTATION IS PAST THE BOUNDARY, 
+            //LERP BETWEEN THE VALUES
+            //var currentRot = transform.rotation;
+            var currentRot = rb.rotation;
+            var currentX = currentRot[0];
+            var currentY = currentRot[1];
+            var currentZ = currentRot[2];
 
-        //    //CHECK THE X ROTATION
-        //    if (currentX > maxVehicleRotation.x)
-        //    {
-        //        currentX = Mathf.LerpAngle(currentX, maxVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
-        //    }
-        //    if (currentX < minVehicleRotation.x)
-        //    {
-        //        currentX = Mathf.LerpAngle(currentX, minVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
-        //    }
+            //CHECK THE X ROTATION
+            if (currentX > maxVehicleRotation.x)
+            {
+                currentX = Mathf.LerpAngle(currentX, maxVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+            if (currentX < minVehicleRotation.x)
+            {
+                currentX = Mathf.LerpAngle(currentX, minVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
 
-        //    //CHECK THE Y ROTATION
-        //    if (currentY > maxVehicleRotation.y)
-        //    {
-        //        currentY = Mathf.LerpAngle(currentY, maxVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
-        //    }
-        //    if (currentY < minVehicleRotation.y)
-        //    {
-        //        currentY = Mathf.LerpAngle(currentY, minVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
-        //    }
+            //CHECK THE Y ROTATION
+            if (currentY > maxVehicleRotation.y)
+            {
+                currentY = Mathf.LerpAngle(currentY, maxVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+            if (currentY < minVehicleRotation.y)
+            {
+                currentY = Mathf.LerpAngle(currentY, minVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
 
-        //    //CHECK THE Z ROTATION
-        //    if (currentZ > maxVehicleRotation.z)
-        //    {
-        //        currentZ = Mathf.LerpAngle(currentZ, maxVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
-        //    }
-        //    if (currentZ < minVehicleRotation.z)
-        //    {
-        //        currentZ = Mathf.LerpAngle(currentZ, minVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
-        //    }
+            //CHECK THE Z ROTATION
+            if (currentZ > maxVehicleRotation.z)
+            {
+                currentZ = Mathf.LerpAngle(currentZ, maxVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
+            if (currentZ < minVehicleRotation.z)
+            {
+                currentZ = Mathf.LerpAngle(currentZ, minVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
+            }
 
-        //    currentRot[0] = currentX;
-        //    currentRot[1] = currentY;
-        //    currentRot[2] = currentZ;
+            currentRot[0] = currentX;
+            currentRot[1] = currentY;
+            currentRot[2] = currentZ;
 
-        //    //transform.rotation = currentRot;
-        //    rb.rotation = currentRot;
-        //}
+            //transform.rotation = currentRot;
+            rb.rotation = currentRot;
+        }
 
         public void Hover()
         {
@@ -192,6 +194,8 @@ namespace UGP
             currentVehicleThrottle = throttle;
             currentVehicleStrafe = strafeVehicle;
 
+            
+
             Hover();
             UseBooster();
             ApplyBreak();
@@ -218,6 +222,14 @@ namespace UGP
             }
             #endregion
 
+            if (rb.transform.position.y <= TargetHeight)
+            {
+                var displacement_y = TargetHeight - rb.transform.position.y;
+                var force_vector = (new Vector3(0.0f, displacement_y, 0.0f) + (-Vector3.up)) * EvasionHoverStrength;
+                Downforce = force_vector;
+                rb.AddForce(force_vector);
+            }
+
             if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
             {
                 //OLD
@@ -239,6 +251,11 @@ namespace UGP
             }
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
+
+            if (!isRotating)
+            {
+                CheckVehicleRotation();
+            }
         }
 
         public override void Rotate(float xRot, float yRot, float zRot)
@@ -247,24 +264,35 @@ namespace UGP
             var y_rot = new Vector3(0, xRot, 0);
             var z_rot = new Vector3(0, 0, -xRot);
 
+
             if (Input.GetKey(KeyCode.LeftAlt))
             {
+                MaxSpeed = 0.0f;
+                StrafeSpeed = 0.0f;
+                isRotating = true;
+
                 rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
                 var z_rotation = Quaternion.Euler((z_rot + x_rot) * VehicleSteerSpeed);
                 rb.MoveRotation(rb.rotation * z_rotation);
                 return;
             }
+            else
+            {
+                MaxSpeed = originalSpeed;
+                StrafeSpeed = originalStrafeSpeed;
+                isRotating = false;
+                rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ; //FREEZE THE Y-AXIS ROTATION
+            }
 
-            if(y_rot.magnitude > 0.0f)
+            if (y_rot.magnitude > 0.0f)
             {
                 rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
                 var new_rotation = Quaternion.Euler(y_rot * VehicleSteerSpeed);
                 rb.MoveRotation(rb.rotation * new_rotation);
             }
-
             else
             {
-                rb.constraints = RigidbodyConstraints.FreezeRotationY; //FREEZE THE Y-AXIS ROTATION    
+                rb.constraints = RigidbodyConstraints.FreezeRotation; //FREEZE THE Y-AXIS ROTATION    
             }
         }
 

@@ -10,7 +10,7 @@ namespace UGP
         public string InputHorizontal = "Horizontal";
         public string InputVertical = "Vertical";
 
-        public DefaultVehicleController ic;
+        public InputController ic;
 
         void FixedUpdate()
         {

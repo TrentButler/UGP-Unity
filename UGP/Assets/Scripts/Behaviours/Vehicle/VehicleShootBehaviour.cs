@@ -18,7 +18,7 @@ namespace UGP
     {
         public Weapon w;
 
-        public GameObject bulletModel;
+        public GameObject bulletPrefab;
         public Transform GunBarrel;
         public AudioSource audio;
 
@@ -41,7 +41,7 @@ namespace UGP
 
         private VehicleBehaviour v;
 
-        [Command(channel = 3)] private void CmdShoot()
+        [Command] private void CmdShoot()
         {
             switch (w)
             {
@@ -53,34 +53,10 @@ namespace UGP
                             v._v.ammunition.Assault -= 1;
                             //audio.Play();
 
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>();
-
+                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            NetworkServer.Spawn(b);
                             Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
                         }
                         else
                         {
@@ -97,34 +73,10 @@ namespace UGP
                             v._v.ammunition.Shotgun -= 1;
                             //audio.Play();
 
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SHOTGUNROUNDBEHAVIOUR
-
+                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            NetworkServer.Spawn(b);
                             Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
                         }
                         else
                         {
@@ -141,34 +93,10 @@ namespace UGP
                             v._v.ammunition.Sniper -= 1;
                             //audio.Play();
 
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SNIPERROUNDBEHAVIOUR
-
+                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            NetworkServer.Spawn(b);
                             Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
                         }
                         else
                         {
@@ -185,34 +113,10 @@ namespace UGP
                             v._v.ammunition.Rocket -= 1;
                             //audio.Play();
 
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //ROCKETROUNDBEHAVIOUR
-
+                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
                             b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+                            NetworkServer.Spawn(b);
                             Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
                         }
                         else
                         {
@@ -220,28 +124,12 @@ namespace UGP
                         }
                         break;
                     }
+
+                default:
+                    {
+                        break;
+                    }
             }
-
-            #region OLD_SHOOT
-            //roundsFired += 1;
-            //audio.Play();
-
-            //var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-            //b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-            //Destroy(b, 4);
-
-            //Debug.Log("SHOT FIRED");
-
-            //RAYCAST FORWARD FROM 'GunBarrel'
-            //RaycastHit hit;
-            //if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-            //{
-            //    var n = hit.collider.name;
-            //    Debug.Log(n);
-            //}
-
-            //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * BulletTravelDist, Color.red);
-            #endregion
         }
 
         //NEEDS WORK
@@ -291,13 +179,13 @@ namespace UGP
         private float aimTimer = 0;
         private void Aim()
         {
-            var h = Input.GetAxis("Mouse X");
+            //var h = Input.GetAxis("Mouse X");
             var v = Input.GetAxis("Mouse Y");
 
-            var aimVector = new Vector3(h, v, 0);
+            var aimVector = new Vector3(0, v, 0);
 
-            var vehicleThrottle = GetComponent<InGameVehicleMovementBehaviour>().currentVehicleThrottle;
-            var vehicleStrafe = GetComponent<InGameVehicleMovementBehaviour>().currentVehicleStrafe;
+            var vehicleThrottle = GetComponent<DefaultVehicleController>().currentVehicleThrottle;
+            var vehicleStrafe = GetComponent<DefaultVehicleController>().currentVehicleStrafe;
             Vector3 moveVector = new Vector3(vehicleStrafe, 0, vehicleThrottle);
             
             if(moveVector.magnitude <= 0)
@@ -312,7 +200,6 @@ namespace UGP
                     if (aimTimer >= AimCooldown)
                     {
                         #region UI_CROSSHAIR
-
                         var rectTrans = c.GetComponent<RectTransform>();
 
                         var _w = rectTrans.rect.width;
@@ -381,6 +268,7 @@ namespace UGP
                 time += Time.deltaTime;
                 if (time > FireRate)
                 {
+                    Debug.Log("SHOT FIRED");
                     CmdShoot();
                     time = 0.0f;
                 }
@@ -403,6 +291,17 @@ namespace UGP
                 return;
             }
         }
+
+        public override void OnStartClient()
+        {
+            v = GetComponent<VehicleBehaviour>();
+            var vActive = v.vehicleActive;
+            if (vActive)
+            {
+                c = v.vehicleUI;
+            }
+        }
+
 
         private void Start()
         {
@@ -437,20 +336,20 @@ namespace UGP
             {
                 if(hasAuthority && !isServer)
                 {
-                    Aim();
+                    //Aim();
                     Fire();
 
-                    Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+                    //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
                     return;
                 }
 
                 return;
             }
 
-            Aim();
+            //Aim();
             Fire();
 
-            Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+            //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
         }
 
         private void LateUpdate()
