@@ -52,70 +52,43 @@ namespace UGP
 
         private void KeepVehicleUpright()
         {
-            //DETERMINE THE DELTA OF THE CURRENT X AND Z ROTATION OF THE VEHICLE
-            //APPLY THE INVERSE OF THE DELTA TO EACH ROTATION
+            var rot = rb.rotation;
+            var euler_rot = rb.rotation.eulerAngles;
 
-            var rot = transform.rotation;
-            var dX = 0 - rot[0];
-            var dZ = 0 - rot[2];
+            var target_rotation = new Vector3(0, euler_rot[1], 0);
 
-            if (dX > 0.0f || dX < 0.0f || dZ > 0.0f || dZ < 0.0f)
-            {
-                rot[0] = Mathf.LerpAngle(dX, 0.0f, Time.fixedDeltaTime);
-                rot[2] = Mathf.LerpAngle(dZ, 0.0f, Time.fixedDeltaTime);
-            }
+            var move_rotation = Quaternion.Euler(target_rotation);
+            var new_rot = Quaternion.Slerp(rb.rotation, move_rotation, Time.smoothDeltaTime);
+            new_rot[1] = rot[1];
 
-            transform.rotation = rot;
+            rb.rotation = new_rot;
         }
 
         private void CheckVehicleRotation()
         {
-            //GET THE VEHICLE'S CURRENT ROTATION
-            //COMPARE EACH ROTATION AMOUNT TO THE MIN/MAX ROTATION
-            //IF ANY ROTATION IS PAST THE BOUNDARY, 
-            //LERP BETWEEN THE VALUES
-            //var currentRot = transform.rotation;
-            var currentRot = rb.rotation;
+            var currentRot = rb.rotation.eulerAngles;
             var currentX = currentRot[0];
-            var currentY = currentRot[1];
             var currentZ = currentRot[2];
 
             //CHECK THE X ROTATION
             if (currentX > maxVehicleRotation.x)
             {
-                currentX = Mathf.LerpAngle(currentX, maxVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
+                KeepVehicleUpright();
             }
             if (currentX < minVehicleRotation.x)
             {
-                currentX = Mathf.LerpAngle(currentX, minVehicleRotation.x, vehicleRotateSpeed * Time.smoothDeltaTime);
-            }
-
-            //CHECK THE Y ROTATION
-            if (currentY > maxVehicleRotation.y)
-            {
-                currentY = Mathf.LerpAngle(currentY, maxVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
-            }
-            if (currentY < minVehicleRotation.y)
-            {
-                currentY = Mathf.LerpAngle(currentY, minVehicleRotation.y, vehicleRotateSpeed * Time.smoothDeltaTime);
+                KeepVehicleUpright();
             }
 
             //CHECK THE Z ROTATION
             if (currentZ > maxVehicleRotation.z)
             {
-                currentZ = Mathf.LerpAngle(currentZ, maxVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
+                KeepVehicleUpright();
             }
             if (currentZ < minVehicleRotation.z)
             {
-                currentZ = Mathf.LerpAngle(currentZ, minVehicleRotation.z, vehicleRotateSpeed * Time.smoothDeltaTime);
+                KeepVehicleUpright();
             }
-
-            currentRot[0] = currentX;
-            currentRot[1] = currentY;
-            currentRot[2] = currentZ;
-
-            //transform.rotation = currentRot;
-            rb.rotation = currentRot;
         }
 
         public void Hover()
@@ -194,8 +167,6 @@ namespace UGP
             currentVehicleThrottle = throttle;
             currentVehicleStrafe = strafeVehicle;
 
-            
-
             Hover();
             UseBooster();
             ApplyBreak();
@@ -208,13 +179,11 @@ namespace UGP
             //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
             //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
             RaycastHit hit;
-            //var world_point = transform.TransformPoint(point.position);
             if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
             {
                 var vertForce = (TargetHeight - hit.distance) / TargetHeight;
                 Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
-
-                //Debug.Log(hoverVector); //DELETE THIS
+                
                 CurrentHoverVector = hoverVector;
 
                 rb.AddForce(hoverVector);
@@ -222,7 +191,7 @@ namespace UGP
             }
             #endregion
 
-            if (rb.transform.position.y <= TargetHeight)
+            if (rb.centerOfMass.y > TargetHeight)
             {
                 var displacement_y = TargetHeight - rb.transform.position.y;
                 var force_vector = (new Vector3(0.0f, displacement_y, 0.0f) + (-Vector3.up)) * EvasionHoverStrength;
@@ -231,19 +200,10 @@ namespace UGP
             }
 
             if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
-            {
-                //OLD
-                ////GET THE TRANSFORM OF THE VEHICLE CAMERA
-                //var cam_transform = Camera.main.transform;
-                //var cam_rotation = cam_transform.rotation;
-                //cam_rotation[0] = 0.0f; //ZERO OUT THE X-AXIS ROTATION
-                //cam_rotation[2] = 0.0f; //ZERO OUT THE Z-AXIS ROTATION
-                //cam_transform.rotation = cam_rotation;
-
-                //DERIVE A MOVEMENT DIRECTION BY USING THE CAMERA'S TRANSFORM
+            {             
                 var move_direction = transform.TransformDirection((accelerationVector + strafeVector));
-                //APPLY FORCES
-                rb.AddForce(move_direction, ForceMode.Impulse);
+                
+                rb.AddForce(move_direction, ForceMode.Impulse); //APPLY FORCES
             }
             else
             {

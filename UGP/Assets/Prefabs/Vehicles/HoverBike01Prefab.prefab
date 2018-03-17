@@ -336,9 +336,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4635698420635970}
   - component: {fileID: 95534976567420574}
-  - component: {fileID: 136746253461490618}
-  - component: {fileID: 136194899219279536}
-  - component: {fileID: 136514699497115874}
+  - component: {fileID: 65025859315244762}
+  - component: {fileID: 65681711408493432}
   m_Layer: 0
   m_Name: HoverBike01
   m_TagString: Vehicle
@@ -1718,6 +1717,18 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!65 &65025859315244762
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1463482265724598}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.32, y: 1, z: 6.53}
+  m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!65 &65531685581890804
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -1728,8 +1739,20 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5, z: 0.5}
+  m_Size: {x: 0.5, y: 1, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &65681711408493432
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1463482265724598}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.25, y: 1, z: 1.61}
+  m_Center: {x: 0, y: 0.7, z: -0.91}
 --- !u!82 &82160715551518716
 AudioSource:
   m_ObjectHideFlags: 1
@@ -2753,16 +2776,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentHoverVector: {x: 0, y: 0, z: 0}
-  TargetHeight: 4
-  EvasionHoverHeight: 8
+  TargetHeight: 2.75
+  EvasionHoverHeight: 5
   HoverStrength: 20
   EvasionHoverStrength: 50
-  maxVehicleRotation: {x: 10, y: 360, z: 45}
-  minVehicleRotation: {x: 0, y: -360, z: -45}
+  maxVehicleRotation: {x: 2, y: 360, z: 10}
+  minVehicleRotation: {x: -2, y: -360, z: -10}
   vehicleRotateSpeed: 2
   MaxSpeed: 20
   VehicleDecelerateRate: 3
-  StrafeSpeed: 0.5
+  StrafeSpeed: 0
   VehicleSteerSpeed: 2
   BoostSpeed: 80
   isTesting: 0
@@ -2817,45 +2840,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!136 &136194899219279536
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1463482265724598}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.49
-  m_Height: 3.93
-  m_Direction: 2
-  m_Center: {x: 0, y: 0.62, z: 1.66}
---- !u!136 &136514699497115874
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1463482265724598}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.66
-  m_Height: 3.13
-  m_Direction: 2
-  m_Center: {x: 0, y: 0.77, z: -1.86}
---- !u!136 &136746253461490618
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1463482265724598}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 4.5
-  m_Direction: 0
-  m_Center: {x: 0, y: 0.5, z: -1.07}
 --- !u!222 &222224355691407284
 CanvasRenderer:
   m_ObjectHideFlags: 1

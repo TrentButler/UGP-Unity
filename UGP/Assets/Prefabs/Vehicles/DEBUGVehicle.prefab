@@ -791,7 +791,7 @@ Animator:
   m_GameObject: {fileID: 1912099926934314}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c49d2f092d840dd4e8ce828db793aa38, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1145,16 +1145,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentHoverVector: {x: 0, y: 0, z: 0}
-  TargetHeight: 4
-  EvasionHoverHeight: 8
+  TargetHeight: 2.75
+  EvasionHoverHeight: 5
   HoverStrength: 14
   EvasionHoverStrength: 50
-  maxVehicleRotation: {x: 10, y: 360, z: 45}
-  minVehicleRotation: {x: 0, y: -360, z: -45}
+  maxVehicleRotation: {x: 2, y: 360, z: 10}
+  minVehicleRotation: {x: -2, y: -360, z: -10}
   vehicleRotateSpeed: 2
   MaxSpeed: 20
   VehicleDecelerateRate: 3
-  StrafeSpeed: 0.5
+  StrafeSpeed: 0
   VehicleSteerSpeed: 2
   BoostSpeed: 80
   isTesting: 0
