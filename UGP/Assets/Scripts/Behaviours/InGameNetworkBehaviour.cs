@@ -16,7 +16,7 @@ namespace UGP
         public List<GameObject> VehiclePrefabs;
         public Transform OriginVehicleSpawn;
 
-        [HideInInspector] public float vehiclePositionOffset; 
+        public float vehiclePositionOffset; 
         private bool spawnOnPlayerCount;
 
         #region ServerCamera
@@ -78,6 +78,7 @@ namespace UGP
             #endregion
         }
         #endregion
+
         private void SpawnVehiclesOnPlayerCount()
         {
             //SPAWN A VEHICLE FOR EACH PLAYER THAT IS CONNECTED
@@ -136,13 +137,14 @@ namespace UGP
 
         public void ResetServer()
         {
+            NetworkServer.ClearLocalObjects();
             NetworkServer.Reset();
+            NetworkServer.Shutdown();
         }
 
         private void Start()
         {
             spawnOnPlayerCount = false;
-            vehiclePositionOffset = 20;
             if(isServer)
             {
                 server_camera = Camera.main.gameObject;
@@ -151,14 +153,14 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if(spawnOnPlayerCount)
-            {
-                SpawnVehiclesOnPlayerCount();
-            }
-
             if(isServer)
             {
                 FreeLookCamera();
+
+                if (spawnOnPlayerCount)
+                {
+                    SpawnVehiclesOnPlayerCount();
+                }
             }
         }
     }

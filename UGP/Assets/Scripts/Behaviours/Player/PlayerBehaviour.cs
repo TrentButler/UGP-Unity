@@ -20,7 +20,7 @@ namespace UGP
         public InputController ic;
         public PlayerInteractionBehaviour interaction;
 
-        private Animator ani;
+        public Animator ani;
 
         [HideInInspector] public bool needsToEnterVehicle;
 
@@ -83,7 +83,11 @@ namespace UGP
             p.Alive = true;
             p.Health = p.MaxHealth;
 
-            ani = GetComponent<Animator>();
+            if(ani == null)
+            {
+                ani = GetComponent<Animator>();
+            }
+            
             needsToEnterVehicle = false;
         }
 
@@ -123,9 +127,7 @@ namespace UGP
                 ic.enabled = false;
                 interaction.enabled = false;
                 CmdDisablePlayerModel();
-                ani.SetFloat("Walk", 0.0f);
-
-                ani.SetTrigger("EnterVehicle");
+                //ani.SetFloat("Walk", 0.0f);
 
                 transform.position = vehicle.seat.position;
                 transform.rotation = vehicle.seat.rotation;
@@ -161,8 +163,6 @@ namespace UGP
                 ic.enabled = true;
                 interaction.enabled = true;
                 CmdEnablePlayerModel();
-
-                ani.SetTrigger("ExitVehicle");
             }
         }
     }
