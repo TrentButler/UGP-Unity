@@ -132,6 +132,11 @@ namespace UGP
 
         public override void OnStartClient()
         {
+            if(VehicleConfig == null)
+            {
+                VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
+            }
+
             _v = Instantiate(VehicleConfig);
             _v.Health = _v.MaxHealth;
             _v.Fuel = _v.MaxFuel;
@@ -146,6 +151,10 @@ namespace UGP
             {
                 if (hasAuthority)
                 {
+                    if (VehicleConfig == null)
+                    {
+                        VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
+                    }
                     vehicleActive = false;
                     _v = Instantiate(VehicleConfig);
                     _v.Health = _v.MaxHealth;
@@ -164,6 +173,10 @@ namespace UGP
                 return;
             }
 
+            if (VehicleConfig == null)
+            {
+                VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
+            }
             vehicleActive = false;
             _v = Instantiate(VehicleConfig);
             _v.Health = _v.MaxHealth;
@@ -181,7 +194,7 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if (hasAuthority)
+                if (hasAuthority && !isServer)
                 {
                     if (vehicleActive)
                     {
