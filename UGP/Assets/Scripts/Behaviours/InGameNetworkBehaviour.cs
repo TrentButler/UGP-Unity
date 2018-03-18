@@ -16,7 +16,7 @@ namespace UGP
         public List<GameObject> VehiclePrefabs;
         public Transform OriginVehicleSpawn;
 
-        public float vehiclePositionOffset; 
+        public float vehiclePositionOffset;
         private bool spawnOnPlayerCount;
 
         #region ServerCamera
@@ -62,7 +62,7 @@ namespace UGP
             }
 
             //RESET THE CAMERA'S ROTATION
-            if(Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 var currentRot = server_camera.transform.rotation;
                 currentRot[0] = 0.0f;
@@ -110,22 +110,19 @@ namespace UGP
 
         public void SpawnAllVehicles()
         {
-            for(int i = 0; i < VehiclePrefabs.Count; i++)
+            for (int i = 0; i < VehiclePrefabs.Count; i++)
             {
-                var spawn = OriginVehicleSpawn.position;
+                var spawn_position = OriginVehicleSpawn.position;
+                spawn_position.z = spawn_position.z + (i * vehiclePositionOffset);
 
-                var spawnPos = i * vehiclePositionOffset;
-
-                spawn.x += spawnPos;
-
-                var v = Instantiate(VehiclePrefabs[i], spawn, OriginVehicleSpawn.rotation);
+                var v = Instantiate(VehiclePrefabs[i], spawn_position, OriginVehicleSpawn.rotation);
                 NetworkServer.Spawn(v);
             }
         }
 
         public void ToggleVehicleSpawning()
         {
-            if(spawnOnPlayerCount == true)
+            if (spawnOnPlayerCount == true)
             {
                 spawnOnPlayerCount = false;
             }
@@ -145,7 +142,7 @@ namespace UGP
         private void Start()
         {
             spawnOnPlayerCount = false;
-            if(isServer)
+            if (isServer)
             {
                 server_camera = Camera.main.gameObject;
             }
@@ -153,7 +150,7 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if(isServer)
+            if (isServer)
             {
                 FreeLookCamera();
 
@@ -182,7 +179,7 @@ namespace UGP
                 mytarget.SpawnAllVehicles();
             }
             GUILayout.Space(10);
-            if(GUILayout.Button("TOGGLE SPAWN VEHICLE PER PLAYER"))
+            if (GUILayout.Button("TOGGLE SPAWN VEHICLE PER PLAYER"))
             {
                 mytarget.ToggleVehicleSpawning();
             }
