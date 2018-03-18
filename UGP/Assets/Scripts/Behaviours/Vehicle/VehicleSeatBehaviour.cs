@@ -11,6 +11,12 @@ namespace UGP
         {
             if (other.tag == "Player")
             {
+                var is_server = other.GetComponent<NetworkIdentity>().isServer;
+                if(is_server)
+                {
+                    return;
+                }
+
                 var v = GetComponentInParent<VehicleBehaviour>();
                 var vActive = v.vehicleActive;
                 var vehicleIdentity = v.GetComponent<NetworkIdentity>();
