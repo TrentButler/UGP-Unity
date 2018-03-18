@@ -3103,6 +3103,7 @@ MonoBehaviour:
   m_SpawnPrefabs:
   - {fileID: 1912099926934314, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
   - {fileID: 1978491074197374, guid: 66946e60c99eef847bc5a630042122ad, type: 2}
+  - {fileID: 1594409605834688, guid: 2332336a42dec1b4eba62f986165cbe9, type: 2}
   m_CustomConfig: 1
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -3158,16 +3159,16 @@ MonoBehaviour:
   matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
-  m_ShowLobbyGUI: 1
+  m_ShowLobbyGUI: 0
   m_MaxPlayers: 100
   m_MaxPlayersPerConnection: 1
   m_MinPlayers: 0
   m_LobbyPlayerPrefab: {fileID: 11487034, guid: ad727d7e1462ecc4f83c898ecc501997,
     type: 2}
-  m_GamePlayerPrefab: {fileID: 1800139849652126, guid: 5c66c3aa49abf1148b61e20a6ac51505,
+  m_GamePlayerPrefab: {fileID: 1499516513290062, guid: 015eaae25481ce44cb44eb348709c40d,
     type: 2}
   m_LobbyScene: 69.OfflineScene
-  m_PlayScene: 100.NetworkVehicleTest
+  m_PlayScene: 03.Race
   lobbySlots: []
   prematchCountdown: 0
   topPanel: {fileID: 11424994}
@@ -5576,7 +5577,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 155310}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8aa07e36de6ea12469d9b6aed647c544, type: 3}
   m_Name: 
