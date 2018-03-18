@@ -33,6 +33,7 @@ namespace UGP
         private float originalStrafeSpeed;
 
         public bool isTesting = false;
+        public bool useDownforce = true;
         public Vector3 Downforce;
 
         private Rigidbody rb;
@@ -179,11 +180,13 @@ namespace UGP
             //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
             //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
             RaycastHit hit;
+            //var world_point = transform.TransformPoint(point.position);
             if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
             {
                 var vertForce = (TargetHeight - hit.distance) / TargetHeight;
                 Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
-                
+
+                //Debug.Log(hoverVector); //DELETE THIS
                 CurrentHoverVector = hoverVector;
 
                 rb.AddForce(hoverVector);
@@ -200,10 +203,10 @@ namespace UGP
             }
 
             if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
-            {             
+            {
                 var move_direction = transform.TransformDirection((accelerationVector + strafeVector));
-                
-                rb.AddForce(move_direction, ForceMode.Impulse); //APPLY FORCES
+                //APPLY FORCES
+                rb.AddForce(move_direction, ForceMode.Impulse);
             }
             else
             {
