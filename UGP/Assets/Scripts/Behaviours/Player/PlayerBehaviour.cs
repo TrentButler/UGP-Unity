@@ -24,8 +24,7 @@ namespace UGP
 
         [HideInInspector] public bool needsToEnterVehicle;
 
-        [Command]
-        private void CmdExitVehicle(NetworkIdentity identity)
+        [Command] private void CmdExitVehicle(NetworkIdentity identity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
@@ -37,13 +36,20 @@ namespace UGP
             //localPlayerNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
 
-        [Command]
-        public void CmdDisablePlayerModel()
+        [Command] public void CmdDisablePlayerModel()
         {
             model.SetActive(false);
         }
-        [Command]
-        public void CmdEnablePlayerModel()
+        [Command] public void CmdEnablePlayerModel()
+        {
+            model.SetActive(true);
+        }
+        
+        [ClientRpc] public void RpcDisablePlayerModel()
+        {
+            model.SetActive(false);
+        }
+        [ClientRpc] public void RpcEnablePlayerModel()
         {
             model.SetActive(true);
         }
@@ -93,6 +99,15 @@ namespace UGP
 
         private void FixedUpdate()
         {
+            if (vehicle == null)
+            {
+                isDriving = false;
+            }
+            else
+            {
+                isDriving = true;
+            }
+
             if (!isLocalPlayer)
             {
                 if (isClient)
@@ -106,18 +121,20 @@ namespace UGP
                         CmdEnablePlayerModel();
                     }
                 }
+                if(isServer)
+                {
+                    if (isDriving)
+                    {
+                        RpcDisablePlayerModel();
+                    }
+                    else
+                    {
+                        RpcEnablePlayerModel();
+                    }
+                }
 
                 VirtualCamera.SetActive(false);
                 return;
-            }
-
-            if (vehicle == null)
-            {
-                isDriving = false;
-            }
-            else
-            {
-                isDriving = true;
             }
 
             if (isDriving)
