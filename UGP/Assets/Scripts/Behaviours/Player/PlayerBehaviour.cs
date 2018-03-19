@@ -24,7 +24,8 @@ namespace UGP
 
         [HideInInspector] public bool needsToEnterVehicle;
 
-        [Command] private void CmdExitVehicle(NetworkIdentity identity)
+        [Command]
+        private void CmdExitVehicle(NetworkIdentity identity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
@@ -36,20 +37,24 @@ namespace UGP
             //localPlayerNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
 
-        [Command] public void CmdDisablePlayerModel()
+        [Command]
+        public void CmdDisablePlayerModel()
         {
             model.SetActive(false);
         }
-        [Command] public void CmdEnablePlayerModel()
+        [Command]
+        public void CmdEnablePlayerModel()
         {
             model.SetActive(true);
         }
-        
-        [ClientRpc] public void RpcDisablePlayerModel()
+
+        [ClientRpc]
+        public void RpcDisablePlayerModel()
         {
             model.SetActive(false);
         }
-        [ClientRpc] public void RpcEnablePlayerModel()
+        [ClientRpc]
+        public void RpcEnablePlayerModel()
         {
             model.SetActive(true);
         }
@@ -89,11 +94,11 @@ namespace UGP
             p.Alive = true;
             p.Health = p.MaxHealth;
 
-            if(ani == null)
+            if (ani == null)
             {
                 ani = GetComponent<Animator>();
             }
-            
+
             needsToEnterVehicle = false;
         }
 
@@ -114,22 +119,22 @@ namespace UGP
                 {
                     if (isDriving)
                     {
-                        CmdDisablePlayerModel();
+                        model.SetActive(false);
                     }
                     else
                     {
-                        CmdEnablePlayerModel();
+                        model.SetActive(true);
                     }
                 }
-                if(isServer)
+                if (isServer)
                 {
                     if (isDriving)
                     {
-                        RpcDisablePlayerModel();
+                        model.SetActive(false);
                     }
                     else
                     {
-                        RpcEnablePlayerModel();
+                        model.SetActive(true);
                     }
                 }
 
@@ -143,7 +148,8 @@ namespace UGP
                 vehicle.enabled = true;
                 ic.enabled = false;
                 interaction.enabled = false;
-                CmdDisablePlayerModel();
+                model.SetActive(false);
+                //CmdDisablePlayerModel();
                 //ani.SetFloat("Walk", 0.0f);
 
                 transform.position = vehicle.seat.position;
@@ -179,7 +185,8 @@ namespace UGP
                 vehicle = null;
                 ic.enabled = true;
                 interaction.enabled = true;
-                CmdEnablePlayerModel();
+                model.SetActive(true);
+                //CmdEnablePlayerModel();
             }
         }
     }

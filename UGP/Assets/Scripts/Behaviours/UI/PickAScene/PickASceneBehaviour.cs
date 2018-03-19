@@ -24,6 +24,11 @@ namespace UGP
         public GameObject Panel;
         public ScenesInBuildScriptableObject scenesInBuild;
 
+        public void GotoPlayTestScene()
+        {
+            SceneManager.LoadScene("98.offline");
+        }
+
         public string GetScenes()
         {
             //GET THE DIRECTORY 'Assets/Scenes' 

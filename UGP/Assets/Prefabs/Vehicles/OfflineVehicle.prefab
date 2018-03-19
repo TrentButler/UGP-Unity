@@ -466,7 +466,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1732297616117992}
-  m_LocalRotation: {x: -0.0025117637, y: 0.8545199, z: 0.004132703, w: 0.5193962}
+  m_LocalRotation: {x: -0.0025117886, y: 0.8545199, z: 0.0041327034, w: 0.5193962}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -480,7 +480,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1098971431534986}
-  m_LocalRotation: {x: -0.011921844, y: 0.85430473, z: 0.019613763, w: 0.5192655}
+  m_LocalRotation: {x: -0.011922067, y: 0.85430473, z: 0.019613821, w: 0.5192655}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -548,7 +548,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1118716059497530}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 3.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4247175605364564}
@@ -593,7 +593,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1283808188664076}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -13.315456, y: 0.39999995, z: 6.9064217}
+  m_LocalPosition: {x: -13.315456, y: 0.39999986, z: 6.9064217}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4449935761532856}
@@ -939,21 +939,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentHoverVector: {x: 0, y: 0, z: 0}
-  TargetHeight: 2.5
+  TargetHeight: 4
   EvasionHoverHeight: 5
-  HoverStrength: 14
+  HoverStrength: 15
   EvasionHoverStrength: 50
-  InputHorizontal: Horizontal
-  InputVertical: Vertical
+  targetRotation: {x: 0, y: 0, z: 0}
   maxVehicleRotation: {x: 0, y: 360, z: 10}
   minVehicleRotation: {x: 0, y: -360, z: -10}
   vehicleRotateSpeed: 1.5
-  MaxSpeed: 10
-  VehicleDecelerateRate: 3
-  StrafeSpeed: 2.5
-  VehicleSteerSpeed: 1
-  BoostSpeed: 50
-  ThrusterPosition: {fileID: 4933576604808216}
+  InputHorizontal: Horizontal
+  InputVertical: Vertical
+  MaxSpeed: 50
+  VehicleDecelerateRate: 1.75
+  StrafeSpeed: 0.5
+  VehicleSteerSpeed: 1.75
+  BoostSpeed: 100
+  isTesting: 0
+  Downforce: {x: 0, y: 0, z: 0}
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
 --- !u!114 &114221107828021762

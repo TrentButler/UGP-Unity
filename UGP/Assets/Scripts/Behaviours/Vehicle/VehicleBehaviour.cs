@@ -70,6 +70,29 @@ namespace UGP
 
         [Command] private void CmdUpdateVehicle()
         {
+            if (_v == null)
+            {
+                if (VehicleConfig == null)
+                {
+                    VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
+                    vehicleActive = false;
+                    _v = Instantiate(VehicleConfig);
+                    _v.Health = _v.MaxHealth;
+                    _v.Fuel = _v.MaxFuel;
+                    _v.Destroyed = false;
+                    _v.FuelDepeleted = false;
+                }
+                else
+                {
+                    vehicleActive = false;
+                    _v = Instantiate(VehicleConfig);
+                    _v.Health = _v.MaxHealth;
+                    _v.Fuel = _v.MaxFuel;
+                    _v.Destroyed = false;
+                    _v.FuelDepeleted = false;
+                }
+            }
+
             var health = _v.Health;
             var fuel = _v.Fuel;
 

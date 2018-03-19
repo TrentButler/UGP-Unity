@@ -1727,7 +1727,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.32, y: 1, z: 6.53}
+  m_Size: {x: 1.5, y: 1, z: 6.53}
   m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!65 &65531685581890804
 BoxCollider:
@@ -1751,7 +1751,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4.25, y: 1, z: 1.61}
+  m_Size: {x: 4.25, y: 1, z: 2}
   m_Center: {x: 0, y: 0.7, z: -0.91}
 --- !u!82 &82160715551518716
 AudioSource:
@@ -2789,6 +2789,7 @@ MonoBehaviour:
   VehicleSteerSpeed: 2
   BoostSpeed: 80
   isTesting: 0
+  useDownforce: 1
   Downforce: {x: 0, y: 0, z: 0}
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0

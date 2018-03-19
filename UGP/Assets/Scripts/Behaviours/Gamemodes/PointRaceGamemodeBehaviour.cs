@@ -27,6 +27,7 @@ namespace UGP
         [ClientRpc]
         public void RpcRestartRace()
         {
+            NetworkServer.Reset();
             SceneManager.LoadScene("03.Race");
         }
 
@@ -85,6 +86,11 @@ namespace UGP
                 if (RaceTimer <= 0.0f)
                 {
                     EndOfRace();
+                    return;
+                }
+                else
+                {
+                    ResultsPanel.SetActive(false);
                 }
 
                 //SORT THE LIST OF PLAYERS BY THEIR DISTANCE TO THE 'FINISH'
@@ -108,24 +114,37 @@ namespace UGP
         {
             if (other.CompareTag("Player"))
             {
+                Debug.Log("COLLISION WITH PLAYER");
+
                 var p_behaviour = other.GetComponent<PlayerBehaviour>();
                 var p_netIdentity = other.GetComponent<NetworkIdentity>();
 
+                Debug.Log(p_behaviour.gameObject.name + " FINISHED");
                 finished_players.Add(p_behaviour);
 
-                p_behaviour.ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
+                var ic = p_behaviour.ic;
+                ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
+                p_behaviour.model.SetActive(false);
+                //p_behaviour.enabled = false;
             }
 
             if (other.CompareTag("Vehicle"))
             {
+                Debug.Log("COLLISION WITH VEHICLE");
                 var v_behaviour = other.GetComponentInParent<VehicleBehaviour>();
                 players.ForEach(player =>
                 {
                     if (player.vehicle == v_behaviour)
                     {
+                        Debug.Log(player.gameObject.name + " FINISHED");
+
                         finished_players.Add(player);
-                        player.ic.enabled = false;
-                        v_behaviour.ic.enabled = false;
+
+                        var ic = player.ic;
+                        ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
+                        player.model.SetActive(false);
+                        //player.enabled = false;
+                        Destroy(v_behaviour.gameObject);
                     }
                 });
             }
