@@ -844,8 +844,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4913019633117466}
-  - component: {fileID: 114506142230728900}
-  - component: {fileID: 65287560243119172}
   m_Layer: 0
   m_Name: Seat
   m_TagString: Untagged
@@ -2069,18 +2067,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &65287560243119172
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1960435490343192}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.25, z: 0.5}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65430514617621876
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -2876,17 +2862,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   car: {fileID: 114029770601621136}
---- !u!114 &114506142230728900
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1960435490343192}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85952a6dc564ca742b671a4ea34cbbf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114522321999323804
 MonoBehaviour:
   m_ObjectHideFlags: 1
