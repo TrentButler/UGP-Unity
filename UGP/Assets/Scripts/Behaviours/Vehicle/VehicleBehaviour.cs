@@ -68,20 +68,22 @@ namespace UGP
                 + sSniper + "\n" + sRocket;
         }
 
+        //NEEDS WORK
+        //- UPDATE THE VEHICLE'S HEALTH AND FUEL
         [Command] private void CmdUpdateVehicle()
         {
-            var health = _v.Health;
-            var fuel = _v.Fuel;
+            //var health = _v.Health;
+            //var fuel = _v.Fuel;
 
-            if (health <= 0.0f)
-            {
-                _v.Destroyed = true;
-            }
+            //if (health <= 0.0f)
+            //{
+            //    _v.Destroyed = true;
+            //}
 
-            if (fuel <= 0.0f)
-            {
-                _v.FuelDepeleted = true;
-            }
+            //if (fuel <= 0.0f)
+            //{
+            //    _v.FuelDepeleted = true;
+            //}
         }
 
         public void SetVehicleActive(bool active)
@@ -89,7 +91,7 @@ namespace UGP
             vehicleActive = active;
         }
 
-        [Command] public void CmdOnVehicleEnter()
+        public void OnVehicleEnter()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
@@ -109,7 +111,7 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
-        [Command] public void CmdOnVehicleExit()
+        public void OnVehicleExit()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
             models.ForEach(m =>
@@ -132,19 +134,17 @@ namespace UGP
 
         public override void OnStartClient()
         {
-            _v = Instantiate(VehicleConfig);
-            _v.Health = _v.MaxHealth;
-            _v.Fuel = _v.MaxFuel;
-            _v.Destroyed = false;
-            _v.FuelDepeleted = false;
-            vehicleActive = false;
+            if(_v == null)
+            {
+                _v = Instantiate(VehicleConfig);
+            }
         }
 
         private void Start()
         {
             if (!isLocalPlayer)
             {
-                if (hasAuthority)
+                if (hasAuthority || isServer)
                 {
                     vehicleActive = false;
                     _v = Instantiate(VehicleConfig);
@@ -186,25 +186,25 @@ namespace UGP
                     if (vehicleActive)
                     {
                         VirtualCamera.SetActive(true);
-                        CmdOnVehicleEnter();
+                        OnVehicleEnter();
                         Cursor.visible = false;
                         ic.enabled = true;
                         //shootBehaviour.enabled = true;
                         vehicleUI.gameObject.SetActive(true);
                         vehicleUI.enabled = true;
-                        CmdUpdateVehicle();
+                        //CmdUpdateVehicle();
                         UpdateUI();
                     }
                     else
                     {
                         VirtualCamera.SetActive(false);
-                        CmdOnVehicleExit();
+                        OnVehicleExit();
                         Cursor.visible = true;
                         ic.enabled = false;
                         //shootBehaviour.enabled = false;
                         vehicleUI.gameObject.SetActive(false);
                         vehicleUI.enabled = false;
-                        CmdUpdateVehicle();
+                        //CmdUpdateVehicle();
                     }
                     return;
                 }
@@ -216,25 +216,25 @@ namespace UGP
             if (vehicleActive)
             {
                 VirtualCamera.SetActive(true);
-                CmdOnVehicleEnter();
+                OnVehicleEnter();
                 Cursor.visible = false;
                 ic.enabled = true;
                 //shootBehaviour.enabled = true;
                 vehicleUI.gameObject.SetActive(true);
                 vehicleUI.enabled = true;
-                CmdUpdateVehicle();
+                //CmdUpdateVehicle();
                 UpdateUI();
             }
             else
             {
                 VirtualCamera.SetActive(false);
-                CmdOnVehicleExit();
+                OnVehicleExit();
                 Cursor.visible = true;
                 ic.enabled = false;
                 //shootBehaviour.enabled = false;
                 vehicleUI.gameObject.SetActive(false);
                 vehicleUI.enabled = false;
-                CmdUpdateVehicle();
+                //CmdUpdateVehicle();
             }
         }
     }

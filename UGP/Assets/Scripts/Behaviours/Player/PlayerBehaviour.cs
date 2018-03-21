@@ -24,8 +24,7 @@ namespace UGP
 
         [HideInInspector] public bool needsToEnterVehicle;
 
-        [Command]
-        private void CmdExitVehicle(NetworkIdentity identity)
+        [Command] private void CmdExitVehicle(NetworkIdentity identity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
@@ -37,13 +36,13 @@ namespace UGP
             //localPlayerNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
 
-        [Command]
-        public void CmdDisablePlayerModel()
+        
+        public void DisablePlayerModel()
         {
             model.SetActive(false);
         }
-        [Command]
-        public void CmdEnablePlayerModel()
+        
+        public void EnablePlayerModel()
         {
             model.SetActive(true);
         }
@@ -95,15 +94,15 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if (isClient)
+                if (isClient && !isLocalPlayer)
                 {
                     if (isDriving)
                     {
-                        CmdDisablePlayerModel();
+                        DisablePlayerModel();
                     }
                     else
                     {
-                        CmdEnablePlayerModel();
+                        EnablePlayerModel();
                     }
                 }
 
@@ -126,7 +125,7 @@ namespace UGP
                 vehicle.enabled = true;
                 ic.enabled = false;
                 interaction.enabled = false;
-                CmdDisablePlayerModel();
+                DisablePlayerModel();
                 //ani.SetFloat("Walk", 0.0f);
 
                 transform.position = vehicle.seat.position;
@@ -137,16 +136,16 @@ namespace UGP
                 if (exitTimer >= TimeToExitVehicle)
                 {
                     //GET OUT OF VEHICLE
-                    vehicle.ani.SetTrigger("OpenDoor");
+                    //vehicle.ani.SetTrigger("OpenDoor");
 
-                    var get_out_position = transform.position;
-                    get_out_position.x = get_out_position.x + 1.5f;
+                    //var get_out_position = vehicle.seat.position;
+                    //get_out_position.x = get_out_position.x - 1.5f;
                     //get_out_position.y += 0.1f;
                     //get_out_position.z += 0.1f;
 
-                    GetComponent<CharacterController>().SimpleMove(get_out_position);
+                    //GetComponent<CharacterController>().Move(get_out_position);
 
-                    vehicle.ani.SetTrigger("CloseDoor");
+                    //vehicle.ani.SetTrigger("CloseDoor");
 
                     vehicle.SetVehicleActive(false);
                     var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
@@ -162,7 +161,7 @@ namespace UGP
                 vehicle = null;
                 ic.enabled = true;
                 interaction.enabled = true;
-                CmdEnablePlayerModel();
+                EnablePlayerModel();
             }
         }
     }

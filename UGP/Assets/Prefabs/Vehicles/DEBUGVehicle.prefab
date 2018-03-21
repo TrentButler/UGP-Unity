@@ -268,8 +268,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4126962040237516}
-  - component: {fileID: 114354326114777816}
-  - component: {fileID: 65152481187731180}
   m_Layer: 0
   m_Name: Seat
   m_TagString: Untagged
@@ -678,18 +676,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &65152481187731180
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1604610976863374}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!65 &65906811335488660
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -1158,6 +1144,7 @@ MonoBehaviour:
   VehicleSteerSpeed: 2
   BoostSpeed: 80
   isTesting: 0
+  useDownforce: 1
   Downforce: {x: 0, y: 0, z: 0}
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
@@ -1234,17 +1221,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waitTime: 3
   velocityThreshold: 1
---- !u!114 &114354326114777816
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1604610976863374}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85952a6dc564ca742b671a4ea34cbbf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114358088618495944
 MonoBehaviour:
   m_ObjectHideFlags: 1
