@@ -1,14 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace UGP
 {
-
-    public class OfflinePlayerInteractionBehaviour : MonoBehaviour 
+    public class InteractorBehaviour : MonoBehaviour, IInteractor
     {
         public IInteractable currentInteractable;
-        public GameObject Objecttocarry;
-        
 
         public void Interaction_Set(IInteractable interactable)
         {
@@ -29,9 +27,7 @@ namespace UGP
             {
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    
-                    currentInteractable.Interact(this);
-                    
+                    currentInteractable.Interact(currentInteractable);
                 }
             }
         }

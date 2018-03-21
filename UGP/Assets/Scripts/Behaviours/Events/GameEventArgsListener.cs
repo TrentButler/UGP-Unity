@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-namespace UGPEVENTS
+namespace UGP
 {
 
     public class GameEventArgsListener : MonoBehaviour

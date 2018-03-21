@@ -16,6 +16,7 @@ namespace UGP
 
         public float JumpStrength = 1.0f;
         private Rigidbody rb;
+        public CharacterController c;
         #endregion
         private void KeepPlayerUpright()
         {
@@ -28,22 +29,17 @@ namespace UGP
 
             if (dX > 0.0f || dX < 0.0f || dZ > 0.0f || dZ < 0.0f)
                 rot[0] = Mathf.LerpAngle(dX, 0.0f, 1.0f);
-            rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
+                rot[2] = Mathf.LerpAngle(dZ, 0.0f, 1.0f);
 
-            rb.rotation = rot;
-            transform.rotation = rot;
+            c.transform.rotation = rot;
+            c.transform.rotation = rot;
         }
-
-
 
         private void Start()
         {
-
-
-
-            rb = GetComponent<Rigidbody>();
-            if (!rb)
-                rb = gameObject.AddComponent<Rigidbody>();
+            //rb = GetComponent<Rigidbody>();
+            //if (!rb)
+            //    rb = gameObject.AddComponent<Rigidbody>();
         }
 
         private void FixedUpdate()
@@ -56,19 +52,21 @@ namespace UGP
             //PLAYER MOVE FORWARD WITHOUT BUTTON PRESS
 
             Vector3 moveForward = new Vector3(0.0f, 0.0f, v * WalkSpeed);
-            var move = (moveForward + transform.forward);
+            var move = c.transform.TransformDirection(moveForward);
 
             var YRot = new Vector3(0.0f, h * TurnSpeed, 0.0f);
             //Debug.Log(move);
             //Debug.Log(YRot);
 
-            transform.Rotate(YRot);
-            transform.Translate(move * Time.fixedDeltaTime);
+            //transform.Rotate(YRot);
+            //transform.Translate(move * Time.fixedDeltaTime);
+            c.transform.Rotate(YRot);
+            c.Move(move * Time.smoothDeltaTime);
+
         }
 
         private void LateUpdate()
         {
-           
             KeepPlayerUpright();
         }
     }
