@@ -10,47 +10,120 @@ namespace UGP
     //NEEDS WORK
     public class VehicleBehaviour : NetworkBehaviour
     {
-        public GameObject VirtualCamera;
+        #region COLOR_CHANGE
         public Color vColor;
         public List<MeshRenderer> models;
         [Range(0.001f, 1.0f)] public float colorChangeSpeed;
-        public Vehicle VehicleConfig;
-        [HideInInspector] public Vehicle _v;
+        #endregion
+
+        public GameObject VirtualCamera;
         public DefaultVehicleController ic;
         public VehicleShootBehaviour shootBehaviour;
-        public Canvas vehicleUI;
 
-        [SyncVar] public bool vehicleActive;
+        public Vehicle VehicleConfig;
+        [HideInInspector] public Vehicle _v;
+
+        public Canvas vehicleUI;
 
         public Transform seat;
         public Animator ani;
 
-        //NEEDS WORK
-        private void UpdateUI()
+        #region SYNCED_VARIABLES
+        [SyncVar] public bool vehicleActive; //ADD FUNCTION TO TRIGGER VEHICLE DESTROYED EVENT???? (hook = "OnVehicleDestroyed")
+        [SyncVar(hook = "OnVehicleHealthChange")] public float vehicleHealth;
+        //[SyncVar] public float vehicleArmor;
+        [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
+        #endregion
+
+        [Command]
+        public void CmdUseFuel(float fuelUsed)
         {
-            //HEALTH SLIDER
-            //FUEL SLIDER
+            vehicleFuel -= fuelUsed;
 
-            //FORMAT AND POPULATE THE TEXT BOX WITH THE INFO FROM 'AMMOBOX'
+            if (vehicleFuel <= 0.0f)
+            {
+                vehicleActive = false;
+            }
+        }
 
-            var fuel = _v.Fuel;
-            var health = _v.Health;
+        [Command]
+        public void CmdTakeDamage(float healthTaken)
+        {
+            vehicleHealth -= healthTaken;
 
+            if (vehicleHealth <= 0.0f)
+            {
+                vehicleActive = false;
+            }
+        }
+
+        private void UpdateVehicle()
+        {
+            if (vehicleHealth <= 0.0f)
+            {
+                vehicleActive = false;
+            }
+
+            if (vehicleFuel <= 0.0f)
+            {
+                vehicleActive = false;
+            }
+        }
+
+
+        public void OnVehicleHealthChange(float healthChange)
+        {
             var sliders = vehicleUI.GetComponentsInChildren<Slider>().ToList();
             sliders.ForEach(s =>
             {
                 if (s.name == "Health")
                 {
-                    s.value = health;
+                    s.value = healthChange;
                     s.maxValue = _v.MaxHealth;
                 }
-                else
+            });
+        }
+        public void OnVehicleFuelChange(float fuelChange)
+        {
+            var sliders = vehicleUI.GetComponentsInChildren<Slider>().ToList();
+            sliders.ForEach(s =>
+            {
+                if (s.name == "Fuel")
                 {
-                    s.value = fuel;
+                    s.value = fuelChange;
                     s.maxValue = _v.MaxFuel;
                 }
-
             });
+        }
+
+        //NEEDS WORK
+        private void UpdateUI()
+        {
+            #region OLD
+            //HEALTH SLIDER
+            //FUEL SLIDER
+
+            //FORMAT AND POPULATE THE TEXT BOX WITH THE INFO FROM 'AMMOBOX'
+
+            //var fuel = _v.Fuel;
+            //var health = _v.Health;
+
+            //var sliders = vehicleUI.GetComponentsInChildren<Slider>().ToList();
+            //sliders.ForEach(s =>
+            //{
+            //    if (s.name == "Health")
+            //    {
+            //        s.value = health;
+            //        s.maxValue = _v.MaxHealth;
+            //    }
+            //    else
+            //    {
+            //        s.value = fuel;
+            //        s.maxValue = _v.MaxFuel;
+            //    }
+
+            //});
+            #endregion
 
             var text = vehicleUI.GetComponentInChildren<Text>();
 
@@ -70,7 +143,8 @@ namespace UGP
 
         //NEEDS WORK
         //- UPDATE THE VEHICLE'S HEALTH AND FUEL
-        [Command] private void CmdUpdateVehicle()
+        [Command]
+        private void CmdUpdateVehicle()
         {
             //var health = _v.Health;
             //var fuel = _v.Fuel;
@@ -132,13 +206,13 @@ namespace UGP
             });
         }
 
-        public override void OnStartClient()
-        {
-            if(_v == null)
-            {
-                _v = Instantiate(VehicleConfig);
-            }
-        }
+        //public override void OnStartClient()
+        //{
+        //    if(_v == null)
+        //    {
+        //        _v = Instantiate(VehicleConfig);
+        //    }
+        //}
 
         private void Start()
         {
@@ -146,12 +220,19 @@ namespace UGP
             {
                 if (hasAuthority || isServer)
                 {
-                    vehicleActive = false;
-                    _v = Instantiate(VehicleConfig);
-                    _v.Health = _v.MaxHealth;
-                    _v.Fuel = _v.MaxFuel;
-                    _v.Destroyed = false;
-                    _v.FuelDepeleted = false;
+                    if (_v == null)
+                    {
+                        if (VehicleConfig == null)
+                        {
+                            VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
+                        }
+                        _v = Instantiate(VehicleConfig);
+                        vehicleHealth = _v.MaxHealth;
+                        vehicleFuel = _v.MaxFuel;
+                        _v.Destroyed = false;
+                        _v.FuelDepeleted = false;
+                        //vehicleActive = false;
+                    }
 
                     models.ForEach(m =>
                     {
@@ -164,12 +245,19 @@ namespace UGP
                 return;
             }
 
-            vehicleActive = false;
-            _v = Instantiate(VehicleConfig);
-            _v.Health = _v.MaxHealth;
-            _v.Fuel = _v.MaxFuel;
-            _v.Destroyed = false;
-            _v.FuelDepeleted = false;
+            if (_v == null)
+            {
+                if (VehicleConfig == null)
+                {
+                    VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
+                }
+                _v = Instantiate(VehicleConfig);
+                vehicleHealth = _v.MaxHealth;
+                vehicleFuel = _v.MaxFuel;
+                _v.Destroyed = false;
+                _v.FuelDepeleted = false;
+                //vehicleActive = false;
+            }
 
             models.ForEach(m =>
             {
@@ -179,9 +267,15 @@ namespace UGP
 
         private void FixedUpdate()
         {
+            if (isServer)
+            {
+                UpdateVehicle();
+                return;
+            }
+
             if (!isLocalPlayer)
             {
-                if (hasAuthority)
+                if (hasAuthority && !isServer)
                 {
                     if (vehicleActive)
                     {
@@ -193,7 +287,7 @@ namespace UGP
                         vehicleUI.gameObject.SetActive(true);
                         vehicleUI.enabled = true;
                         //CmdUpdateVehicle();
-                        UpdateUI();
+                        //UpdateUI();
                     }
                     else
                     {
@@ -223,7 +317,7 @@ namespace UGP
                 vehicleUI.gameObject.SetActive(true);
                 vehicleUI.enabled = true;
                 //CmdUpdateVehicle();
-                UpdateUI();
+                //UpdateUI();
             }
             else
             {

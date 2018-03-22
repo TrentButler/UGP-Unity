@@ -40,6 +40,11 @@ namespace UGP
 
         [HideInInspector] public float currentVehicleThrottle;
         [HideInInspector] public float currentVehicleStrafe;
+        public float currentFuelConsumption;
+        [Range(0.001f, 1.0f)] public float fuelBurnRate = 0.5f;
+        private float originalFuelBurnRate;
+
+        public VehicleBehaviour vehicleBrain;
 
         #region VehicleMovement
         public void ResetVehicleRotation()
@@ -167,6 +172,8 @@ namespace UGP
 
             currentVehicleThrottle = throttle;
             currentVehicleStrafe = strafeVehicle;
+            currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * fuelBurnRate;
+            vehicleBrain.CmdUseFuel(currentFuelConsumption);
 
             Hover();
             UseBooster();

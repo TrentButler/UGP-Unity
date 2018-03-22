@@ -2298,21 +2298,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beadd3ee7ea545e4fa493e0e7908fab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VirtualCamera: {fileID: 1958347032059228}
   vColor: {r: 1, g: 0, b: 0, a: 1}
   models:
   - {fileID: 23890966117838078}
   - {fileID: 23171132043887200}
   - {fileID: 23558278274967876}
   colorChangeSpeed: 0.265
-  VehicleConfig: {fileID: 11400000, guid: 00dd93e5a7108074fb385382df00968e, type: 2}
-  _v: {fileID: 0}
+  VirtualCamera: {fileID: 1958347032059228}
   ic: {fileID: 114936081302871754}
   shootBehaviour: {fileID: 114693570556457754}
+  VehicleConfig: {fileID: 11400000, guid: 00dd93e5a7108074fb385382df00968e, type: 2}
+  _v: {fileID: 0}
   vehicleUI: {fileID: 223560124168869596}
-  vehicleActive: 0
   seat: {fileID: 4261123642762230}
   ani: {fileID: 95495228253066910}
+  vehicleActive: 0
+  vehicleHealth: 0
+  vehicleFuel: 0
 --- !u!114 &114431287556307284
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2768,6 +2770,9 @@ MonoBehaviour:
   Downforce: {x: 0, y: 0, z: 0}
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
+  currentFuelConsumption: 0
+  fuelBurnRate: 0.5
+  vehicleBrain: {fileID: 114420336651608308}
 --- !u!114 &114940082281875364
 MonoBehaviour:
   m_ObjectHideFlags: 1
