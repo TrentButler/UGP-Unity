@@ -34,16 +34,9 @@ namespace UGP
             transform.rotation = rot;
         }
 
-
-
         private void Start()
         {
-
-
-
-            rb = GetComponent<Rigidbody>();
-            if (!rb)
-                rb = gameObject.AddComponent<Rigidbody>();
+            
         }
 
         private void FixedUpdate()
