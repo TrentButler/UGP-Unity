@@ -17,26 +17,67 @@ namespace UGP
         #endregion
 
         public GameObject VirtualCamera;
-        public DefaultVehicleController ic;
+        public NetworkUserControl ic;
         public VehicleShootBehaviour shootBehaviour;
 
         public Vehicle VehicleConfig;
         [HideInInspector] public Vehicle _v;
 
+        #region UI
         public Canvas vehicleUI;
+        public Slider HealthSlider;
+        public Slider FuelSlider;
+        #endregion
 
         public Transform seat;
         public Animator ani;
 
         #region SYNCED_VARIABLES
         [SyncVar] public bool vehicleActive; //ADD FUNCTION TO TRIGGER VEHICLE DESTROYED EVENT???? (hook = "OnVehicleDestroyed")
+        [SyncVar] public bool playerInSeat = false;
         [SyncVar(hook = "OnVehicleHealthChange")] public float vehicleHealth;
-        //[SyncVar] public float vehicleArmor;
+        private float max_health;
         [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
+        private float max_fuel;
         #endregion
 
-        [Command]
-        public void CmdUseFuel(float fuelUsed)
+        //VEHICLE TAKE HEALTH
+        //VEHICLE TAKE ARMOR
+
+        //VEHICLE TAKE DAMAGE
+
+        //VEHICLE TAKE FUEL
+        //VEHICLE USE FUEL
+
+        #region COMMAND_FUNCTIONS
+        [Command] public void CmdTakeHealth(float healthTaken)
+        {
+            //INCREMENT VEHICLE HEALTH, CLAMP THE VALUE BETWEEN 0.0F AND THE 'MaxHealth'
+
+            vehicleHealth += healthTaken;
+            vehicleHealth = Mathf.Clamp(vehicleHealth, 0.0f, _v.MaxHealth);
+            //Debug.Log("VEHICLE TAKE " + healthTaken.ToString() + " HEALTH");
+        }
+
+        [Command] public void CmdTakeDamage(float healthTaken)
+        {
+            //DEPLETE THE VEHICLE'S HEALTH
+            vehicleHealth -= healthTaken;
+            //Debug.Log("VEHICLE TAKE " + healthTaken.ToString() + " DAMAGE");
+
+            if (vehicleHealth <= 0.0f)
+            {
+                vehicleActive = false;
+            }
+        }
+
+        [Command] public void CmdRefuel(float refuel)
+        {
+            vehicleFuel += refuel;
+            vehicleFuel = Mathf.Clamp(vehicleFuel, 0.0f, _v.MaxFuel);
+        }
+
+        [Command] public void CmdUseFuel(float fuelUsed)
         {
             vehicleFuel -= fuelUsed;
 
@@ -45,124 +86,83 @@ namespace UGP
                 vehicleActive = false;
             }
         }
-
-        [Command]
-        public void CmdTakeDamage(float healthTaken)
-        {
-            vehicleHealth -= healthTaken;
-
-            if (vehicleHealth <= 0.0f)
-            {
-                vehicleActive = false;
-            }
-        }
-
-        private void UpdateVehicle()
-        {
-            if (vehicleHealth <= 0.0f)
-            {
-                vehicleActive = false;
-            }
-
-            if (vehicleFuel <= 0.0f)
-            {
-                vehicleActive = false;
-            }
-        }
-
+        #endregion
 
         public void OnVehicleHealthChange(float healthChange)
+        {
+            HealthSlider.value = healthChange;
+            HealthSlider.maxValue = max_health;
+        }
+        public void OnVehicleFuelChange(float fuelChange)
+        {
+            FuelSlider.value = fuelChange;
+            FuelSlider.maxValue = max_fuel;
+        }
+
+        public void SetVehicleActive(string player_name, bool active)
+        {
+            Debug.Log(player_name + "SETACTIVE(" + active.ToString() + ") " + gameObject.name);
+            vehicleActive = active;
+        }
+
+        [ClientRpc] public void RpcSetVehicleActive(bool active)
+        {
+            vehicleActive = active;
+        }
+
+        //NEEDS WORK
+        private void UpdateUI()
         {
             var sliders = vehicleUI.GetComponentsInChildren<Slider>().ToList();
             sliders.ForEach(s =>
             {
                 if (s.name == "Health")
                 {
-                    s.value = healthChange;
-                    s.maxValue = _v.MaxHealth;
+                    s.value = vehicleHealth;
+                    s.maxValue = max_health;
                 }
-            });
-        }
-        public void OnVehicleFuelChange(float fuelChange)
-        {
-            var sliders = vehicleUI.GetComponentsInChildren<Slider>().ToList();
-            sliders.ForEach(s =>
-            {
-                if (s.name == "Fuel")
+                if(s.name == "Fuel")
                 {
-                    s.value = fuelChange;
-                    s.maxValue = _v.MaxFuel;
+                    s.value = vehicleFuel;
+                    s.maxValue = max_fuel;
                 }
             });
+
+            //var text = vehicleUI.GetComponentInChildren<Text>();
+
+            //var _assault = _v.ammunition.Assault;
+            //var _shotgun = _v.ammunition.Shotgun;
+            //var _sniper = _v.ammunition.Sniper;
+            //var _rocket = _v.ammunition.Rocket;
+
+            //string sAssault = "ASSAULT: " + _assault;
+            //string sShotgun = "SHOTGUN: " + _shotgun;
+            //string sSniper = "SNIPER: " + _sniper;
+            //string sRocket = "ROCKET: " + _rocket;
+
+            //text.text = sAssault + "\n" + sShotgun + "\n"
+            //    + sSniper + "\n" + sRocket;
         }
-
-        //NEEDS WORK
-        private void UpdateUI()
+        
+        private void UpdateVehicle()
         {
-            #region OLD
-            //HEALTH SLIDER
-            //FUEL SLIDER
+            //- SERVER ONLY
+            //- CHECK IF VEHICLE FUEL OR HEALTH IS BELOW ZERO(0)
+            //- SET VEHICLE ACTIVE TO FALSE
 
-            //FORMAT AND POPULATE THE TEXT BOX WITH THE INFO FROM 'AMMOBOX'
+            if (vehicleHealth <= 0.0f)
+            {
+                //vehicleActive = false;
+                RpcSetVehicleActive(false);
+                Debug.Log("VEHICLE OUT OF HEALTH");
+            }
 
-            //var fuel = _v.Fuel;
-            //var health = _v.Health;
-
-            //var sliders = vehicleUI.GetComponentsInChildren<Slider>().ToList();
-            //sliders.ForEach(s =>
-            //{
-            //    if (s.name == "Health")
-            //    {
-            //        s.value = health;
-            //        s.maxValue = _v.MaxHealth;
-            //    }
-            //    else
-            //    {
-            //        s.value = fuel;
-            //        s.maxValue = _v.MaxFuel;
-            //    }
-
-            //});
-            #endregion
-
-            var text = vehicleUI.GetComponentInChildren<Text>();
-
-            var _assault = _v.ammunition.Assault;
-            var _shotgun = _v.ammunition.Shotgun;
-            var _sniper = _v.ammunition.Sniper;
-            var _rocket = _v.ammunition.Rocket;
-
-            string sAssault = "ASSAULT: " + _assault;
-            string sShotgun = "SHOTGUN: " + _shotgun;
-            string sSniper = "SNIPER: " + _sniper;
-            string sRocket = "ROCKET: " + _rocket;
-
-            text.text = sAssault + "\n" + sShotgun + "\n"
-                + sSniper + "\n" + sRocket;
-        }
-
-        //NEEDS WORK
-        //- UPDATE THE VEHICLE'S HEALTH AND FUEL
-        [Command]
-        private void CmdUpdateVehicle()
-        {
-            //var health = _v.Health;
-            //var fuel = _v.Fuel;
-
-            //if (health <= 0.0f)
-            //{
-            //    _v.Destroyed = true;
-            //}
-
-            //if (fuel <= 0.0f)
-            //{
-            //    _v.FuelDepeleted = true;
-            //}
-        }
-
-        public void SetVehicleActive(bool active)
-        {
-            vehicleActive = active;
+            if (vehicleFuel <= 0.0f)
+            {
+                //vehicleActive = false;
+                RpcSetVehicleActive(false);
+                Debug.Log("VEHICLE OUT OF FUEL");
+            }
         }
 
         public void OnVehicleEnter()
@@ -253,7 +253,11 @@ namespace UGP
                 }
                 _v = Instantiate(VehicleConfig);
                 vehicleHealth = _v.MaxHealth;
+                max_health = _v.MaxHealth;
+
                 vehicleFuel = _v.MaxFuel;
+                max_fuel = _v.MaxFuel;
+                
                 _v.Destroyed = false;
                 _v.FuelDepeleted = false;
                 //vehicleActive = false;
@@ -286,8 +290,8 @@ namespace UGP
                         //shootBehaviour.enabled = true;
                         vehicleUI.gameObject.SetActive(true);
                         vehicleUI.enabled = true;
-                        //CmdUpdateVehicle();
-                        //UpdateUI();
+                        //UpdateVehicle();
+                        UpdateUI();
                     }
                     else
                     {
@@ -317,11 +321,19 @@ namespace UGP
                 vehicleUI.gameObject.SetActive(true);
                 vehicleUI.enabled = true;
                 //CmdUpdateVehicle();
-                //UpdateUI();
+                UpdateUI();
             }
             else
             {
-                VirtualCamera.SetActive(false);
+                if(playerInSeat)
+                {
+                    VirtualCamera.SetActive(true);
+                }
+                else
+                {
+                    VirtualCamera.SetActive(false);
+                }
+                
                 OnVehicleExit();
                 Cursor.visible = true;
                 ic.enabled = false;

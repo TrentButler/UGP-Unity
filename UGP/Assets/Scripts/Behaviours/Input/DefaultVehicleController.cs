@@ -41,7 +41,9 @@ namespace UGP
         [HideInInspector] public float currentVehicleThrottle;
         [HideInInspector] public float currentVehicleStrafe;
         public float currentFuelConsumption;
-        [Range(0.001f, 1.0f)] public float fuelBurnRate = 0.5f;
+        [Range(0.001f, 1.0f)] public float FuelBurnRate = 0.5f;
+        [Range(0.001f, 2.0f)] public float BoostingFuelBurnRate = 1.0f;
+
         private float originalFuelBurnRate;
 
         public VehicleBehaviour vehicleBrain;
@@ -136,6 +138,7 @@ namespace UGP
             {
                 //BOOST
                 MaxSpeed = BoostSpeed;
+                FuelBurnRate = BoostingFuelBurnRate;
             }
             else
             {
@@ -144,6 +147,7 @@ namespace UGP
                     return;
                 }
                 MaxSpeed = originalSpeed;
+                FuelBurnRate = originalFuelBurnRate;
             }
         }
 
@@ -172,8 +176,6 @@ namespace UGP
 
             currentVehicleThrottle = throttle;
             currentVehicleStrafe = strafeVehicle;
-            currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * fuelBurnRate;
-            vehicleBrain.CmdUseFuel(currentFuelConsumption);
 
             Hover();
             UseBooster();
@@ -182,42 +184,52 @@ namespace UGP
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
 
-            #region HOVERVECTORCALCULATION
-            //PERFORM A RAYCAST DOWNWARD, 
-            //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
-            //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
-            RaycastHit hit;
-            //var world_point = transform.TransformPoint(point.position);
-            if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
+            if(vehicleBrain.vehicleActive)
             {
-                var vertForce = (TargetHeight - hit.distance) / TargetHeight;
-                Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
+                currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * FuelBurnRate;
+                vehicleBrain.CmdUseFuel(currentFuelConsumption);
 
-                //Debug.Log(hoverVector); //DELETE THIS
-                CurrentHoverVector = hoverVector;
+                #region HOVERVECTORCALCULATION
+                //PERFORM A RAYCAST DOWNWARD, 
+                //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
+                //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
+                RaycastHit hit;
+                //var world_point = transform.TransformPoint(point.position);
+                if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
+                {
+                    var vertForce = (TargetHeight - hit.distance) / TargetHeight;
+                    Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
 
-                rb.AddForce(hoverVector);
-                //rb.AddForceAtPosition(hoverVector, point.position);
-            }
-            #endregion
+                    //Debug.Log(hoverVector); //DELETE THIS
+                    CurrentHoverVector = hoverVector;
 
-            if (rb.centerOfMass.y > TargetHeight)
-            {
-                var displacement_y = TargetHeight - rb.transform.position.y;
-                var force_vector = (new Vector3(0.0f, displacement_y, 0.0f) + (-Vector3.up)) * EvasionHoverStrength;
-                Downforce = force_vector;
-                rb.AddForce(force_vector);
-            }
+                    rb.AddForce(hoverVector);
+                    //rb.AddForceAtPosition(hoverVector, point.position);
+                }
+                #endregion
 
-            if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
-            {
-                var move_direction = transform.TransformDirection((accelerationVector + strafeVector));
-                //APPLY FORCES
-                rb.AddForce(move_direction, ForceMode.Impulse);
+                if (rb.centerOfMass.y > TargetHeight)
+                {
+                    var displacement_y = TargetHeight - rb.transform.position.y;
+                    var force_vector = (new Vector3(0.0f, displacement_y, 0.0f) + (-Vector3.up)) * EvasionHoverStrength;
+                    Downforce = force_vector;
+                    rb.AddForce(force_vector);
+                }
+
+                if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
+                {
+                    var move_direction = transform.TransformDirection((accelerationVector + strafeVector));
+                    //APPLY FORCES
+                    rb.AddForce(move_direction, ForceMode.Impulse);
+                }
+                else
+                {
+                    rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
+                }
             }
             else
             {
-                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
+                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO USER CONTROL
             }
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
@@ -277,6 +289,7 @@ namespace UGP
             originalStrafeSpeed = StrafeSpeed;
             originalTargetHeight = TargetHeight;
             originalHoverStrength = HoverStrength;
+            originalFuelBurnRate = FuelBurnRate;
         }
     }
 }

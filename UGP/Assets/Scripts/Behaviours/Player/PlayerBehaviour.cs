@@ -14,6 +14,7 @@ namespace UGP
         [HideInInspector] public Player p;
 
         [SyncVar] public bool isDriving;
+        [SyncVar] public bool playerModelActive; //HAVE THE PLAYER MODEL BEING ACTIVE MANAGED BY THE SERVER
         public VehicleBehaviour vehicle;
         public float TimeToExitVehicle;
         private float exitTimer = 0.0f;
@@ -35,7 +36,6 @@ namespace UGP
             vehicleNetworkIdentity.RemoveClientAuthority(localPlayerConn);
             //localPlayerNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
-
         
         public void DisablePlayerModel()
         {
@@ -147,7 +147,8 @@ namespace UGP
 
                     //vehicle.ani.SetTrigger("CloseDoor");
 
-                    vehicle.SetVehicleActive(false);
+                    vehicle.playerInSeat = false;
+                    vehicle.SetVehicleActive(this.name, false);
                     var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
                     CmdExitVehicle(vehicleIdentity);
                     vehicle = null;

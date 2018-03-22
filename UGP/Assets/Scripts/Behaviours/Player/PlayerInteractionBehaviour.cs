@@ -68,8 +68,9 @@ namespace UGP
                     {
                         //GET IN THE VEHICLE
                         p.vehicle = v;
+                        v.SetVehicleActive(p.name, true);
+                        v.playerInSeat = true;
                         CmdEnterVehicle(vehicleIdentity);
-                        v.SetVehicleActive(true);
                     }
                 }
             }
