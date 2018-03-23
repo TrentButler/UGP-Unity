@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace UGP
 {
 
-    public class ItemBehaviour : MonoBehaviour
+    public class OfflineItemBehaviour : MonoBehaviour
     {
         public Text ItemName;
         public GameObject ItemCanvas;
@@ -72,11 +72,11 @@ namespace UGP
                 {
                     player = player_interaction;
                 }
-                
-                
+
+
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    if(!player_interaction.isHolding && !isBeingHeld)
+                    if (!player_interaction.isHolding && !isBeingHeld)
                     {
                         PickUp(player_holding_transform, player);
                     }

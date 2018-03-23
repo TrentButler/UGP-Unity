@@ -41,14 +41,6 @@ namespace UGP
         private float max_fuel;
         #endregion
 
-        //VEHICLE TAKE HEALTH
-        //VEHICLE TAKE ARMOR
-
-        //VEHICLE TAKE DAMAGE
-
-        //VEHICLE TAKE FUEL
-        //VEHICLE USE FUEL
-
         #region COMMAND_FUNCTIONS
         [Command] public void CmdTakeHealth(float healthTaken)
         {
@@ -90,13 +82,21 @@ namespace UGP
 
         public void OnVehicleHealthChange(float healthChange)
         {
-            HealthSlider.value = healthChange;
-            HealthSlider.maxValue = max_health;
+            //RpcUpdateVehicleHealth(healthChange);
+
+            vehicleHealth = Mathf.Clamp(healthChange, 0.0f, max_health);
+
+            //HealthSlider.value = vehicleHealth;
+            //HealthSlider.maxValue = max_health;
         }
         public void OnVehicleFuelChange(float fuelChange)
         {
-            FuelSlider.value = fuelChange;
-            FuelSlider.maxValue = max_fuel;
+            //RpcUpdateVehicleFuel(fuelChange);
+
+            vehicleFuel = Mathf.Clamp(fuelChange, 0.0f, max_fuel);
+
+            //FuelSlider.value = vehicleFuel;
+            //FuelSlider.maxValue = max_fuel;
         }
 
         public void SetVehicleActive(string player_name, bool active)
@@ -108,6 +108,21 @@ namespace UGP
         [ClientRpc] public void RpcSetVehicleActive(bool active)
         {
             vehicleActive = active;
+        }
+
+        public void UpdateVehicleUI()
+        {
+            HealthSlider.value = Mathf.Clamp(vehicleHealth, 0.0f, max_health);
+            
+            //Debug.Log("VEHICLE HEALTH: " + vehicleHealth.ToString());
+            //Debug.Log("HEALTH SLIDER VALUE: " + HealthSlider.value.ToString());
+            //Debug.Log("HEALTH SLIDER MAX VALUE: " + HealthSlider.maxValue.ToString());
+
+            
+            FuelSlider.value = Mathf.Clamp(vehicleFuel, 0.0f, max_fuel);
+            //Debug.Log("VEHICLE FUEL: " + vehicleFuel.ToString());
+            //Debug.Log("FUEL SLIDER VALUE: " + FuelSlider.value.ToString());
+            //Debug.Log("FUEL SLIDER MAX VALUE: " + FuelSlider.maxValue.ToString());
         }
 
         //NEEDS WORK
@@ -226,13 +241,22 @@ namespace UGP
                         {
                             VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
                         }
+
                         _v = Instantiate(VehicleConfig);
+
                         vehicleHealth = _v.MaxHealth;
                         vehicleFuel = _v.MaxFuel;
+
+                        max_fuel = _v.MaxFuel;
+                        max_health = _v.MaxHealth;
+
                         _v.Destroyed = false;
                         _v.FuelDepeleted = false;
                         //vehicleActive = false;
                     }
+
+                    HealthSlider.maxValue = max_health;
+                    FuelSlider.maxValue = max_fuel;
 
                     models.ForEach(m =>
                     {
@@ -251,17 +275,22 @@ namespace UGP
                 {
                     VehicleConfig = Resources.Load("Assets//Resources//ScriptableObjects//Vehicles//BasicVehicle") as Vehicle;
                 }
+
                 _v = Instantiate(VehicleConfig);
+
                 vehicleHealth = _v.MaxHealth;
+                vehicleFuel = _v.MaxFuel;
+
+                max_fuel = _v.MaxFuel;
                 max_health = _v.MaxHealth;
 
-                vehicleFuel = _v.MaxFuel;
-                max_fuel = _v.MaxFuel;
-                
                 _v.Destroyed = false;
                 _v.FuelDepeleted = false;
                 //vehicleActive = false;
             }
+
+            HealthSlider.maxValue = max_health;
+            FuelSlider.maxValue = max_fuel;
 
             models.ForEach(m =>
             {
@@ -291,7 +320,8 @@ namespace UGP
                         vehicleUI.gameObject.SetActive(true);
                         vehicleUI.enabled = true;
                         //UpdateVehicle();
-                        UpdateUI();
+                        //UpdateUI();
+                        UpdateVehicleUI();
                     }
                     else
                     {
@@ -321,7 +351,8 @@ namespace UGP
                 vehicleUI.gameObject.SetActive(true);
                 vehicleUI.enabled = true;
                 //CmdUpdateVehicle();
-                UpdateUI();
+                //UpdateUI();
+                UpdateVehicleUI();
             }
             else
             {

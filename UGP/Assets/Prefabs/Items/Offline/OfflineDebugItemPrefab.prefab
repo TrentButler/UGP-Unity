@@ -76,7 +76,7 @@ GameObject:
   - component: {fileID: 65884520958955278}
   - component: {fileID: 23660507248365558}
   - component: {fileID: 54643853479384106}
-  - component: {fileID: 114370037917910714}
+  - component: {fileID: 114965252584015574}
   m_Layer: 0
   m_Name: OfflineDebugItemPrefab
   m_TagString: Untagged
@@ -228,23 +228,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &114370037917910714
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1381941193068494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd81f2f253212b041bb057ec2944c9c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ItemName: {fileID: 114879274639831228}
-  ItemCanvas: {fileID: 1026482096882798}
-  ItemConfig: {fileID: 11400000, guid: b8afb1fa966ced749a563962472c94bd, type: 2}
-  _I: {fileID: 0}
-  _parent: {fileID: 0}
-  isBeingHeld: 0
 --- !u!114 &114574882808956540
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -385,6 +368,23 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114965252584015574
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1381941193068494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78c3ba9a2f7be1444b63d0155d748bc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemName: {fileID: 114879274639831228}
+  ItemCanvas: {fileID: 1026482096882798}
+  ItemConfig: {fileID: 11400000, guid: b8afb1fa966ced749a563962472c94bd, type: 2}
+  _I: {fileID: 0}
+  _parent: {fileID: 0}
+  isBeingHeld: 0
 --- !u!222 &222188666242313718
 CanvasRenderer:
   m_ObjectHideFlags: 1

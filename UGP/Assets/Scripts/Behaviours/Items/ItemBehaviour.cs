@@ -1,0 +1,147 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Networking;
+namespace UGP
+{
+
+    public class ItemBehaviour : NetworkBehaviour
+    {
+        public Text ItemName;
+        public GameObject ItemCanvas;
+        public Item ItemConfig;
+        [HideInInspector]
+        public Item _I;
+
+        private Rigidbody rb;
+        public Transform _parent;
+        private PlayerInteractionBehaviour player;
+        public bool isBeingHeld = false;
+
+
+
+        //NEEDS WORK
+        //MAYBE MAKE A RPC CALL TO SET THE PARENT ACROSS ALL CLIENTS
+        public void PickUp(Transform parent, PlayerInteractionBehaviour interaction)
+        {
+            //PARENT THE 'ITEM' TO THE PLAYER
+            //TURN GRAVITY OFF FOR THE ITEM
+            _parent = parent;
+            transform.SetParent(parent);
+            rb.MovePosition(Vector3.zero);
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+            GetComponent<BoxCollider>().enabled = false;
+            rb.useGravity = false;
+            isBeingHeld = true;
+
+            player = interaction;
+            player.CmdSetHolding(true);
+        }
+
+        public void Drop(Transform parent)
+        {
+            //UN-PARENT THE 'ITEM' FROM THE PLAYER
+            //TURN GRAVITY BACK ON FOR THE ITEM
+            transform.parent = null;
+            rb.MovePosition(parent.position);
+            _parent = null;
+            rb.constraints = RigidbodyConstraints.None;
+            GetComponent<BoxCollider>().enabled = true;
+            rb.useGravity = true;
+            isBeingHeld = false;
+            player.CmdSetHolding(false);
+            player = null;
+        }
+
+        //public void UseItem()
+        //{
+
+        //}
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (other.tag == "Player")
+            {
+                var player_identity = other.GetComponent<NetworkIdentity>();
+
+                if(player_identity.isLocalPlayer)
+                {
+                    Debug.Log("Press F To Pick Up " + _I.name);
+                    ItemName.text = ItemConfig.name;
+                    ItemCanvas.SetActive(true);
+                }
+
+                var player_holding_transform = other.transform.Find("ItemHoldPosition");
+
+                var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
+
+                if (player_interaction != null)
+                {
+                    player = player_interaction;
+                }
+
+                if (Input.GetKeyDown(KeyCode.F))
+                {
+                    if (!player_interaction.isHolding && !isBeingHeld)
+                    {
+                        PickUp(player_holding_transform, player);
+                    }
+                }
+            }
+
+            if (other.tag == "Vehicle")
+            {
+                if (isBeingHeld)
+                {
+                    //TYPE CAST THE ITEM CONFIG AS A REPAIR KIT
+                    //INVOKE THE FUNCTION 'TakeHealth' ON THE VEHICLE
+                }
+            }
+        }
+        private void OnTriggerExit(Collider other)
+        {
+            ItemCanvas.SetActive(false);
+        }
+
+        void Start()
+        {
+            if (_I == null)
+            {
+                if (ItemConfig == null)
+                {
+                    ItemConfig = Resources.Load("Assets\\Resources\\ScriptableObjects\\Items\\DefaultItem") as Item;
+                }
+                else
+                {
+                    _I = Instantiate(ItemConfig);
+                }
+            }
+
+            rb = GetComponent<Rigidbody>();
+            if (rb == null)
+            {
+                rb = gameObject.AddComponent<Rigidbody>();
+            }
+        }
+
+        void Update()
+        {
+            if (isBeingHeld)
+            {
+                ItemCanvas.SetActive(false);
+                rb.MovePosition(_parent.TransformPoint(Vector3.zero));
+                rb.rotation = _parent.rotation;
+            }
+
+            if (Input.GetKeyDown(KeyCode.RightAlt))
+            {
+                if (isBeingHeld)
+                {
+                    //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
+                    Drop(_parent);
+                }
+            }
+        }
+    }
+}

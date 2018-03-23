@@ -12,26 +12,11 @@ namespace UGP
     public class PlayerInteractionBehaviour : NetworkBehaviour
     {
         public PlayerBehaviour p;
+        [SyncVar] public bool isHolding = false;
 
-        private void Awake()
+        [Command] public void CmdSetHolding(bool holding)
         {
-            if (!isLocalPlayer)
-            {
-                return;
-            }
-        }
-
-        private void Start()
-        {
-            if (!isLocalPlayer)
-            {
-                return;
-            }
-        }
-
-        public void NewEvent()
-        {
-
+            isHolding = holding;
         }
 
         [Command] private void CmdEnterVehicle(NetworkIdentity identity)
