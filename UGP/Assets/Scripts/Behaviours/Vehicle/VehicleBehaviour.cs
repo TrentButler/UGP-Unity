@@ -36,9 +36,9 @@ namespace UGP
         [SyncVar] public bool vehicleActive; //ADD FUNCTION TO TRIGGER VEHICLE DESTROYED EVENT???? (hook = "OnVehicleDestroyed")
         [SyncVar] public bool playerInSeat = false;
         [SyncVar(hook = "OnVehicleHealthChange")] public float vehicleHealth;
-        private float max_health;
+        [SyncVar] private float max_health;
         [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
-        private float max_fuel;
+        [SyncVar] private float max_fuel;
         #endregion
 
         #region COMMAND_FUNCTIONS
@@ -83,8 +83,12 @@ namespace UGP
         public void OnVehicleHealthChange(float healthChange)
         {
             //RpcUpdateVehicleHealth(healthChange);
-
+            
             vehicleHealth = Mathf.Clamp(healthChange, 0.0f, max_health);
+            if(vehicleHealth <= 0.0f)
+            {
+                vehicleActive = false;
+            }
 
             //HealthSlider.value = vehicleHealth;
             //HealthSlider.maxValue = max_health;
@@ -94,6 +98,10 @@ namespace UGP
             //RpcUpdateVehicleFuel(fuelChange);
 
             vehicleFuel = Mathf.Clamp(fuelChange, 0.0f, max_fuel);
+            if (vehicleFuel <= 0.0f)
+            {
+                vehicleActive = false;
+            }
 
             //FuelSlider.value = vehicleFuel;
             //FuelSlider.maxValue = max_fuel;
@@ -113,16 +121,16 @@ namespace UGP
         public void UpdateVehicleUI()
         {
             HealthSlider.value = Mathf.Clamp(vehicleHealth, 0.0f, max_health);
-            
-            //Debug.Log("VEHICLE HEALTH: " + vehicleHealth.ToString());
-            //Debug.Log("HEALTH SLIDER VALUE: " + HealthSlider.value.ToString());
-            //Debug.Log("HEALTH SLIDER MAX VALUE: " + HealthSlider.maxValue.ToString());
 
-            
+            Debug.Log("VEHICLE HEALTH: " + vehicleHealth.ToString());
+            Debug.Log("HEALTH SLIDER VALUE: " + HealthSlider.value.ToString());
+            Debug.Log("HEALTH SLIDER MAX VALUE: " + HealthSlider.maxValue.ToString());
+
+
             FuelSlider.value = Mathf.Clamp(vehicleFuel, 0.0f, max_fuel);
-            //Debug.Log("VEHICLE FUEL: " + vehicleFuel.ToString());
-            //Debug.Log("FUEL SLIDER VALUE: " + FuelSlider.value.ToString());
-            //Debug.Log("FUEL SLIDER MAX VALUE: " + FuelSlider.maxValue.ToString());
+            Debug.Log("VEHICLE FUEL: " + vehicleFuel.ToString());
+            Debug.Log("FUEL SLIDER VALUE: " + FuelSlider.value.ToString());
+            Debug.Log("FUEL SLIDER MAX VALUE: " + FuelSlider.maxValue.ToString());
         }
 
         //NEEDS WORK
@@ -221,13 +229,11 @@ namespace UGP
             });
         }
 
-        //public override void OnStartClient()
-        //{
-        //    if(_v == null)
-        //    {
-        //        _v = Instantiate(VehicleConfig);
-        //    }
-        //}
+        public override void OnStartClient()
+        {
+            HealthSlider.maxValue = max_health;
+            FuelSlider.maxValue = max_fuel;
+        }
 
         private void Start()
         {
@@ -314,7 +320,7 @@ namespace UGP
                     {
                         VirtualCamera.SetActive(true);
                         OnVehicleEnter();
-                        Cursor.visible = false;
+                        //Cursor.visible = false;
                         ic.enabled = true;
                         //shootBehaviour.enabled = true;
                         vehicleUI.gameObject.SetActive(true);
@@ -325,9 +331,18 @@ namespace UGP
                     }
                     else
                     {
-                        VirtualCamera.SetActive(false);
+                        if (playerInSeat)
+                        {
+                            VirtualCamera.SetActive(true);
+                        }
+                        else
+                        {
+                            VirtualCamera.SetActive(false);
+                        }
+
+                        //VirtualCamera.SetActive(false);
                         OnVehicleExit();
-                        Cursor.visible = true;
+                        //Cursor.visible = true;
                         ic.enabled = false;
                         //shootBehaviour.enabled = false;
                         vehicleUI.gameObject.SetActive(false);
@@ -345,7 +360,7 @@ namespace UGP
             {
                 VirtualCamera.SetActive(true);
                 OnVehicleEnter();
-                Cursor.visible = false;
+                //Cursor.visible = false;
                 ic.enabled = true;
                 //shootBehaviour.enabled = true;
                 vehicleUI.gameObject.SetActive(true);
@@ -366,7 +381,7 @@ namespace UGP
                 }
                 
                 OnVehicleExit();
-                Cursor.visible = true;
+                //Cursor.visible = true;
                 ic.enabled = false;
                 //shootBehaviour.enabled = false;
                 vehicleUI.gameObject.SetActive(false);

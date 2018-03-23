@@ -12,6 +12,7 @@ namespace UGP
     public class PlayerInteractionBehaviour : NetworkBehaviour
     {
         public PlayerBehaviour p;
+        public Transform TwoHandHold;
         [SyncVar] public bool isHolding = false;
 
         [Command] public void CmdSetHolding(bool holding)

@@ -19,8 +19,6 @@ namespace UGP
         private PlayerInteractionBehaviour player;
         public bool isBeingHeld = false;
 
-
-
         //NEEDS WORK
         //MAYBE MAKE A RPC CALL TO SET THE PARENT ACROSS ALL CLIENTS
         public void PickUp(Transform parent, PlayerInteractionBehaviour interaction)
@@ -28,10 +26,12 @@ namespace UGP
             //PARENT THE 'ITEM' TO THE PLAYER
             //TURN GRAVITY OFF FOR THE ITEM
             _parent = parent;
-            transform.SetParent(parent);
-            rb.MovePosition(Vector3.zero);
+            //transform.SetParent(parent);
+            var item_pos = transform.TransformPoint(_parent.position);
+            rb.MovePosition(item_pos);
+
             rb.constraints = RigidbodyConstraints.FreezeAll;
-            GetComponent<BoxCollider>().enabled = false;
+            //GetComponent<BoxCollider>().enabled = false;
             rb.useGravity = false;
             isBeingHeld = true;
 
@@ -43,11 +43,12 @@ namespace UGP
         {
             //UN-PARENT THE 'ITEM' FROM THE PLAYER
             //TURN GRAVITY BACK ON FOR THE ITEM
-            transform.parent = null;
-            rb.MovePosition(parent.position);
+            //transform.parent = null;
+            var item_pos = transform.TransformPoint(_parent.position);
+            rb.MovePosition(item_pos);
             _parent = null;
             rb.constraints = RigidbodyConstraints.None;
-            GetComponent<BoxCollider>().enabled = true;
+            //GetComponent<BoxCollider>().enabled = true;
             rb.useGravity = true;
             isBeingHeld = false;
             player.CmdSetHolding(false);
@@ -130,7 +131,8 @@ namespace UGP
             if (isBeingHeld)
             {
                 ItemCanvas.SetActive(false);
-                rb.MovePosition(_parent.TransformPoint(Vector3.zero));
+                var item_pos = _parent.position;
+                rb.MovePosition(item_pos);
                 rb.rotation = _parent.rotation;
             }
 
