@@ -17,42 +17,57 @@ namespace UGP
         private Rigidbody rb;
         public Transform _parent;
         private PlayerInteractionBehaviour player;
-        public bool isBeingHeld = false;
-
-        //NEEDS WORK
-        //MAYBE MAKE A RPC CALL TO SET THE PARENT ACROSS ALL CLIENTS
+        private NetworkIdentity item_network_identity;
+        [SyncVar] public bool isBeingHeld = false;
+        
         public void PickUp(Transform parent, PlayerInteractionBehaviour interaction)
         {
+            player = interaction;
+            player.CmdSetHolding(true);
+
+            player.CmdAssignItemAuthority(item_network_identity);
+            Debug.Log("ATTEMPT TO ASSIGN AUTHORITY: EXPECTED = True, RESULT = " + item_network_identity.hasAuthority.ToString());
+
             //PARENT THE 'ITEM' TO THE PLAYER
             //TURN GRAVITY OFF FOR THE ITEM
             _parent = parent;
-            //transform.SetParent(parent);
-            var item_pos = transform.TransformPoint(_parent.position);
-            rb.MovePosition(item_pos);
+            transform.SetParent(_parent);
+            interaction.Child.target = transform;
+            var item_pos = Vector3.zero;
+            //var item_pos = _parent.TransformPoint(Vector3.zero);
+            //rb.MovePosition(item_pos);
+            rb.MovePosition(_parent.position);
+            //rb.position = _parent.position;
 
             rb.constraints = RigidbodyConstraints.FreezeAll;
             //GetComponent<BoxCollider>().enabled = false;
             rb.useGravity = false;
             isBeingHeld = true;
 
-            player = interaction;
-            player.CmdSetHolding(true);
+            
         }
 
         public void Drop(Transform parent)
         {
-            //UN-PARENT THE 'ITEM' FROM THE PLAYER
-            //TURN GRAVITY BACK ON FOR THE ITEM
-            //transform.parent = null;
-            var item_pos = transform.TransformPoint(_parent.position);
-            rb.MovePosition(item_pos);
-            _parent = null;
-            rb.constraints = RigidbodyConstraints.None;
-            //GetComponent<BoxCollider>().enabled = true;
-            rb.useGravity = true;
-            isBeingHeld = false;
+            player.CmdRemoveItemAuthority(item_network_identity);
+            Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + item_network_identity.hasAuthority.ToString());
+
+            player.Child.target = player.originalChild;
             player.CmdSetHolding(false);
             player = null;
+
+            isBeingHeld = false;
+            transform.parent = null;
+            _parent = null;
+
+            //transform.parent = null;
+            //var item_pos = _parent.position;
+            //var item_pos = _parent.position;
+            //rb.MovePosition(item_pos);
+
+            rb.constraints = RigidbodyConstraints.None;
+            rb.useGravity = true;
+            rb.MovePosition(parent.position);
         }
 
         //public void UseItem()
@@ -66,7 +81,7 @@ namespace UGP
             {
                 var player_identity = other.GetComponent<NetworkIdentity>();
 
-                if(player_identity.isLocalPlayer)
+                if(player_identity.isLocalPlayer && !isBeingHeld)
                 {
                     Debug.Log("Press F To Pick Up " + _I.name);
                     ItemName.text = ItemConfig.name;
@@ -84,7 +99,7 @@ namespace UGP
 
                 if (Input.GetKeyDown(KeyCode.F))
                 {
-                    if (!player_interaction.isHolding && !isBeingHeld)
+                    if (!player_interaction.isHolding && !isBeingHeld && !isServer)
                     {
                         PickUp(player_holding_transform, player);
                     }
@@ -124,21 +139,29 @@ namespace UGP
             {
                 rb = gameObject.AddComponent<Rigidbody>();
             }
+
+            item_network_identity = GetComponent<NetworkIdentity>();
+            if(item_network_identity == null)
+            {
+                item_network_identity = gameObject.AddComponent<NetworkIdentity>();
+            }
         }
 
-        void Update()
+        void FixedUpdate()
         {
-            if (isBeingHeld)
+            if (isBeingHeld && !isServer && hasAuthority)
             {
                 ItemCanvas.SetActive(false);
-                var item_pos = _parent.position;
-                rb.MovePosition(item_pos);
+                //var item_pos = _parent.position;
+                //rb.MovePosition(item_pos);
+                rb.MovePosition(_parent.position);
+                //rb.position = _parent.position;
                 rb.rotation = _parent.rotation;
             }
 
             if (Input.GetKeyDown(KeyCode.RightAlt))
             {
-                if (isBeingHeld)
+                if (isBeingHeld && !isServer && hasAuthority)
                 {
                     //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
                     Drop(_parent);

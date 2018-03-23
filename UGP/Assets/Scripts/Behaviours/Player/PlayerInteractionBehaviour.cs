@@ -14,12 +14,14 @@ namespace UGP
         public PlayerBehaviour p;
         public Transform TwoHandHold;
         [SyncVar] public bool isHolding = false;
+        public NetworkTransformChild Child;
+        [HideInInspector] public Transform originalChild;
 
+        #region COMMAND_FUNCTIONS
         [Command] public void CmdSetHolding(bool holding)
         {
             isHolding = holding;
         }
-
         [Command] private void CmdEnterVehicle(NetworkIdentity identity)
         {
             var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
@@ -31,6 +33,33 @@ namespace UGP
             vehicleNetworkIdentity.AssignClientAuthority(localPlayerConn);
             //localPlayerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
+
+        [Command] public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
+        {
+            //Debug.Log(player.gameObject.name + " ASSIGN AUTHORITY TO: " + gameObject.name);
+            var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
+            var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
+
+            var itemNetworkIdentity = itemIdentity;
+
+            //INVOKE THESE FUNCTIONS ON THE SERVER
+            itemNetworkIdentity.AssignClientAuthority(localPlayerConn);
+            //localPlayerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
+        }
+        [Command] public void CmdRemoveItemAuthority(NetworkIdentity itemIdentity)
+        {
+            //Debug.Log(player.gameObject.name + " REMOVE AUTHORITY FROM: " + gameObject.name);
+
+            var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
+            var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
+
+            var itemNetworkIdentity = itemIdentity;
+
+            //INVOKE THESE FUNCTIONS ON THE SERVER
+            itemNetworkIdentity.RemoveClientAuthority(localPlayerConn);
+        }
+        #endregion
+
 
         private void OnTriggerStay(Collider other)
         {
@@ -60,6 +89,17 @@ namespace UGP
                     }
                 }
             }
+        }
+
+        private void Start()
+        {
+            Child = GetComponent<NetworkTransformChild>();
+            if(Child == null)
+            {
+                Child = gameObject.AddComponent<NetworkTransformChild>();
+            }
+
+            originalChild = Child.target;
         }
     }
 }
