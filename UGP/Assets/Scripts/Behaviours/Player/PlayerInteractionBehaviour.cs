@@ -12,10 +12,8 @@ namespace UGP
     public class PlayerInteractionBehaviour : NetworkBehaviour
     {
         public PlayerBehaviour p;
-        public Transform TwoHandHold;
+        public Transform HoldingItemPosition;
         [SyncVar] public bool isHolding = false;
-        public NetworkTransformChild Child;
-        [HideInInspector] public Transform originalChild;
 
         #region COMMAND_FUNCTIONS
         [Command] public void CmdSetHolding(bool holding)
@@ -74,32 +72,24 @@ namespace UGP
                 var vActive = v.vehicleActive;
                 var vehicleIdentity = v.GetComponent<NetworkIdentity>();
 
-                if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
+                if(!isHolding) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM
                 {
-                    Debug.Log("PRESS F TO ENTER VEHICLE");
-
-                    //F KEY PRESS TO ENTER THE VEHICLE
-                    if (Input.GetKeyDown(KeyCode.F))
+                    if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
                     {
-                        //GET IN THE VEHICLE
-                        p.vehicle = v;
-                        v.SetVehicleActive(p.name, true);
-                        v.playerInSeat = true;
-                        CmdEnterVehicle(vehicleIdentity);
+                        Debug.Log("PRESS F TO ENTER VEHICLE");
+
+                        //F KEY PRESS TO ENTER THE VEHICLE
+                        if (Input.GetKeyDown(KeyCode.F))
+                        {
+                            //GET IN THE VEHICLE
+                            p.vehicle = v;
+                            v.SetVehicleActive(p.name, true);
+                            v.playerInSeat = true;
+                            CmdEnterVehicle(vehicleIdentity);
+                        }
                     }
                 }
             }
-        }
-
-        private void Start()
-        {
-            Child = GetComponent<NetworkTransformChild>();
-            if(Child == null)
-            {
-                Child = gameObject.AddComponent<NetworkTransformChild>();
-            }
-
-            originalChild = Child.target;
         }
     }
 }

@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 namespace UGP
 {
-
     public class ItemBehaviour : NetworkBehaviour
     {
         public Text ItemName;
@@ -15,12 +14,11 @@ namespace UGP
         public Item _I;
 
         private Rigidbody rb;
-        public Transform _parent;
         private PlayerInteractionBehaviour player;
         private NetworkIdentity item_network_identity;
         [SyncVar] public bool isBeingHeld = false;
         
-        public void PickUp(Transform parent, PlayerInteractionBehaviour interaction)
+        public void PickUp(PlayerInteractionBehaviour interaction)
         {
             player = interaction;
             player.CmdSetHolding(true);
@@ -30,44 +28,44 @@ namespace UGP
 
             //PARENT THE 'ITEM' TO THE PLAYER
             //TURN GRAVITY OFF FOR THE ITEM
-            _parent = parent;
-            transform.SetParent(_parent);
-            interaction.Child.target = transform;
-            var item_pos = Vector3.zero;
+            //PlayerHand = parent;
+            //transform.SetParent(PlayerHand);
+            //interaction.Child.target = transform;
+            //var item_pos = Vector3.zero;
             //var item_pos = _parent.TransformPoint(Vector3.zero);
             //rb.MovePosition(item_pos);
-            rb.MovePosition(_parent.position);
+            //rb.MovePosition(PlayerHand.position);
             //rb.position = _parent.position;
 
-            rb.constraints = RigidbodyConstraints.FreezeAll;
-            //GetComponent<BoxCollider>().enabled = false;
+            rb.MovePosition(player.HoldingItemPosition.position);
+
+            //rb.constraints = RigidbodyConstraints.FreezeAll;
+            GetComponent<BoxCollider>().enabled = false;
             rb.useGravity = false;
             isBeingHeld = true;
-
-            
         }
 
-        public void Drop(Transform parent)
+        public void Drop()
         {
             player.CmdRemoveItemAuthority(item_network_identity);
             Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + item_network_identity.hasAuthority.ToString());
-
-            player.Child.target = player.originalChild;
+            
             player.CmdSetHolding(false);
-            player = null;
 
             isBeingHeld = false;
-            transform.parent = null;
-            _parent = null;
+            //transform.parent = null;
+
 
             //transform.parent = null;
             //var item_pos = _parent.position;
             //var item_pos = _parent.position;
             //rb.MovePosition(item_pos);
-
+            GetComponent<BoxCollider>().enabled = true;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
-            rb.MovePosition(parent.position);
+            rb.MovePosition(player.HoldingItemPosition.position);
+
+            player = null; //REMOVE REFRENCE TO PLAYER
         }
 
         //public void UseItem()
@@ -88,7 +86,7 @@ namespace UGP
                     ItemCanvas.SetActive(true);
                 }
 
-                var player_holding_transform = other.transform.Find("ItemHoldPosition");
+                //var player_holding_transform = other.transform.Find("ItemHoldPosition");
 
                 var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
 
@@ -101,7 +99,7 @@ namespace UGP
                 {
                     if (!player_interaction.isHolding && !isBeingHeld && !isServer)
                     {
-                        PickUp(player_holding_transform, player);
+                        PickUp(player);
                     }
                 }
             }
@@ -154,9 +152,11 @@ namespace UGP
                 ItemCanvas.SetActive(false);
                 //var item_pos = _parent.position;
                 //rb.MovePosition(item_pos);
-                rb.MovePosition(_parent.position);
+                //rb.MovePosition(player.HoldingItemPosition.position);
                 //rb.position = _parent.position;
-                rb.rotation = _parent.rotation;
+                rb.position = player.HoldingItemPosition.position;
+                rb.velocity = Vector3.zero;
+                rb.rotation = player.HoldingItemPosition.rotation;
             }
 
             if (Input.GetKeyDown(KeyCode.RightAlt))
@@ -164,7 +164,7 @@ namespace UGP
                 if (isBeingHeld && !isServer && hasAuthority)
                 {
                     //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
-                    Drop(_parent);
+                    Drop();
                 }
             }
         }
