@@ -924,7 +924,7 @@ GameObject:
   - component: {fileID: 114954449703427742}
   - component: {fileID: 114436284547116170}
   - component: {fileID: 114742462909492668}
-  - component: {fileID: 114880310024438940}
+  - component: {fileID: 114436805829194078}
   - component: {fileID: 95152687211648958}
   - component: {fileID: 143254331847889690}
   - component: {fileID: 136739931918921192}
@@ -3840,10 +3840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   p: {fileID: 114954449703427742}
-  TwoHandHold: {fileID: 4161411594686704}
-  isHolding: 0
-  Child: {fileID: 114481462762374098}
---- !u!114 &114481462762374098
+--- !u!114 &114436805829194078
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -3851,17 +3848,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1499516513290062}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1267208747, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Script: {fileID: 11500000, guid: ae0883b3bcea4d14f8705724044be732, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Target: {fileID: 4161411594686704}
-  m_ChildIndex: 0
-  m_SendInterval: 0.1
-  m_SyncRotationAxis: 7
-  m_RotationSyncCompression: 0
-  m_MovementThreshold: 0.001
-  m_InterpolateRotation: 0.5
-  m_InterpolateMovement: 0.5
+  MovementSpeed: 5
+  RunSpeed: 20
+  TurnSpeed: 2.5
+  JumpStrength: 2
+  Ani: {fileID: 95152687211648958}
+  controller: {fileID: 143254331847889690}
 --- !u!114 &114521680120044998
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4206,7 +4201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputHorizontal: Horizontal
   InputVertical: Vertical
-  ic: {fileID: 114880310024438940}
+  ic: {fileID: 114436805829194078}
 --- !u!114 &114780202282222318
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4342,23 +4337,6 @@ MonoBehaviour:
   m_SnapThreshold: 5
   m_InterpolateRotation: 1
   m_InterpolateMovement: 1
---- !u!114 &114880310024438940
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1499516513290062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a340f117f7c2da944a18b5596470ddb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MovementSpeed: 1.5
-  RunSpeed: 5
-  TurnSpeed: 2
-  JumpStrength: 1.5
-  Ani: {fileID: 95152687211648958}
-  controller: {fileID: 143254331847889690}
 --- !u!114 &114883349289273446
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4419,7 +4397,7 @@ MonoBehaviour:
   playerModelActive: 0
   vehicle: {fileID: 0}
   TimeToExitVehicle: 0.4
-  ic: {fileID: 114880310024438940}
+  ic: {fileID: 114436805829194078}
   interaction: {fileID: 114436284547116170}
   ani: {fileID: 95152687211648958}
   needsToEnterVehicle: 0
