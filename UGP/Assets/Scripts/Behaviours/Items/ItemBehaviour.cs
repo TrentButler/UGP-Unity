@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 namespace UGP
 {
+
+    //NEEDS WORK
+    //DISABLE THE ITEM GAMEOBJECT'S MODEL ACROSS ALL CLIENTS IF IT IS BEING HELD
     public class ItemBehaviour : NetworkBehaviour
     {
         public Text ItemName;
@@ -13,11 +16,38 @@ namespace UGP
         [HideInInspector]
         public Item _I;
 
+        public GameObject model;
         private Rigidbody rb;
         private PlayerInteractionBehaviour player;
         private NetworkIdentity item_network_identity;
-        [SyncVar] public bool isBeingHeld = false;
-        
+        [SyncVar(hook = "OnValueChange")] public bool isBeingHeld = false;
+
+        public void OnValueChange(bool valueChange)
+        {
+            isBeingHeld = valueChange;
+        }
+
+        [Command] public void CmdOnPickUp()
+        {
+            isBeingHeld = true;
+            model.SetActive(false);
+        }
+        [Command] public void CmdOnDrop()
+        {
+            isBeingHeld = false;
+            model.SetActive(true);
+        }
+
+        public void UpdateItem()
+        {
+            RpcSetItemActive(!isBeingHeld);
+        }
+
+        [ClientRpc] public void RpcSetItemActive(bool active)
+        {
+            model.SetActive(active);
+        }
+
         public void PickUp(PlayerInteractionBehaviour interaction)
         {
             player = interaction;
@@ -37,12 +67,15 @@ namespace UGP
             //rb.MovePosition(PlayerHand.position);
             //rb.position = _parent.position;
 
+            model.SetActive(false);
+            //CmdDisableItemModel();
             rb.MovePosition(player.HoldingItemPosition.position);
 
             //rb.constraints = RigidbodyConstraints.FreezeAll;
             GetComponent<BoxCollider>().enabled = false;
             rb.useGravity = false;
             isBeingHeld = true;
+            //CmdOnPickUp();
         }
 
         public void Drop()
@@ -53,6 +86,7 @@ namespace UGP
             player.CmdSetHolding(false);
 
             isBeingHeld = false;
+            CmdOnDrop();
             //transform.parent = null;
 
 
@@ -60,7 +94,10 @@ namespace UGP
             //var item_pos = _parent.position;
             //var item_pos = _parent.position;
             //rb.MovePosition(item_pos);
+            model.SetActive(true);
+            //CmdEnableItemModel();
             GetComponent<BoxCollider>().enabled = true;
+            rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
             rb.MovePosition(player.HoldingItemPosition.position);
@@ -147,6 +184,11 @@ namespace UGP
 
         void FixedUpdate()
         {
+            if(isServer)
+            {
+                UpdateItem();
+            }
+
             if (isBeingHeld && !isServer && hasAuthority)
             {
                 ItemCanvas.SetActive(false);
@@ -154,9 +196,11 @@ namespace UGP
                 //rb.MovePosition(item_pos);
                 //rb.MovePosition(player.HoldingItemPosition.position);
                 //rb.position = _parent.position;
-                rb.position = player.HoldingItemPosition.position;
+                model.SetActive(false);
+                //rb.isKinematic = true;
+                rb.MovePosition(player.HoldingItemPosition.position);
                 rb.velocity = Vector3.zero;
-                rb.rotation = player.HoldingItemPosition.rotation;
+                rb.MoveRotation(player.HoldingItemPosition.rotation);
             }
 
             if (Input.GetKeyDown(KeyCode.RightAlt))

@@ -15,6 +15,8 @@ namespace UGP
         public Transform HoldingItemPosition;
         [SyncVar] public bool isHolding = false;
 
+        public GameObject ItemModel;
+
         #region COMMAND_FUNCTIONS
         [Command] public void CmdSetHolding(bool holding)
         {
@@ -89,6 +91,18 @@ namespace UGP
                         }
                     }
                 }
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if(isHolding)
+            {
+                ItemModel.SetActive(true);
+            }
+            else
+            {
+                ItemModel.SetActive(false);
             }
         }
     }
