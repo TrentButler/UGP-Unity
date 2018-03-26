@@ -56,7 +56,10 @@ namespace UGP
             var colliders = GetComponents<BoxCollider>().ToList();
             colliders.ForEach(collider =>
             {
-                collider.enabled = false;
+                if(!collider.isTrigger)
+                {
+                    collider.enabled = false;
+                }
             });
             rb.useGravity = false;
             //isBeingHeld = true;
@@ -94,10 +97,27 @@ namespace UGP
             player = null; //REMOVE REFRENCE TO PLAYER
         }
 
-        //public void UseItem()
-        //{
 
-        //}
+        //NEEDS WORK
+        //COMMAND FUNCTION WILL NOT INVOKE IF GAMEOBJECT THAT IS INVOKING IT DOES NOT HAVE AUTHORITY
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.tag == "Vehicle")
+            {
+                Debug.Log("COLLISION WITH: " + other.gameObject.name);
+
+                var vehicle_behaviour = other.GetComponentInParent<VehicleBehaviour>();
+                var vehicle_identity = other.GetComponentInParent<NetworkIdentity>();
+
+                if (isBeingHeld && !isServer)
+                {
+                    //TYPE CAST THE ITEM CONFIG AS A REPAIR KIT
+                    //INVOKE THE FUNCTION 'TakeHealth' ON THE VEHICLE
+                    var string_type = _I.GetType().ToString();
+                    player.UseItemOnVehicle(string_type, this, vehicle_behaviour);
+                }
+            }
+        }
 
         private void OnTriggerStay(Collider other)
         {
@@ -127,15 +147,6 @@ namespace UGP
                     {
                         PickUp(player);
                     }
-                }
-            }
-
-            if (other.tag == "Vehicle")
-            {
-                if (isBeingHeld)
-                {
-                    //TYPE CAST THE ITEM CONFIG AS A REPAIR KIT
-                    //INVOKE THE FUNCTION 'TakeHealth' ON THE VEHICLE
                 }
             }
         }
@@ -194,6 +205,7 @@ namespace UGP
 
             if (Input.GetKeyDown(KeyCode.RightAlt))
             {
+                Debug.Log("RIGHT ALT KEY PRESS");
                 if (isBeingHeld && !isServer && hasAuthority)
                 {
                     //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();

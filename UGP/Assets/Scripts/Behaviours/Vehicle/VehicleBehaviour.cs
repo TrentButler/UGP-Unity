@@ -39,11 +39,11 @@ namespace UGP
         [SyncVar] private float max_health;
         [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
         [SyncVar] private float max_fuel;
+        [SyncVar] private int Assault, Shotgun, Sniper, Rocket;
         #endregion
 
         #region COMMAND_FUNCTIONS
-        [Command]
-        public void CmdTakeHealth(float healthTaken)
+        [Command] public void CmdTakeHealth(float healthTaken)
         {
             //INCREMENT VEHICLE HEALTH, CLAMP THE VALUE BETWEEN 0.0F AND THE 'MaxHealth'
 
@@ -51,8 +51,7 @@ namespace UGP
             vehicleHealth = Mathf.Clamp(vehicleHealth, 0.0f, _v.MaxHealth);
             //Debug.Log("VEHICLE TAKE " + healthTaken.ToString() + " HEALTH");
         }
-        [Command]
-        public void CmdTakeDamage(float healthTaken)
+        [Command] public void CmdTakeDamage(float healthTaken)
         {
             //DEPLETE THE VEHICLE'S HEALTH
             vehicleHealth -= healthTaken;
@@ -63,14 +62,12 @@ namespace UGP
                 vehicleActive = false;
             }
         }
-        [Command]
-        public void CmdRefuel(float refuel)
+        [Command] public void CmdRefuel(float refuel)
         {
             vehicleFuel += refuel;
             vehicleFuel = Mathf.Clamp(vehicleFuel, 0.0f, _v.MaxFuel);
         }
-        [Command]
-        public void CmdUseFuel(float fuelUsed)
+        [Command] public void CmdUseFuel(float fuelUsed)
         {
             vehicleFuel -= fuelUsed;
 
@@ -78,6 +75,34 @@ namespace UGP
             {
                 vehicleActive = false;
             }
+        }
+        [Command] public void CmdTakeAmmunition(int assault, int shotgun, int sniper, int rocket)
+        {
+            Assault += assault;
+            Assault = Mathf.Clamp(Assault, 0, 999);
+
+            Shotgun += shotgun;
+            Shotgun = Mathf.Clamp(Shotgun, 0, 999);
+
+            Sniper += sniper;
+            Sniper = Mathf.Clamp(Sniper, 0, 999);
+
+            Rocket += rocket;
+            Rocket = Mathf.Clamp(Rocket, 0, 999);
+        }
+        [Command] void CmdUseAmmunition(int assault, int shotgun, int sniper, int rocket)
+        {
+            Assault -= assault;
+            Assault = Mathf.Clamp(Assault, 0, 999);
+
+            Shotgun -= shotgun;
+            Shotgun = Mathf.Clamp(Shotgun, 0, 999);
+
+            Sniper -= sniper;
+            Sniper = Mathf.Clamp(Sniper, 0, 999);
+
+            Rocket -= rocket;
+            Rocket = Mathf.Clamp(Rocket, 0, 999);
         }
         #endregion
 
@@ -118,16 +143,17 @@ namespace UGP
         public void UpdateVehicleUI()
         {
             HealthSlider.value = Mathf.Clamp(vehicleHealth, 0.0f, max_health);
-
-            //Debug.Log("VEHICLE HEALTH: " + vehicleHealth.ToString());
-            //Debug.Log("HEALTH SLIDER VALUE: " + HealthSlider.value.ToString());
-            //Debug.Log("HEALTH SLIDER MAX VALUE: " + HealthSlider.maxValue.ToString());
-
-
             FuelSlider.value = Mathf.Clamp(vehicleFuel, 0.0f, max_fuel);
-            //Debug.Log("VEHICLE FUEL: " + vehicleFuel.ToString());
-            //Debug.Log("FUEL SLIDER VALUE: " + FuelSlider.value.ToString());
-            //Debug.Log("FUEL SLIDER MAX VALUE: " + FuelSlider.maxValue.ToString());
+
+            var text = vehicleUI.GetComponentInChildren<Text>();
+
+            string sAssault = "ASSAULT: " + Assault;
+            string sShotgun = "SHOTGUN: " + Shotgun;
+            string sSniper = "SNIPER: " + Sniper;
+            string sRocket = "ROCKET: " + Rocket;
+
+            text.text = sAssault + "\n" + sShotgun + "\n"
+                + sSniper + "\n" + sRocket;
         }
 
         private void UpdateVehicle()
@@ -219,7 +245,7 @@ namespace UGP
                         _v = Instantiate(VehicleConfig);
 
                         vehicleHealth = _v.MaxHealth;
-                        vehicleFuel = _v.MaxFuel;
+                        vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
 
                         max_fuel = _v.MaxFuel;
                         max_health = _v.MaxHealth;
@@ -252,10 +278,15 @@ namespace UGP
                 _v = Instantiate(VehicleConfig);
 
                 vehicleHealth = _v.MaxHealth;
-                vehicleFuel = _v.MaxFuel;
+                vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
 
                 max_fuel = _v.MaxFuel;
                 max_health = _v.MaxHealth;
+
+                Assault = _v.ammunition.Assault;
+                Shotgun = _v.ammunition.Shotgun;
+                Sniper = _v.ammunition.Sniper;
+                Rocket = _v.ammunition.Rocket;
 
                 _v.Destroyed = false;
                 _v.FuelDepeleted = false;
