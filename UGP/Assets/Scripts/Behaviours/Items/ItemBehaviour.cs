@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+
 namespace UGP
 {
-
     //NEEDS WORK
     //DISABLE THE ITEM GAMEOBJECT'S MODEL ACROSS ALL CLIENTS IF IT IS BEING HELD
     public class ItemBehaviour : NetworkBehaviour
@@ -20,38 +21,18 @@ namespace UGP
         private Rigidbody rb;
         private PlayerInteractionBehaviour player;
         private NetworkIdentity item_network_identity;
-        [SyncVar(hook = "OnValueChange")] public bool isBeingHeld = false;
+        [SyncVar] public bool isBeingHeld = false;
 
-        public void OnValueChange(bool valueChange)
+        [Command] public void CmdSetHolding(bool holding)
         {
-            isBeingHeld = valueChange;
-        }
-
-        [Command] public void CmdOnPickUp()
-        {
-            isBeingHeld = true;
-            model.SetActive(false);
-        }
-        [Command] public void CmdOnDrop()
-        {
-            isBeingHeld = false;
-            model.SetActive(true);
-        }
-
-        public void UpdateItem()
-        {
-            RpcSetItemActive(!isBeingHeld);
-        }
-
-        [ClientRpc] public void RpcSetItemActive(bool active)
-        {
-            model.SetActive(active);
+            isBeingHeld = holding;
         }
 
         public void PickUp(PlayerInteractionBehaviour interaction)
-        {
+        {   
             player = interaction;
             player.CmdSetHolding(true);
+            player.CmdSetItemBeingHeld(true, item_network_identity);
 
             player.CmdAssignItemAuthority(item_network_identity);
             Debug.Log("ATTEMPT TO ASSIGN AUTHORITY: EXPECTED = True, RESULT = " + item_network_identity.hasAuthority.ToString());
@@ -67,14 +48,18 @@ namespace UGP
             //rb.MovePosition(PlayerHand.position);
             //rb.position = _parent.position;
 
-            model.SetActive(false);
+            //model.SetActive(false);
             //CmdDisableItemModel();
             rb.MovePosition(player.HoldingItemPosition.position);
 
             //rb.constraints = RigidbodyConstraints.FreezeAll;
-            GetComponent<BoxCollider>().enabled = false;
+            var colliders = GetComponents<BoxCollider>().ToList();
+            colliders.ForEach(collider =>
+            {
+                collider.enabled = false;
+            });
             rb.useGravity = false;
-            isBeingHeld = true;
+            //isBeingHeld = true;
             //CmdOnPickUp();
         }
 
@@ -84,9 +69,8 @@ namespace UGP
             Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + item_network_identity.hasAuthority.ToString());
             
             player.CmdSetHolding(false);
-
-            isBeingHeld = false;
-            CmdOnDrop();
+            player.CmdSetItemBeingHeld(false, item_network_identity);
+            //CmdOnDrop();
             //transform.parent = null;
 
 
@@ -94,9 +78,14 @@ namespace UGP
             //var item_pos = _parent.position;
             //var item_pos = _parent.position;
             //rb.MovePosition(item_pos);
-            model.SetActive(true);
+            //model.SetActive(true);
             //CmdEnableItemModel();
-            GetComponent<BoxCollider>().enabled = true;
+            //GetComponent<BoxCollider>().enabled = true;
+            var colliders = GetComponents<BoxCollider>().ToList();
+            colliders.ForEach(collider =>
+            {
+                collider.enabled = true;
+            });
             rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
@@ -184,10 +173,10 @@ namespace UGP
 
         void FixedUpdate()
         {
-            if(isServer)
-            {
-                UpdateItem();
-            }
+            //if(isServer)
+            //{
+            //    UpdateItem();
+            //}
 
             if (isBeingHeld && !isServer && hasAuthority)
             {
@@ -196,7 +185,7 @@ namespace UGP
                 //rb.MovePosition(item_pos);
                 //rb.MovePosition(player.HoldingItemPosition.position);
                 //rb.position = _parent.position;
-                model.SetActive(false);
+                //model.SetActive(false);
                 //rb.isKinematic = true;
                 rb.MovePosition(player.HoldingItemPosition.position);
                 rb.velocity = Vector3.zero;
@@ -210,6 +199,18 @@ namespace UGP
                     //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
                     Drop();
                 }
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if(isBeingHeld)
+            {
+                model.SetActive(false);
+            }
+            else
+            {
+                model.SetActive(true);
             }
         }
     }

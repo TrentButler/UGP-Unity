@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 23018535921766264}
   m_Layer: 8
   m_Name: ColliderFront
-  m_TagString: Untagged
+  m_TagString: Vehicle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -393,7 +393,7 @@ GameObject:
   - component: {fileID: 4059609627376946}
   m_Layer: 8
   m_Name: Colliders
-  m_TagString: Untagged
+  m_TagString: Vehicle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -444,7 +444,7 @@ GameObject:
   - component: {fileID: 23337947965571936}
   m_Layer: 8
   m_Name: ColliderBottom
-  m_TagString: Untagged
+  m_TagString: Vehicle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -548,7 +548,7 @@ GameObject:
   - component: {fileID: 23993577338054830}
   m_Layer: 8
   m_Name: ColliderBody
-  m_TagString: Untagged
+  m_TagString: Vehicle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2543,20 +2543,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beadd3ee7ea545e4fa493e0e7908fab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vColor: {r: 0, g: 0, b: 0, a: 0}
-  models: []
+  models:
+  - {fileID: 23612234038829090}
   colorChangeSpeed: 0
   VirtualCamera: {fileID: 1412080588597622}
   ic: {fileID: 114371726013668816}
   shootBehaviour: {fileID: 114444752747813438}
   VehicleConfig: {fileID: 11400000, guid: 00dd93e5a7108074fb385382df00968e, type: 2}
   _v: {fileID: 0}
-  vehicleUI: {fileID: 223582509644103092}
+  vehicleUI: {fileID: 1442511755745338}
   HealthSlider: {fileID: 114131639340992436}
   FuelSlider: {fileID: 114888603069789200}
   seat: {fileID: 4913019633117466}
   ani: {fileID: 95339772470667690}
   vehicleActive: 0
+  vColor: {r: 0, g: 0, b: 0, a: 0}
   playerInSeat: 0
   vehicleHealth: 0
   vehicleFuel: 0

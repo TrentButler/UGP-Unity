@@ -298,7 +298,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
 
@@ -314,7 +314,7 @@ namespace UGP
 
                     if (vactive)
                     {
-                        c = v.vehicleUI;
+                        c = v.vehicleUI.GetComponent<Canvas>();
                     }
                     return;
                 }
@@ -326,7 +326,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
 
@@ -361,7 +361,7 @@ namespace UGP
                     var vactive = v.vehicleActive;
                     if (vactive)
                     {
-                        c = v.vehicleUI;
+                        c = v.vehicleUI.GetComponent<Canvas>();
                     }
                     return;
                 }
@@ -372,7 +372,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
     }

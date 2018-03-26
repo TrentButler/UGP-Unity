@@ -22,6 +22,10 @@ namespace UGP
         {
             isHolding = holding;
         }
+        [Command] public void CmdSetItemBeingHeld(bool holding, NetworkIdentity item)
+        {
+            item.GetComponent<ItemBehaviour>().isBeingHeld = holding;
+        }
         [Command] private void CmdEnterVehicle(NetworkIdentity identity)
         {
             var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
@@ -31,7 +35,18 @@ namespace UGP
 
             //INVOKE THESE FUNCTIONS ON THE SERVER
             vehicleNetworkIdentity.AssignClientAuthority(localPlayerConn);
-            //localPlayerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
+        }
+        [Command] public void CmdSetVehicleActive(bool active, NetworkIdentity vehicleIdentity)
+        {
+            vehicleIdentity.GetComponent<VehicleBehaviour>().vehicleActive = active;
+        }
+        [Command] public void CmdSetPlayerInSeat(bool inSeat, NetworkIdentity vehicleIdentity)
+        {
+            vehicleIdentity.GetComponent<VehicleBehaviour>().playerInSeat = inSeat;
+        }
+        [Command] public void CmdSetVehicleColor(Color color, NetworkIdentity vehicleIdentity)
+        {
+            vehicleIdentity.GetComponent<VehicleBehaviour>().vColor = color;
         }
 
         [Command] public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
@@ -60,7 +75,6 @@ namespace UGP
         }
         #endregion
 
-
         private void OnTriggerStay(Collider other)
         {
             if (!isLocalPlayer)
@@ -84,9 +98,11 @@ namespace UGP
                         if (Input.GetKeyDown(KeyCode.F))
                         {
                             //GET IN THE VEHICLE
-                            p.vehicle = v;
-                            v.SetVehicleActive(p.name, true);
-                            v.playerInSeat = true;
+                            p.CmdSetDriving(true);
+                            p.SetVehicle(v);
+                            CmdSetVehicleActive(true, vehicleIdentity);
+                            CmdSetPlayerInSeat(true, vehicleIdentity);
+                            CmdSetVehicleColor(p.vehicleColor, vehicleIdentity);
                             CmdEnterVehicle(vehicleIdentity);
                         }
                     }
