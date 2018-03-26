@@ -245,7 +245,8 @@ namespace UGP
                         _v = Instantiate(VehicleConfig);
 
                         vehicleHealth = _v.MaxHealth;
-                        vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
+                        //vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
+                        vehicleFuel = _v.MaxFuel;
 
                         max_fuel = _v.MaxFuel;
                         max_health = _v.MaxHealth;
@@ -278,7 +279,8 @@ namespace UGP
                 _v = Instantiate(VehicleConfig);
 
                 vehicleHealth = _v.MaxHealth;
-                vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
+                //vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
+                vehicleFuel = _v.MaxFuel;
 
                 max_fuel = _v.MaxFuel;
                 max_health = _v.MaxHealth;
