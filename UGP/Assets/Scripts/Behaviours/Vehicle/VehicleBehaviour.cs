@@ -35,11 +35,10 @@ namespace UGP
         [SyncVar] public bool vehicleActive; //ADD FUNCTION TO TRIGGER VEHICLE DESTROYED EVENT???? (hook = "OnVehicleDestroyed")
         [SyncVar] public Color vColor;
         [SyncVar] public bool playerInSeat = false;
+        [SyncVar] private float max_health, max_fuel;
         [SyncVar(hook = "OnVehicleHealthChange")] public float vehicleHealth;
-        [SyncVar] private float max_health;
         [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
-        [SyncVar] private float max_fuel;
-        [SyncVar] private int Assault, Shotgun, Sniper, Rocket;
+        [SyncVar] public int Assault, Shotgun, Sniper, Rocket;
         #endregion
 
         #region COMMAND_FUNCTIONS
@@ -90,7 +89,7 @@ namespace UGP
             Rocket += rocket;
             Rocket = Mathf.Clamp(Rocket, 0, 999);
         }
-        [Command] void CmdUseAmmunition(int assault, int shotgun, int sniper, int rocket)
+        [Command] public void CmdUseAmmunition(int assault, int shotgun, int sniper, int rocket)
         {
             Assault -= assault;
             Assault = Mathf.Clamp(Assault, 0, 999);
@@ -243,10 +242,11 @@ namespace UGP
                         }
 
                         _v = Instantiate(VehicleConfig);
-
-                        vehicleHealth = _v.MaxHealth;
-                        //vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
-                        vehicleFuel = _v.MaxFuel;
+                        
+                        //vehicleHealth = _v.MaxHealth; //INITALIZE THE VEHICLE WITH FULL HEALTH
+                        //vehicleFuel = _v.MaxFuel; //INITALIZE THE VEHICLE WITH FULL FUEL
+                        vehicleHealth = _v.MaxHealth / 2; //INITALIZE THE VEHICLE WITH HALF HEALTH
+                        vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
 
                         max_fuel = _v.MaxFuel;
                         max_health = _v.MaxHealth;
@@ -278,9 +278,10 @@ namespace UGP
 
                 _v = Instantiate(VehicleConfig);
 
-                vehicleHealth = _v.MaxHealth;
-                //vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
-                vehicleFuel = _v.MaxFuel;
+                //vehicleHealth = _v.MaxHealth; //INITALIZE THE VEHICLE WITH FULL HEALTH
+                //vehicleFuel = _v.MaxFuel; //INITALIZE THE VEHICLE WITH FULL FUEL
+                vehicleHealth = _v.MaxHealth / 2; //INITALIZE THE VEHICLE WITH HALF HEALTH
+                vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
 
                 max_fuel = _v.MaxFuel;
                 max_health = _v.MaxHealth;
@@ -320,7 +321,7 @@ namespace UGP
                         VirtualCamera.SetActive(true);
                         Cursor.visible = false;
                         ic.enabled = true;
-                        //shootBehaviour.enabled = true;
+                        shootBehaviour.enabled = true;
                         UpdateVehicleUI();
                         vehicleUI.SetActive(true);
                     }
@@ -356,7 +357,7 @@ namespace UGP
                 VirtualCamera.SetActive(true);
                 Cursor.visible = false;
                 ic.enabled = true;
-                //shootBehaviour.enabled = true;
+                shootBehaviour.enabled = true;
                 vehicleUI.SetActive(true);
                 UpdateVehicleUI();
             }

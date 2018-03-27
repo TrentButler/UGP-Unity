@@ -2316,6 +2316,10 @@ MonoBehaviour:
   playerInSeat: 0
   vehicleHealth: 0
   vehicleFuel: 0
+  Assault: 0
+  Shotgun: 0
+  Sniper: 0
+  Rocket: 0
 --- !u!114 &114431287556307284
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2515,10 +2519,12 @@ MonoBehaviour:
   crosshairYOffset: 147
   crosshairSpeed: 1.5
   crosshairWorldOffset: {x: 0, y: 0, z: 58}
-  FireRate: 0.5
+  AutomaticFireRate: 0.25
+  SemiAutoFireRate: 0.5
   WeaponRange: 180
   AimCooldown: 2.5
   roundsFired: 0
+  v: {fileID: 114420336651608308}
 --- !u!114 &114711319396005030
 MonoBehaviour:
   m_ObjectHideFlags: 1

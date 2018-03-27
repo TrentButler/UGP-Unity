@@ -28,12 +28,12 @@ namespace UGP
         {
             isDriving = driving;
         }
-        [Command] private void CmdExitVehicle(NetworkIdentity identity)
+        [Command] public void CmdRemoveVehicleAuthority(NetworkIdentity vehicleIdentity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
 
-            var vehicleNetworkIdentity = identity;
+            var vehicleNetworkIdentity = vehicleIdentity;
 
             //INVOKE THESE FUNCTIONS ON THE SERVER
             vehicleNetworkIdentity.RemoveClientAuthority(localPlayerConn);
@@ -62,7 +62,7 @@ namespace UGP
                 var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
                 interaction.CmdSetVehicleActive(false, vehicleIdentity);
                 interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
-                CmdExitVehicle(vehicleIdentity);
+                CmdRemoveVehicleAuthority(vehicleIdentity);
                 exitTimer = 0.0f; //RESET THE TIMER
 
                 transform.position = vehicle.seat.position;
