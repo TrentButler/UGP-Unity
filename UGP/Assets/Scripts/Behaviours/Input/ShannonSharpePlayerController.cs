@@ -50,6 +50,14 @@ namespace UGP
             controller.transform.rotation = rot;
         }
 
+        private void PickUpItem()
+        {
+            if(Input.GetKeyDown(KeyCode.F))
+            {
+                Ani.SetTrigger("PickUpItem");
+            }
+        }
+
         public override void Move(float x, float y)
         {
             Sprint();
@@ -61,6 +69,8 @@ namespace UGP
             {
                 y = 0;
             }
+
+            Ani.SetFloat("Move", Mathf.Abs(x + y));
 
             var move_vector = new Vector3(0, 0, y);
             var move = controller.transform.TransformDirection(move_vector);
