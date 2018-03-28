@@ -884,7 +884,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1978491074197374}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.71, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4635698420635970}
@@ -1725,7 +1725,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.32, y: 1, z: 6.53}
+  m_Size: {x: 1.6, y: 1, z: 6.53}
   m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!65 &65681711408493432
 BoxCollider:
@@ -1737,7 +1737,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4.25, y: 1, z: 1.61}
+  m_Size: {x: 4.25, y: 1.6, z: 2}
   m_Center: {x: 0, y: 0.7, z: -0.91}
 --- !u!82 &82160715551518716
 AudioSource:
@@ -1949,7 +1949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 3
-  m_SendInterval: 0.11111111
+  m_SendInterval: 0.04761905
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
   m_SyncSpin: 0
@@ -2298,21 +2298,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beadd3ee7ea545e4fa493e0e7908fab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VirtualCamera: {fileID: 1958347032059228}
-  vColor: {r: 1, g: 0, b: 0, a: 1}
   models:
-  - {fileID: 23890966117838078}
-  - {fileID: 23171132043887200}
   - {fileID: 23558278274967876}
   colorChangeSpeed: 0.265
-  VehicleConfig: {fileID: 11400000, guid: 00dd93e5a7108074fb385382df00968e, type: 2}
-  _v: {fileID: 0}
-  ic: {fileID: 114936081302871754}
+  VirtualCamera: {fileID: 1958347032059228}
+  ic: {fileID: 114584750268079746}
   shootBehaviour: {fileID: 114693570556457754}
-  vehicleUI: {fileID: 223560124168869596}
-  vehicleActive: 0
+  VehicleConfig: {fileID: 11400000, guid: aa4dc7568a4573147b4190c5385ef569, type: 2}
+  _v: {fileID: 0}
+  vehicleUI: {fileID: 1507676463385292}
+  HealthSlider: {fileID: 114239544120561932}
+  FuelSlider: {fileID: 114210411791571910}
   seat: {fileID: 4261123642762230}
   ani: {fileID: 95495228253066910}
+  vehicleActive: 0
+  vColor: {r: 1, g: 0, b: 0, a: 1}
+  playerInSeat: 0
+  vehicleHealth: 0
+  vehicleFuel: 0
+  Assault: 0
+  Shotgun: 0
+  Sniper: 0
+  Rocket: 0
 --- !u!114 &114431287556307284
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2512,10 +2519,12 @@ MonoBehaviour:
   crosshairYOffset: 147
   crosshairSpeed: 1.5
   crosshairWorldOffset: {x: 0, y: 0, z: 58}
-  FireRate: 0.5
+  AutomaticFireRate: 0.25
+  SemiAutoFireRate: 0.5
   WeaponRange: 180
   AimCooldown: 2.5
   roundsFired: 0
+  v: {fileID: 114420336651608308}
 --- !u!114 &114711319396005030
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2768,6 +2777,10 @@ MonoBehaviour:
   Downforce: {x: 0, y: 0, z: 0}
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
+  currentFuelConsumption: 0
+  FuelBurnRate: 0.5
+  BoostingFuelBurnRate: 1
+  vehicleBrain: {fileID: 114420336651608308}
 --- !u!114 &114940082281875364
 MonoBehaviour:
   m_ObjectHideFlags: 1

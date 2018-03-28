@@ -977,10 +977,12 @@ MonoBehaviour:
   crosshairYOffset: 147
   crosshairSpeed: 1.5
   crosshairWorldOffset: {x: 0, y: 0, z: 58}
-  FireRate: 0.5
+  AutomaticFireRate: 0.25
+  SemiAutoFireRate: 0.5
   WeaponRange: 180
   AimCooldown: 2.5
   roundsFired: 0
+  v: {fileID: 114843804702031498}
 --- !u!114 &114151063587179744
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1148,6 +1150,10 @@ MonoBehaviour:
   Downforce: {x: 0, y: 0, z: 0}
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
+  currentFuelConsumption: 0
+  FuelBurnRate: 0.5
+  BoostingFuelBurnRate: 1
+  vehicleBrain: {fileID: 114843804702031498}
 --- !u!114 &114316205108092730
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1376,7 +1382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 3
-  m_SendInterval: 0.11111111
+  m_SendInterval: 0.04761905
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
   m_SyncSpin: 0
@@ -1600,19 +1606,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beadd3ee7ea545e4fa493e0e7908fab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VirtualCamera: {fileID: 1202918356384980}
-  vColor: {r: 1, g: 0.42647058, b: 0.9841786, a: 1}
   models:
   - {fileID: 23628603462743604}
   colorChangeSpeed: 0.265
-  VehicleConfig: {fileID: 11400000, guid: 00dd93e5a7108074fb385382df00968e, type: 2}
-  _v: {fileID: 0}
-  ic: {fileID: 114309290927467896}
+  VirtualCamera: {fileID: 1202918356384980}
+  ic: {fileID: 114219999007729168}
   shootBehaviour: {fileID: 114119439211231952}
-  vehicleUI: {fileID: 223255173832801424}
-  vehicleActive: 0
+  VehicleConfig: {fileID: 11400000, guid: aa4dc7568a4573147b4190c5385ef569, type: 2}
+  _v: {fileID: 0}
+  vehicleUI: {fileID: 1874825454472314}
+  HealthSlider: {fileID: 114028939043363892}
+  FuelSlider: {fileID: 114358088618495944}
   seat: {fileID: 4126962040237516}
   ani: {fileID: 95847938825256242}
+  vehicleActive: 0
+  vColor: {r: 1, g: 0.42647058, b: 0.9841786, a: 1}
+  playerInSeat: 0
+  vehicleHealth: 0
+  vehicleFuel: 0
+  Assault: 0
+  Shotgun: 0
+  Sniper: 0
+  Rocket: 0
 --- !u!114 &114846417567106178
 MonoBehaviour:
   m_ObjectHideFlags: 1

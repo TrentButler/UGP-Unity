@@ -23,8 +23,8 @@ namespace UGP
         {
             if (collision.collider.tag == "Vehicle")
             {
-                var vehicle_scriptable = collision.collider.GetComponentInParent<VehicleBehaviour>()._v;
-                vehicle_scriptable.TakeDamage(DamageDealt);
+                var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
+                vehicle_behaviour.CmdTakeDamage(DamageDealt);
                 Destroy(gameObject);
             }
         }
