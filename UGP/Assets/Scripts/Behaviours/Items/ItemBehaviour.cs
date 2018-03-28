@@ -123,6 +123,7 @@ namespace UGP
                 {
                     if (!player_interaction.isHolding && !isBeingHeld && !isServer)
                     {
+                        player.PickUpItem();
                         PickUp(player);
                     }
                 }
@@ -144,6 +145,7 @@ namespace UGP
 
                     if (vehicle_identity.hasAuthority)
                     {
+                        player.DropItem();
                         player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity);
                         player.p.CmdRemoveVehicleAuthority(vehicle_identity);
                     }
@@ -209,6 +211,7 @@ namespace UGP
                 if (isBeingHeld && !isServer && hasAuthority)
                 {
                     //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
+                    player.DropItem();
                     Drop();
                 }
             }

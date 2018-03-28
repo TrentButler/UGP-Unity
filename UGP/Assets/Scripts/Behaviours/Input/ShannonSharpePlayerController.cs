@@ -50,32 +50,32 @@ namespace UGP
             controller.transform.rotation = rot;
         }
 
-        private void PickUpItem()
-        {
-            if(Input.GetKeyDown(KeyCode.F))
-            {
-                Ani.SetTrigger("PickUpItem");
-            }
-        }
-
         public override void Move(float x, float y)
         {
             Sprint();
             Jump();
             KeepPlayerUpright();
 
+            //ATTEMPT AT PLAYER MOVEMENT SIMULAR TO A TWIN STICK SHOOTER
+            //Ani.SetFloat("Move", Mathf.Abs(x + y));
+            //var rotate_direction = new Vector3(x, 0, y);
+            //controller.transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(rotate_direction), Time.smoothDeltaTime * TurnSpeed);
+
             //DO NOT WALK BACKWARDS
             if (y < 0.0f)
             {
-                y = 0;
+                //sy = y / 2;
+                var move_vector = new Vector3(0, 0, y);
+                var move = controller.transform.TransformDirection(move_vector);
+                controller.SimpleMove(move * 1);
             }
-
-            Ani.SetFloat("Move", Mathf.Abs(x + y));
-
-            var move_vector = new Vector3(0, 0, y);
-            var move = controller.transform.TransformDirection(move_vector);
-
-            controller.SimpleMove(move * MovementSpeed);
+            else
+            {
+                Ani.SetFloat("Move", Mathf.Abs(y));
+                var move_vector = new Vector3(0, 0, y);
+                var move = controller.transform.TransformDirection(move_vector);
+                controller.SimpleMove(move * MovementSpeed);
+            }
         }
 
         public override void Rotate(float xRot, float yRot, float zRot)

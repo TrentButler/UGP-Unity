@@ -16,6 +16,7 @@ namespace UGP
         [SyncVar] public bool isHolding = false;
 
         public GameObject ItemModel;
+        public Animator Ani;
 
         #region COMMAND_FUNCTIONS
         [Command] public void CmdSetHolding(bool holding)
@@ -73,7 +74,17 @@ namespace UGP
             itemNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
         #endregion
-        
+
+        public void PickUpItem()
+        {
+            Ani.SetTrigger("PickUpItem");
+        }
+
+        public void DropItem()
+        {
+            Ani.SetTrigger("DropItem");
+        }
+
         //NEEDS WORK
         public void UseItemOnVehicle(string itemType, NetworkIdentity itemIdentity, NetworkIdentity vehicleIdentity)
         {

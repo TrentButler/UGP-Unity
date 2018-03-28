@@ -3900,7 +3900,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 95152687211648958}
-  m_ParameterSendBits: 3
+  m_ParameterSendBits: 15
   param0: 
   param1: 
   param2: 
@@ -4012,6 +4012,7 @@ MonoBehaviour:
   HoldingItemPosition: {fileID: 4795179477832944}
   isHolding: 0
   ItemModel: {fileID: 1895686742729626}
+  Ani: {fileID: 95152687211648958}
 --- !u!114 &114436805829194078
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4565,14 +4566,13 @@ MonoBehaviour:
   model: {fileID: 1932171957708586}
   player: {fileID: 11400000, guid: 7cc16566e0ddac14fb3b18f2a87a010d, type: 2}
   p: {fileID: 0}
+  vehicleColor: {r: 0, g: 0, b: 0, a: 0}
   isDriving: 0
-  playerModelActive: 0
   vehicle: {fileID: 0}
   TimeToExitVehicle: 0.4
   ic: {fileID: 114436805829194078}
   interaction: {fileID: 114436284547116170}
   ani: {fileID: 95152687211648958}
-  needsToEnterVehicle: 0
 --- !u!114 &114963408421735460
 MonoBehaviour:
   m_ObjectHideFlags: 1
