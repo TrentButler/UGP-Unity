@@ -33,30 +33,39 @@ namespace UGP
         private Canvas c;
         #endregion
 
-        [Range(0.1f, 2.0f)] public float FireRate; //ROUNDS FIRED PER MINUTE
+        [Range(0.1f, 2.0f)] public float AutomaticFireRate; //ROUNDS FIRED PER MINUTE
+        [Range(0.1f, 2.0f)] public float SemiAutoFireRate = 0.5f; //ROUNDS FIRED PER MINUTE
+        private float automatic_timer = 0;
+        private float semiauto_timer = 0;
+        private bool hasFired = false;
+
         public float WeaponRange;
         public float AimCooldown;
         public int roundsFired = 0;
         private Vector3 barrelLookAt;
+        public VehicleBehaviour v;
 
-        private VehicleBehaviour v;
+        [Command] private void CmdFireRound()
+        {
+            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
+            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+            NetworkServer.Spawn(b);
+            Destroy(b, 4);
+        }
 
-        [Command] private void CmdShoot()
+        private void Shoot()
         {
             switch (w)
             {
                 case Weapon.ASSAULT:
                     {
-                        var assault = v._v.ammunition.Assault;
+                        var assault = v.Assault;
                         if (assault > 0)
                         {
-                            v._v.ammunition.Assault -= 1;
+                            //v._v.ammunition.Assault -= 1;
+                            v.CmdUseAmmunition(1, 0, 0, 0);
                             //audio.Play();
-
-                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            NetworkServer.Spawn(b);
-                            Destroy(b, 4);
+                            CmdFireRound();
                         }
                         else
                         {
@@ -67,16 +76,12 @@ namespace UGP
 
                 case Weapon.SHOTGUN:
                     {
-                        var shotgun = v._v.ammunition.Shotgun;
+                        var shotgun = v.Shotgun;
                         if (shotgun > 0)
                         {
-                            v._v.ammunition.Shotgun -= 1;
+                            v.CmdUseAmmunition(0, 1, 0, 0);
                             //audio.Play();
-
-                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            NetworkServer.Spawn(b);
-                            Destroy(b, 4);
+                            CmdFireRound();
                         }
                         else
                         {
@@ -87,16 +92,12 @@ namespace UGP
 
                 case Weapon.SNIPER:
                     {
-                        var sniper = v._v.ammunition.Sniper;
+                        var sniper = v.Sniper;
                         if (sniper > 0)
                         {
-                            v._v.ammunition.Sniper -= 1;
+                            v.CmdUseAmmunition(0, 0, 1, 0);
+                            CmdFireRound();
                             //audio.Play();
-
-                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            NetworkServer.Spawn(b);
-                            Destroy(b, 4);
                         }
                         else
                         {
@@ -107,16 +108,12 @@ namespace UGP
 
                 case Weapon.ROCKET:
                     {
-                        var rocket = v._v.ammunition.Rocket;
+                        var rocket = v.Rocket;
                         if (rocket > 0)
                         {
-                            v._v.ammunition.Rocket -= 1;
+                            v.CmdUseAmmunition(0, 0, 0, 1);
                             //audio.Play();
-
-                            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            NetworkServer.Spawn(b);
-                            Destroy(b, 4);
+                            CmdFireRound();
                         }
                         else
                         {
@@ -250,32 +247,43 @@ namespace UGP
             barrelLookAt = cam.ScreenToWorldPoint(uiCrosshair + crosshairWorldOffset);
             GunBarrel.LookAt(barrelLookAt);
         }
-
-        private float time = 0;
+        
         private void Fire()
         {
-            //NEEDS WORK
             //SINGLE-FIRE
-            //if(Input.GetKeyDown(KeyCode.Mouse0))
-            //{
-            //    CmdShoot();
-            //}
-
-            //AUTOMATIC FIRE
-            //LIMIT THE RATE OF FIRE
-            if (Input.GetKey(KeyCode.Mouse0))
+            if (Input.GetKeyDown(KeyCode.RightControl))
             {
-                time += Time.deltaTime;
-                if (time > FireRate)
+                if(!hasFired)
                 {
-                    Debug.Log("SHOT FIRED");
-                    CmdShoot();
-                    time = 0.0f;
+                    Shoot();
+                    hasFired = true;
                 }
             }
             else
             {
-                time = 0.0f;
+                semiauto_timer += Time.deltaTime;
+                if(semiauto_timer >= SemiAutoFireRate)
+                {
+                    hasFired = false;
+                    semiauto_timer = 0.0f; //RESET THE TIMER
+                }
+            }
+
+            //AUTOMATIC FIRE
+            //LIMIT THE RATE OF FIRE
+            if (Input.GetKey(KeyCode.RightControl))
+            {
+                automatic_timer += Time.deltaTime;
+                if (automatic_timer > AutomaticFireRate)
+                {
+                    Debug.Log("SHOT FIRED");
+                    Shoot();
+                    automatic_timer = 0.0f;
+                }
+            }
+            else
+            {
+                automatic_timer = 0.0f;
             }
         }
 
@@ -298,10 +306,9 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
-
 
         private void Start()
         {
@@ -314,7 +321,7 @@ namespace UGP
 
                     if (vactive)
                     {
-                        c = v.vehicleUI;
+                        c = v.vehicleUI.GetComponent<Canvas>();
                     }
                     return;
                 }
@@ -326,7 +333,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
 
@@ -347,7 +354,7 @@ namespace UGP
             }
 
             //Aim();
-            Fire();
+            //Fire();
 
             //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
         }
@@ -361,7 +368,7 @@ namespace UGP
                     var vactive = v.vehicleActive;
                     if (vactive)
                     {
-                        c = v.vehicleUI;
+                        c = v.vehicleUI.GetComponent<Canvas>();
                     }
                     return;
                 }
@@ -372,7 +379,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
     }

@@ -14,9 +14,12 @@ namespace UGP
     public class InGameNetworkBehaviour : NetworkBehaviour
     {
         public List<GameObject> VehiclePrefabs;
+        public List<GameObject> ItemPrefabs;
+
         public Transform OriginVehicleSpawn;
 
         public float vehiclePositionOffset;
+        public float ItemPositionOffset = 5.0f;
         private bool spawnOnPlayerCount;
 
         #region ServerCamera
@@ -117,6 +120,27 @@ namespace UGP
 
                 var v = Instantiate(VehiclePrefabs[i], spawn_position, OriginVehicleSpawn.rotation);
                 NetworkServer.Spawn(v);
+            }
+        }
+
+        public void SpawnAllVehiclesWithAllItems()
+        {
+            for (int i = 0; i < VehiclePrefabs.Count; i++)
+            {
+                var spawn_position = OriginVehicleSpawn.position;
+                spawn_position.z = spawn_position.z + (i * vehiclePositionOffset);
+
+                var v = Instantiate(VehiclePrefabs[i], spawn_position, OriginVehicleSpawn.rotation);
+                NetworkServer.Spawn(v);
+
+                for(int j = 0; j < ItemPrefabs.Count; j++)
+                {
+                    var item_spawn = spawn_position;
+                    item_spawn.x = item_spawn.x - ((j + 1) * ItemPositionOffset);
+
+                    var item = Instantiate(ItemPrefabs[j], item_spawn, OriginVehicleSpawn.rotation);
+                    NetworkServer.Spawn(item);
+                }
             }
         }
 
