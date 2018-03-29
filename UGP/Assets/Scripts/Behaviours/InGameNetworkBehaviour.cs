@@ -82,6 +82,18 @@ namespace UGP
         }
         #endregion
 
+        public void RespawnPlayer(NetworkIdentity playerIdentity)
+        {
+            //RESPAWN THE PLAYER AT ONE OF THE NETWORKSTARTPOSITIONS
+            //MAYBE TRY TO INVOKE THE PLAYERBEHAVIOUR'S START FUNCTION
+            var spawnPoints = FindObjectsOfType<NetworkStartPosition>().ToList();
+            var randomSpawn = Random.Range(0, spawnPoints.Count);
+            var spawn = spawnPoints[randomSpawn];
+
+            var player_behaviour = playerIdentity.GetComponent<PlayerBehaviour>();
+            player_behaviour.OnRespawn(spawn.transform);
+        }
+
         private void SpawnVehiclesOnPlayerCount()
         {
             //SPAWN A VEHICLE FOR EACH PLAYER THAT IS CONNECTED

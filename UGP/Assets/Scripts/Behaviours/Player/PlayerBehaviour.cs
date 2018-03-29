@@ -11,7 +11,6 @@ namespace UGP
         public GameObject VirtualCamera;
         public GameObject model;
         public GameObject RagDoll;
-        private Transform lookat_override;
         public Player PlayerConfig;
         [HideInInspector] public Player _p;
 
@@ -21,33 +20,33 @@ namespace UGP
         private float exitTimer = 0.0f;
         public NetworkUserControl ic;
         public PlayerInteractionBehaviour interaction;
+        public PlayerUIBehaviour ui;
 
         public Animator ani;
-
-        #region UI
-        public GameObject playerUI;
-        public Slider HealthSlider;
-        public Text PlayerNameText;
-        #endregion
 
         #region SYNCED_VARIABLES
         [SyncVar(hook = "OnPlayerHealthChange")] public float playerHealth;
         [SyncVar(hook = "OnisDeadChange")] public bool isDead;
-        [SyncVar] private bool hasInstantiatedRagdoll;
         [SyncVar] public bool isDriving;
         [SyncVar] public Color vehicleColor;
-        [SyncVar] private float max_health;
+        [SyncVar(hook = "OnMaxHealthAssign")] public float MaxHealth;
         #endregion
 
         #region SYNCVAR_HOOK_FUNCTIONS
         private void OnPlayerHealthChange(float healthChange)
         {
-            playerHealth = Mathf.Clamp(healthChange, 0.0f, max_health);
+            playerHealth = Mathf.Clamp(healthChange, 0.0f, 99999);
 
             if (playerHealth <= 0.0f)
             {
                 isDead = true;
+                ic.enabled = false;
+                interaction.enabled = false;
             }
+        }
+        private void OnMaxHealthAssign(float assignMaxHealth)
+        {
+            MaxHealth = assignMaxHealth;
         }
         private void OnisDeadChange(bool isDead)
         {
@@ -62,17 +61,31 @@ namespace UGP
         [Command] public void CmdTakeHealth(float healthTaken)
         {
             playerHealth += healthTaken;
-            playerHealth = Mathf.Clamp(playerHealth, 0.0f, _p.MaxHealth);
+            playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
         }
         [Command] public void CmdTakeDamage(float healthTaken)
         {
             playerHealth -= healthTaken;
-            playerHealth = Mathf.Clamp(playerHealth, 0.0f, _p.MaxHealth);
-
+            playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
             if (playerHealth <= 0.0f)
             {
                 isDead = true;
+                //isDriving = false;
+                ic.enabled = false;
+                interaction.enabled = false;
             }
+        }
+        [Command] private void CmdSetHealth(float health)
+        {
+            playerHealth = health;
+        }
+        [Command] private void CmdSetMaxHealth(float maxHealth)
+        {
+            MaxHealth = maxHealth;
+        }
+        [Command] private void CmdSetisDead(bool dead)
+        {
+            isDead = dead;
         }
         [Command] public void CmdSetDriving(bool driving)
         {
@@ -91,27 +104,66 @@ namespace UGP
         [Command] private void CmdSpawnRagdoll()
         {
             var ragdoll = Instantiate(RagDoll, transform.position, transform.rotation);
-            lookat_override = ragdoll.transform;
             NetworkServer.Spawn(ragdoll);
-            Destroy(ragdoll, TimeToDestroyRagdoll);
+            RpcSetRagdollPos(ragdoll);
+        }
+        [Command] public void CmdRespawn(Vector3 position, Quaternion rotation)
+        {
+            RpcRespawn(position, rotation);
         }
         #endregion
 
         #region CLIENTRPC_FUNCTIONS
-        [ClientRpc] private void RpcPlayerDeath()
+        //NEEDS WORK
+        [ClientRpc] private void RpcKillPlayer()
         {
-            isDead = true;
-            isDriving = false;
-            model.SetActive(false);
+            if (!isLocalPlayer)
+            {
+                return;
+            }
 
-            //if (!hasInstantiatedRagdoll)
-            //{
-            //    var ragdoll = Instantiate(RagDoll, transform.position, transform.rotation);
-            //    NetworkServer.Spawn(ragdoll);
-            //    hasInstantiatedRagdoll = true;
-            //}
+            isDead = true;
+            //isDriving = false;
+            ic.enabled = false;
+            interaction.enabled = false;
+        }
+        [ClientRpc] private void RpcSetRagdollPos(GameObject ragdoll)
+        {
+            if (!isLocalPlayer)
+                return;
+            LookAt(ragdoll.transform);
+        }
+        [ClientRpc] private void RpcRespawn(Vector3 pos, Quaternion rot)
+        {
+            if(isLocalPlayer)
+            {
+                CmdSetHealth(_p.MaxHealth);
+                CmdSetMaxHealth(_p.MaxHealth);
+                CmdSetisDead(false);
+                CmdSetDriving(false);
+                transform.position = pos;
+                transform.rotation = rot;
+                LookAt(transform);
+            }
         }
         #endregion
+
+        #region LOCAL_FUNCTIONS
+        public void OnRespawn(Transform spawnPoint)
+        {
+            if (PlayerConfig == null)
+            {
+                PlayerConfig = Resources.Load("Assets//Resources//ScriptableObjects//Players//BasicPlayer") as Player;
+            }
+
+            _p = Instantiate(PlayerConfig);
+
+            //playerHealth = _p.MaxHealth;
+            isDead = false;
+            isDriving = false;
+            
+            CmdRespawn(spawnPoint.position, spawnPoint.rotation);
+        }
 
         private void PlayerHealthRegenrate()
         {
@@ -153,60 +205,17 @@ namespace UGP
             }
         }
 
-        public void UpdatePlayerUI()
+        private void LookAt(Transform t)
         {
-            HealthSlider.value = Mathf.Clamp(playerHealth, 0.0f, max_health);
+            VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().Follow = t;
+            VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().LookAt = t;
         }
-
-        private void Server_UpdatePlayer()
-        {
-            if (playerHealth <= 0.0f)
-            {
-                RpcPlayerDeath();
-                Debug.Log("Player DEAD");
-            }
-        }
-
-        //public override void OnStartLocalPlayer()
-        //{
-        //    if (PlayerConfig == null)
-        //    {
-        //        PlayerConfig = Resources.Load("Assets//Resources//ScriptableObjects//Players//BasicPlayer") as Player;
-        //    }
-
-        //    _p = Instantiate(PlayerConfig);
-
-        //    playerHealth = _p.MaxHealth;
-        //    max_health = _p.MaxHealth;
-        //    HealthSlider.maxValue = max_health;
-        //    PlayerNameText.text = gameObject.name;
-        //    isDead = false;
-        //    hasInstantiatedRagdoll = false;
-        //    isDriving = false;
-        //}
+        #endregion
 
         private void Start()
         {
             if (!isLocalPlayer)
             {
-                //if (isServer)
-                //{
-                //    if (PlayerConfig == null)
-                //    {
-                //        PlayerConfig = Resources.Load("Assets//Resources//ScriptableObjects//Players//BasicPlayer") as Player;
-                //    }
-
-                //    _p = Instantiate(PlayerConfig);
-
-                //    playerHealth = _p.MaxHealth;
-                //    max_health = _p.MaxHealth;
-                //    HealthSlider.maxValue = max_health;
-                //    PlayerNameText.text = gameObject.name;
-                //    isDead = false;
-                //    hasInstantiatedRagdoll = false;
-                //    isDriving = false;
-                //}
-
                 VirtualCamera.SetActive(false);
                 return;
             }
@@ -218,13 +227,16 @@ namespace UGP
 
             _p = Instantiate(PlayerConfig);
 
-            playerHealth = _p.MaxHealth;
-            max_health = _p.MaxHealth;
-            HealthSlider.maxValue = max_health;
-            PlayerNameText.text = gameObject.name;
-            isDead = false;
-            hasInstantiatedRagdoll = false;
-            isDriving = false;
+            //playerHealth = _p.MaxHealth;
+            //isDead = false;
+            //isDriving = false;
+
+            CmdSetHealth(_p.MaxHealth);
+            CmdSetMaxHealth(_p.MaxHealth);
+            CmdSetisDead(false);
+            CmdSetDriving(false);
+
+            //max_health = _p.MaxHealth;
 
             if (ani == null)
             {
@@ -234,11 +246,6 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if (isServer)
-            {
-                //Server_UpdatePlayer();
-            }
-
             if (!isLocalPlayer)
             {
                 VirtualCamera.SetActive(false);
@@ -247,47 +254,34 @@ namespace UGP
 
             if (Input.GetKeyDown(KeyCode.Keypad0))
             {
-                CmdTakeDamage(10);
+                CmdTakeDamage(50);
             }
             if (Input.GetKeyDown(KeyCode.Keypad1))
             {
                 CmdTakeHealth(10);
             }
 
-            if (isDead)
+            if(isDead)
             {
-                VirtualCamera.SetActive(true);
-                //VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().Follow = lookat_override;
-                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().LookAt = lookat_override;
-                ic.enabled = false;
-
-                interaction.enabled = false;
-                playerUI.SetActive(false);
-                //PlayerDeadCanvas.SetActive(true);
-                //Cursor.enabled = true;
                 return;
+            }
+
+            if (isDriving)
+            {
+                VirtualCamera.SetActive(false);
+                ic.enabled = false;
+                interaction.enabled = false;
+
+                ani.SetFloat("Walk", 0.0f);
+
+                ExitVehicleWithTimer(); //EXIT THE VEHICLE
             }
             else
             {
-                if (isDriving)
-                {
-                    VirtualCamera.SetActive(false);
-                    ic.enabled = false;
-                    interaction.enabled = false;
-                    playerUI.SetActive(false);
-
-                    ani.SetFloat("Walk", 0.0f);
-
-                    ExitVehicleWithTimer(); //EXIT THE VEHICLE
-                }
-                else
-                {
-                    VirtualCamera.SetActive(true);
-                    ic.enabled = true;
-                    interaction.enabled = true;
-                    UpdatePlayerUI();
-                    playerUI.SetActive(true);
-                }
+                VirtualCamera.SetActive(true);
+                ic.enabled = true;
+                interaction.enabled = true;
+                //UpdatePlayerUI();
             }
         }
 
