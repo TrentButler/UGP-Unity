@@ -12,11 +12,26 @@ namespace UGP
         public float TurnSpeed = 1.0f;
         public float JumpStrength = 2.0f;
         private float OriginalSpeed;
-
         public Animator Ani;
         public CharacterController controller;
         #endregion
 
+        public void Melee()
+        {
+            if (Input.GetMouseButton(1))
+            {
+                Ani.SetBool("Fighting", true);
+                if(Input.GetMouseButtonDown(0))
+                {
+                    Ani.SetTrigger("Punch");
+                }
+            }
+            else
+            {
+                Ani.SetBool("Fighting", false);
+            }
+                
+        }
         public void Jump()
         {
             if (Input.GetKeyDown(KeyCode.Space))
@@ -53,7 +68,8 @@ namespace UGP
         public override void Move(float x, float y)
         {
             Sprint();
-            Jump();
+            Melee();
+            //Jump();
             KeepPlayerUpright();
 
             //ATTEMPT AT PLAYER MOVEMENT SIMULAR TO A TWIN STICK SHOOTER

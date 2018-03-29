@@ -675,6 +675,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4777580433846730}
+  - component: {fileID: 135867826579464398}
+  - component: {fileID: 114263302613085948}
   m_Layer: 0
   m_Name: ShannonSharpe_r_Arm_WristSHJnt
   m_TagString: Untagged
@@ -1309,6 +1311,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4504179999891640}
+  - component: {fileID: 135465985241408104}
+  - component: {fileID: 114735228029206498}
   m_Layer: 0
   m_Name: ShannonSharpe_l_Arm_WristSHJnt
   m_TagString: Untagged
@@ -3734,6 +3738,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8b78ac948f05a46a6d8339a503172b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114263302613085948
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1360119189543382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cadb64633d5a0846889fee5439ed78e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114280931252969692
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3900,7 +3915,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Animator: {fileID: 95152687211648958}
-  m_ParameterSendBits: 15
+  m_ParameterSendBits: 127
   param0: 
   param1: 
   param2: 
@@ -4024,10 +4039,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae0883b3bcea4d14f8705724044be732, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MovementSpeed: 5
-  RunSpeed: 20
+  MovementSpeed: 2.5
+  RunSpeed: 8
   TurnSpeed: 2.5
-  JumpStrength: 2
+  JumpStrength: 1.5
   Ani: {fileID: 95152687211648958}
   controller: {fileID: 143254331847889690}
 --- !u!114 &114521680120044998
@@ -4361,6 +4376,17 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114735228029206498
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1695027354309436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cadb64633d5a0846889fee5439ed78e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114742462909492668
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4660,6 +4686,30 @@ MonoBehaviour:
   m_LegacyHeightOffset: 3.4028235e+38
   m_LegacyHeadingBias: 3.4028235e+38
   m_HeadingIsSlave: 1
+--- !u!135 &135465985241408104
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1695027354309436}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 13
+  m_Center: {x: -12.15, y: -0.14, z: 0.59}
+--- !u!135 &135867826579464398
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1360119189543382}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 13
+  m_Center: {x: 12.15, y: -0.14, z: 0.59}
 --- !u!136 &136739931918921192
 CapsuleCollider:
   m_ObjectHideFlags: 1
