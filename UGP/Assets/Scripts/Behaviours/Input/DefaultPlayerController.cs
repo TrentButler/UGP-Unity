@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UGP
 {
+    [RequireComponent(typeof(Rigidbody))]
     public class DefaultPlayerController : InputController
     {
         #region MemberVariables
@@ -15,11 +16,29 @@ namespace UGP
 
         public Animator Ani;
         public CharacterController controller;
+        public Rigidbody rb;
         #endregion
+
+        public void Melee()
+        {
+            if (Input.GetMouseButton(1))
+            {
+                Ani.SetBool("Fighting", true);
+                if (Input.GetMouseButtonDown(0))
+                {
+                    Ani.SetTrigger("Punch");
+                }
+            }
+            else
+            {
+                Ani.SetBool("Fighting", false);
+            }
+
+        }
 
         public void Jump()
         {
-            if(Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 var half_velocity = controller.velocity / 2;
                 var jump_vector = (Vector3.up * JumpStrength) + half_velocity;
@@ -53,30 +72,52 @@ namespace UGP
         public override void Move(float x, float y)
         {
             Sprint();
-            Jump();
+            //Jump();
+            Melee();
             KeepPlayerUpright();
 
-            //DO NOT WALK BACKWARDS
-            if (y < 0.0f)
+            var accelerationVector = new Vector3(0, 0, y);
+
+            if (accelerationVector.magnitude > 0)
             {
-                y = 0;
+                //DO NOT WALK BACKWARDS
+                if (y < 0.0f)
+                {
+                    //sy = y / 2;
+                    var move_vector = new Vector3(0, 0, y);
+                    var move = controller.transform.TransformDirection(move_vector);
+                    //controller.SimpleMove(move * 1);
+                    rb.AddForce(move * 1);
+                }
+                else
+                {
+                    Ani.SetFloat("Move", Mathf.Abs(y));
+                    var move_vector = new Vector3(0, 0, y);
+                    var move = controller.transform.TransformDirection(move_vector);
+                    //controller.SimpleMove(move * MovementSpeed);
+                    rb.AddForce(move * MovementSpeed, ForceMode.Impulse);
+                }
+            }
+            else
+            {
+                Ani.SetFloat("Move", Mathf.Abs(y));
+                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, 3 * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
             }
 
-            var move_vector = new Vector3(0, 0, y);
-            var move = controller.transform.TransformDirection(move_vector);
-
-            controller.SimpleMove(move * MovementSpeed);
+            rb.velocity = Vector3.ClampMagnitude(rb.velocity, MovementSpeed);
         }
 
         public override void Rotate(float xRot, float yRot, float zRot)
         {
-            var rotate_vector = new Vector3(0, xRot, 0);
-            controller.transform.Rotate(rotate_vector * TurnSpeed);
+            var rotate_vector = new Vector3(0, xRot * TurnSpeed, 0);
+            //controller.transform.Rotate(rotate_vector * TurnSpeed);
+            rb.MoveRotation(rb.rotation * Quaternion.Euler(rotate_vector));
         }
 
         private void Start()
         {
             OriginalSpeed = MovementSpeed;
+            rb = GetComponent<Rigidbody>();
         }
     }
 }
