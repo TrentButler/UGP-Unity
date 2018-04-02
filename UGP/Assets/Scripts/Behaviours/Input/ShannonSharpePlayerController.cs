@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace UGP
 {
@@ -13,18 +14,19 @@ namespace UGP
         public float JumpStrength = 2.0f;
         private float OriginalSpeed;
         public Animator Ani;
+        public NetworkAnimator NetworkAni;
         //public CharacterController controller;
         public Rigidbody rb;
         #endregion
 
         public void Melee()
         {
-            if (Input.GetMouseButton(1))
+            if (Input.GetKey(KeyCode.Space))
             {
                 Ani.SetBool("Fighting", true);
-                if(Input.GetMouseButtonDown(0))
+                if(Input.GetKeyDown(KeyCode.RightAlt))
                 {
-                    Ani.SetTrigger("Punch");
+                    NetworkAni.SetTrigger("Punch");
                 }
             }
             else

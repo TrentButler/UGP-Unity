@@ -260,9 +260,6 @@ namespace UGP
             {
                 ani = GetComponent<Animator>();
             }
-
-            var net_animator = GetComponent<NetworkAnimator>();
-            //net_animator.
         }
 
         private void FixedUpdate()

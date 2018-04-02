@@ -30,11 +30,17 @@ namespace UGP
                     var impact_velocity = collision.relativeVelocity.magnitude;
                     Debug.Log(point.thisCollider.gameObject.name + " COLLIDE WITH " + point.otherCollider.gameObject.name + "@ " + impact_velocity.ToString() + " Force");
 
+                    //var network_identity = GetComponent<NetworkIdentity>(); //CHECK IF THE PLAYER HAS AUTHORITY
+                    //var hasAuthority = network_identity.hasAuthority;
+
+
                     if (point.otherCollider.CompareTag("Player"))
                     {
-                        var player_behaviour = collision.gameObject.GetComponentInParent<PlayerBehaviour>();
+                        //ASSIGN AND REMOVE AUTHORITY TO THE 'CLIENT/OTHER' PLAYER OBJECT WHEN HIT
+                        var other_player_behaviour = collision.gameObject.GetComponentInParent<PlayerBehaviour>();
+                        var other_network_identity = other_player_behaviour.GetComponent<NetworkIdentity>(); 
 
-                        if (player_behaviour.isLocalPlayer)
+                        if (other_player_behaviour.isLocalPlayer)
                         {
                             return;
                         }
@@ -42,7 +48,7 @@ namespace UGP
                         {
                             //Debug.Log("Hit a Player");
                             Debug.Log(collision.gameObject.name + "@ " + impact_velocity.ToString() + " Force");
-                            player_behaviour.CmdTakeDamage(Damage);
+                            other_player_behaviour.CmdTakeDamage(Damage);
                         }
                     }
                 }
