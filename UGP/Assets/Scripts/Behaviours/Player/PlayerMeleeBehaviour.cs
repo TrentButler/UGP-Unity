@@ -27,10 +27,12 @@ namespace UGP
             {
                 if(point.thisCollider == RightHand || point.thisCollider == LeftHand)
                 {
-                    if(point.otherCollider.CompareTag("Player"))
+                    var impact_velocity = collision.relativeVelocity.magnitude;
+                    Debug.Log(point.thisCollider.gameObject.name + " COLLIDE WITH " + point.otherCollider.gameObject.name + "@ " + impact_velocity.ToString() + " Force");
+
+                    if (point.otherCollider.CompareTag("Player"))
                     {
                         var player_behaviour = collision.gameObject.GetComponentInParent<PlayerBehaviour>();
-                        var impact_velocity = collision.relativeVelocity.magnitude;
 
                         if (player_behaviour.isLocalPlayer)
                         {
