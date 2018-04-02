@@ -65,6 +65,7 @@ namespace UGP
         }
         [Command] public void CmdTakeDamage(float healthTaken)
         {
+            Debug.Log("Player Take Damage");
             playerHealth -= healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
             if (playerHealth <= 0.0f)
@@ -137,6 +138,10 @@ namespace UGP
         {
             if(isLocalPlayer)
             {
+                playerHealth = _p.MaxHealth;
+                isDead = false;
+                isDriving = false;
+
                 CmdSetHealth(_p.MaxHealth);
                 CmdSetMaxHealth(_p.MaxHealth);
                 CmdSetisDead(false);
@@ -220,23 +225,36 @@ namespace UGP
                 return;
             }
 
+            var free_look = VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>();
+            var virtual_camera = VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
+
+            if(free_look != null)
+            {
+                //ASSIGN THE CAMERA THE INPUT AXIS FROM THE INPUT CONTROLLER
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_XAxis.m_InputAxisName = ic.CameraInputHorizontal;
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_YAxis.m_InputAxisName = ic.CameraInputVertical;
+            }
+            if(virtual_camera != null)
+            {
+                var pov_camera = virtual_camera.GetCinemachineComponent<Cinemachine.CinemachinePOV>();
+
+                pov_camera.m_HorizontalAxis.m_InputAxisName = ic.CameraInputHorizontal;
+                pov_camera.m_VerticalAxis.m_InputAxisName = ic.CameraInputVertical;
+                pov_camera.m_HorizontalAxis.m_InvertAxis = ic.InvertCameraHorizontal;
+                pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
+            }
+
             if (PlayerConfig == null)
             {
                 PlayerConfig = Resources.Load("Assets//Resources//ScriptableObjects//Players//BasicPlayer") as Player;
             }
 
             _p = Instantiate(PlayerConfig);
-
-            //playerHealth = _p.MaxHealth;
-            //isDead = false;
-            //isDriving = false;
-
+            
             CmdSetHealth(_p.MaxHealth);
             CmdSetMaxHealth(_p.MaxHealth);
             CmdSetisDead(false);
             CmdSetDriving(false);
-
-            //max_health = _p.MaxHealth;
 
             if (ani == null)
             {

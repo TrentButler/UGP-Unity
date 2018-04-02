@@ -110,7 +110,13 @@ namespace UGP
             //controller.transform.Rotate(rotate_vector * TurnSpeed);
             if(rotate_vector.magnitude > 0.0f)
             {
+                rb.constraints = RigidbodyConstraints.None;
+                rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 rb.MoveRotation(rb.rotation * Quaternion.Euler(rotate_vector));
+            }
+            else
+            {
+                rb.constraints = RigidbodyConstraints.FreezeRotation;
             }
         }
 

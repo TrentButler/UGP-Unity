@@ -9,6 +9,10 @@ namespace UGP
     {
         public string InputHorizontal = "Horizontal";
         public string InputVertical = "Vertical";
+        public string CameraInputHorizontal = "Mouse X";
+        public string CameraInputVertical = "Mouse Y";
+        public bool InvertCameraHorizontal = false;
+        public bool InvertCameraVertical = false;
 
         public InputController ic;
 
