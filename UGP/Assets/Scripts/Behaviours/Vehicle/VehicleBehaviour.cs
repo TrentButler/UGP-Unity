@@ -255,6 +255,25 @@ namespace UGP
                         _v.FuelDepeleted = false;
                     }
 
+                    var freeLook = VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>();
+                    var virtualCamera = VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
+
+                    if (freeLook != null)
+                    {
+                        //ASSIGN THE CAMERA THE INPUT AXIS FROM THE INPUT CONTROLLER
+                        VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_XAxis.m_InputAxisName = ic.CameraInputHorizontal;
+                        VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_YAxis.m_InputAxisName = ic.CameraInputVertical;
+                    }
+                    if (virtualCamera != null)
+                    {
+                        var pov_camera = virtualCamera.GetCinemachineComponent<Cinemachine.CinemachinePOV>();
+
+                        pov_camera.m_HorizontalAxis.m_InputAxisName = ic.CameraInputHorizontal;
+                        pov_camera.m_VerticalAxis.m_InputAxisName = ic.CameraInputVertical;
+                        pov_camera.m_HorizontalAxis.m_InvertAxis = ic.InvertCameraHorizontal;
+                        pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
+                    }
+
                     HealthSlider.maxValue = max_health;
                     FuelSlider.maxValue = max_fuel;
 
@@ -293,6 +312,25 @@ namespace UGP
 
                 _v.Destroyed = false;
                 _v.FuelDepeleted = false;
+            }
+
+            var free_look = VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>();
+            var virtual_camera = VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
+
+            if (free_look != null)
+            {
+                //ASSIGN THE CAMERA THE INPUT AXIS FROM THE INPUT CONTROLLER
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_XAxis.m_InputAxisName = ic.CameraInputHorizontal;
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_YAxis.m_InputAxisName = ic.CameraInputVertical;
+            }
+            if (virtual_camera != null)
+            {
+                var pov_camera = virtual_camera.GetCinemachineComponent<Cinemachine.CinemachinePOV>();
+
+                pov_camera.m_HorizontalAxis.m_InputAxisName = ic.CameraInputHorizontal;
+                pov_camera.m_VerticalAxis.m_InputAxisName = ic.CameraInputVertical;
+                pov_camera.m_HorizontalAxis.m_InvertAxis = ic.InvertCameraHorizontal;
+                pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
             }
 
             HealthSlider.maxValue = max_health;

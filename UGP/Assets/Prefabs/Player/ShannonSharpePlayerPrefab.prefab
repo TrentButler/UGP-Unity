@@ -971,7 +971,7 @@ GameObject:
   - component: {fileID: 136289686493461970}
   m_Layer: 0
   m_Name: ShannonSharpe_r_Arm_WristSHJnt
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1775,7 +1775,7 @@ GameObject:
   - component: {fileID: 136234166630274582}
   m_Layer: 0
   m_Name: ShannonSharpe_l_Arm_WristSHJnt
-  m_TagString: Untagged
+  m_TagString: Hand
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6515,9 +6515,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cadb64633d5a0846889fee5439ed78e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Damage: 999
+  Damage: 25
+  KnockBack: 2
   RightHand: {fileID: 136289686493461970}
   LeftHand: {fileID: 136234166630274582}
+  PlayerBrain: {fileID: 114954449703427742}
+  Ani: {fileID: 95152687211648958}
 --- !u!114 &114742462909492668
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6784,10 +6787,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 3
-  m_SendInterval: 0.06666667
+  m_SendInterval: 0.033333335
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
-  m_SyncSpin: 0
+  m_SyncSpin: 1
   m_MovementTheshold: 0.001
   m_VelocityThreshold: 0.0001
   m_SnapThreshold: 5

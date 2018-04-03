@@ -8,58 +8,90 @@ namespace UGP
 {
     public class PlayerMeleeBehaviour : NetworkBehaviour
     {
-        [Range(0, 999999)] public int Damage = 10;
+        [SyncVar(hook = "OnDamageChange")] [Range(0, 999999)] public float Damage = 10;
+        [Range(0, 99999)] public float KnockBack = 10;
         public Collider RightHand;
         public Collider LeftHand;
+        public PlayerBehaviour PlayerBrain;
+        public Animator Ani;
 
-        private void OnCollisionEnter(Collision collision)
+        public void OnDamageChange(float damageChange)
         {
-            if(isServer)
+            Damage = Mathf.Clamp(damageChange, 0, 999999);
+        }
+
+        [ClientRpc] public void RpcHitPlayer(NetworkIdentity player, Vector3 force)
+        {
+            if (player.isLocalPlayer)
+            {
+                var player_behaviour = player.GetComponent<PlayerBehaviour>();
+                GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
+                player_behaviour.CmdTakeDamage(Damage);
+            }
+        }
+        [Command] public void CmdHitPlayer(NetworkIdentity player, Vector3 force)
+        {
+            RpcHitPlayer(player, force);
+        }
+
+        private void Start()
+        {
+            if (!isLocalPlayer)
             {
                 return;
             }
 
-            //var impact_velocity = collision.relativeVelocity.magnitude;
-            //Debug.Log(collision.gameObject.name + "@ " + impact_velocity.ToString() + " Force");
+            PlayerBrain = GetComponent<PlayerBehaviour>();
+            Ani = GetComponent<Animator>();
+        }
 
-            var contact_points = collision.contacts.ToList();
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
+            var contact_points = collision.contacts.ToList(); //GATHER ALL POINTS OF CONTACT FROM EVERY COLLIDER ATTACHED TO THIS GAMEOBJECT
             contact_points.ForEach(point =>
             {
-                if(point.thisCollider == RightHand || point.thisCollider == LeftHand)
+                //ITERATE THROUGH THE LIST OF CONTACT POINTS, IF ONE IS THE 'RightHand' OR 'LeftHand'
+                //CHECK FOR PLAYER COLLISION AND APPLY DAMAGE
+                if (point.thisCollider == RightHand || point.thisCollider == LeftHand)
                 {
-                    var impact_velocity = collision.relativeVelocity.magnitude;
-                    Debug.Log(point.thisCollider.gameObject.name + " COLLIDE WITH " + point.otherCollider.gameObject.name + "@ " + impact_velocity.ToString() + " Force");
-
-                    //var network_identity = GetComponent<NetworkIdentity>(); //CHECK IF THE PLAYER HAS AUTHORITY
-                    //var hasAuthority = network_identity.hasAuthority;
-
+                    var impact_velocity = collision.relativeVelocity;
 
                     if (point.otherCollider.CompareTag("Player"))
                     {
-                        //ASSIGN AND REMOVE AUTHORITY TO THE 'CLIENT/OTHER' PLAYER OBJECT WHEN HIT
                         var other_player_behaviour = collision.gameObject.GetComponentInParent<PlayerBehaviour>();
-                        var other_network_identity = other_player_behaviour.GetComponent<NetworkIdentity>(); 
+                        var other_network_identity = collision.gameObject.GetComponentInParent<NetworkIdentity>();
 
                         if (other_player_behaviour.isLocalPlayer)
                         {
                             return;
                         }
-                        else
+                        
+                        if(Ani.GetBool("Fighting"))
                         {
-                            //Debug.Log("Hit a Player");
-                            Debug.Log(collision.gameObject.name + "@ " + impact_velocity.ToString() + " Force");
-                            other_player_behaviour.CmdTakeDamage(Damage);
+                            Debug.Log(collision.gameObject.name + "@ " + impact_velocity.magnitude.ToString() + " Force");
+                            CmdHitPlayer(other_network_identity, impact_velocity * KnockBack);
                         }
                     }
                 }
 
-            });
+                //if(point.otherCollider.CompareTag("Hand"))
+                //{
+                //    var player_behaviour = point.otherCollider.GetComponent<PlayerBehaviour>();
+                //    if(player_behaviour.isLocalPlayer)
+                //    {
+                //        return;
+                //    }
 
-            //if (collision.collider.tag == "Player")
-            //{
-                
-            //}
+                //    var force = collision.relativeVelocity;
+                //    GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
+                //}
+
+            });
         }
     }
-
 }

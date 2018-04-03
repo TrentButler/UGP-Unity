@@ -27,6 +27,13 @@ namespace UGP
                 vehicle_behaviour.CmdTakeDamage(DamageDealt);
                 Destroy(gameObject);
             }
+
+            if(collision.collider.tag == "Player")
+            {
+                var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                player_behaviour.CmdTakeDamage(DamageDealt);
+                Destroy(gameObject);
+            }
         }
     }
 }

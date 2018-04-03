@@ -26,6 +26,9 @@ namespace UGP
                 GotoSceneString = "00.PickAScene";
             }
 
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            Destroy(netManager);
+
             SceneManager.LoadScene(GotoSceneString);
         }
 

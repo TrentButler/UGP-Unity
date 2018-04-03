@@ -21,10 +21,10 @@ namespace UGP
 
         public void Melee()
         {
-            if (Input.GetKey(KeyCode.Space))
+            if (Input.GetMouseButton(1))
             {
                 Ani.SetBool("Fighting", true);
-                if(Input.GetKeyDown(KeyCode.RightAlt))
+                if(Input.GetMouseButtonDown(0))
                 {
                     NetworkAni.SetTrigger("Punch");
                 }
@@ -33,7 +33,6 @@ namespace UGP
             {
                 Ani.SetBool("Fighting", false);
             }
-                
         }
         public void Jump()
         {
@@ -79,6 +78,7 @@ namespace UGP
 
             if (accelerationVector.magnitude > 0)
             {
+                //rb.isKinematic = false;
                 //DO NOT WALK BACKWARDS
                 if (y < 0.0f)
                 {
@@ -100,7 +100,8 @@ namespace UGP
             else
             {
                 Ani.SetFloat("Move", Mathf.Abs(y));
-                rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, 3 * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
+                //rb.isKinematic = true;
+                //rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, 3 * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
             }
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MovementSpeed);

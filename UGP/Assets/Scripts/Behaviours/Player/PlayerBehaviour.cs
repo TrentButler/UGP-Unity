@@ -48,8 +48,9 @@ namespace UGP
         {
             MaxHealth = assignMaxHealth;
         }
-        private void OnisDeadChange(bool isDead)
+        private void OnisDeadChange(bool Dead)
         {
+            isDead = Dead;
             if(isDead)
             {
                 CmdSpawnRagdoll();
@@ -111,6 +112,26 @@ namespace UGP
         [Command] public void CmdRespawn(Vector3 position, Quaternion rotation)
         {
             RpcRespawn(position, rotation);
+        }
+        [Command] public void CmdAssignPlayerAuthority(NetworkIdentity playerIdentity)
+        {
+            var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
+            var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
+
+            var playerNetworkIdentity = playerIdentity;
+
+            //INVOKE THESE FUNCTIONS ON THE SERVER
+            playerNetworkIdentity.AssignClientAuthority(localPlayerConn);
+        }
+        [Command] public void CmdRemovePlayerAuthority(NetworkIdentity playerIdentity)
+        {
+            var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
+            var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
+
+            var playerNetworkIdentity = playerIdentity;
+
+            //INVOKE THESE FUNCTIONS ON THE SERVER
+            playerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
         #endregion
 
@@ -268,15 +289,6 @@ namespace UGP
             {
                 VirtualCamera.SetActive(false);
                 return;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Keypad0))
-            {
-                CmdTakeDamage(50);
-            }
-            if (Input.GetKeyDown(KeyCode.Keypad1))
-            {
-                CmdTakeHealth(10);
             }
 
             if(isDead)
