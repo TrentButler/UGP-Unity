@@ -13,15 +13,31 @@ namespace UGP
     {
         public PlayerBehaviour p;
         public Transform HoldingItemPosition;
-        [SyncVar] public bool isHolding = false;
+        [SyncVar(hook = "OnisHoldingChange")] public bool isHolding = false;
+        [SyncVar(hook = "OnItemChange")] [HideInInspector] public string current_item = "";
 
-        public GameObject ItemModel;
+        private void OnItemChange(string itemChange)
+        {
+            current_item = itemChange;
+        }
+        private void OnisHoldingChange(bool holdingChange)
+        {
+            isHolding = holdingChange;
+        }
+
+        private GameObject CurrentItemModel;
+        public GameObject EmptyItem;
+        public GameObject fuelModel;
+        public GameObject ammoModel;
+        public GameObject repairKitModel;
         public Animator Ani;
 
         #region COMMAND_FUNCTIONS
-        [Command] public void CmdSetHolding(bool holding)
+        [Command] public void CmdSetHolding(bool holding, string item_type)
         {
             isHolding = holding;
+            current_item = item_type;
+            RpcSetCurrentItem(current_item);
         }
         [Command] public void CmdSetItemBeingHeld(bool holding, NetworkIdentity item)
         {
@@ -75,6 +91,45 @@ namespace UGP
         }
         #endregion
 
+        [ClientRpc] public void RpcSetCurrentItem(string item)
+        {
+            if(isLocalPlayer)
+            {
+                switch(item)
+                {
+                    case "":
+                        {
+                            CurrentItemModel = EmptyItem;
+                            CurrentItemModel.SetActive(false);
+                            break;
+                        }
+
+                    case "UGP.AmmoBox":
+                        {
+                            CurrentItemModel = ammoModel;
+                            break;
+                        }
+
+                    case "UGP.Fuel":
+                        {
+                            CurrentItemModel = fuelModel;
+                            break;
+                        }
+
+                    case "UGP.RepairKit":
+                        {
+                            CurrentItemModel = repairKitModel;
+                            break;
+                        }
+
+                    default:
+                        {
+                            break;
+                        }
+                }
+            }
+        }
+
         public void PickUpItem()
         {
             Ani.SetTrigger("PickUpItem");
@@ -90,23 +145,22 @@ namespace UGP
         {
             switch (itemType)
             {
-                case "UGP.RepairKit":
+                case "UGP.AmmoBox":
                     {
                         //CmdAssignVehicleAuthority(vehicleIdentity);
 
-                        var repair_item = itemIdentity.GetComponent<ItemBehaviour>()._I as RepairKit;
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeHealth(repair_item.RepairFactor);
-                        Debug.Log("VEHICLE TAKE REPAIR");
+                        var ammo_item = itemIdentity.GetComponent<ItemBehaviour>()._I as AmmoBox;
+                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeAmmunition(ammo_item.Assault, ammo_item.Shotgun, ammo_item.Sniper, ammo_item.Rocket);
+                        Debug.Log("VEHICLE TAKE AMMO");
 
                         //p.CmdRemoveVehicleAuthority(vehicleIdentity);
-                        
 
                         //CmdRemoveItemAuthority(itemIdentity);
                         //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
-                        CmdSetHolding(false);
+                        CmdSetHolding(false, "");
                         //CmdSetItemBeingHeld(false, itemIdentity);
 
-                        Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
+                        Destroy(itemIdentity.gameObject);
                         break;
                     }
 
@@ -123,29 +177,30 @@ namespace UGP
 
                         //CmdRemoveItemAuthority(item);
                         //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
-                        CmdSetHolding(false);
+                        CmdSetHolding(false, "");
                         //CmdSetItemBeingHeld(false, itemIdentity);
 
                         Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
                         break;
                     }
 
-                case "UGP.AmmoBox":
+                case "UGP.RepairKit":
                     {
                         //CmdAssignVehicleAuthority(vehicleIdentity);
 
-                        var ammo_item = itemIdentity.GetComponent<ItemBehaviour>()._I as AmmoBox;
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeAmmunition(ammo_item.Assault, ammo_item.Shotgun, ammo_item.Sniper, ammo_item.Rocket);
-                        Debug.Log("VEHICLE TAKE AMMO");
+                        var repair_item = itemIdentity.GetComponent<ItemBehaviour>()._I as RepairKit;
+                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeHealth(repair_item.RepairFactor);
+                        Debug.Log("VEHICLE TAKE REPAIR");
 
                         //p.CmdRemoveVehicleAuthority(vehicleIdentity);
+                        
 
                         //CmdRemoveItemAuthority(itemIdentity);
                         //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
-                        CmdSetHolding(false);
+                        CmdSetHolding(false, "");
                         //CmdSetItemBeingHeld(false, itemIdentity);
 
-                        Destroy(itemIdentity.gameObject);
+                        Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
                         break;
                     }
 
@@ -191,15 +246,25 @@ namespace UGP
             }
         }
 
+        private void Start()
+        {
+            if(!isLocalPlayer)
+            {
+                return;
+            }
+
+            CurrentItemModel = EmptyItem;
+        }
+
         private void FixedUpdate()
         {
             if(isHolding)
             {
-                ItemModel.SetActive(true);
+                CurrentItemModel.SetActive(true);
             }
             else
             {
-                ItemModel.SetActive(false);
+                CurrentItemModel.SetActive(false);
             }
         }
     }

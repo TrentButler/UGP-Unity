@@ -21,49 +21,40 @@ namespace UGP
         private Rigidbody rb;
         private PlayerInteractionBehaviour player;
         private NetworkIdentity item_network_identity;
-        [SyncVar] public bool isBeingHeld = false;
+        [SyncVar(hook = "OnisBeingHeldChange")] public bool isBeingHeld = false;
 
         [Command] public void CmdSetHolding(bool holding)
         {
             isBeingHeld = holding;
         }
 
+        public void OnisBeingHeldChange(bool beingHeldChange)
+        {
+            isBeingHeld = beingHeldChange;
+        }
+
         public void PickUp(PlayerInteractionBehaviour interaction)
         {   
             player = interaction;
-            player.CmdSetHolding(true);
+            var string_type = _I.GetType().ToString();
+            player.CmdSetHolding(true, string_type);
             player.CmdSetItemBeingHeld(true, item_network_identity);
 
             player.CmdAssignItemAuthority(item_network_identity);
             Debug.Log("ATTEMPT TO ASSIGN AUTHORITY: EXPECTED = True, RESULT = " + item_network_identity.hasAuthority.ToString());
 
-            //PARENT THE 'ITEM' TO THE PLAYER
-            //TURN GRAVITY OFF FOR THE ITEM
-            //PlayerHand = parent;
-            //transform.SetParent(PlayerHand);
-            //interaction.Child.target = transform;
-            //var item_pos = Vector3.zero;
-            //var item_pos = _parent.TransformPoint(Vector3.zero);
-            //rb.MovePosition(item_pos);
-            //rb.MovePosition(PlayerHand.position);
-            //rb.position = _parent.position;
-
-            //model.SetActive(false);
-            //CmdDisableItemModel();
             rb.MovePosition(player.HoldingItemPosition.position);
-
-            //rb.constraints = RigidbodyConstraints.FreezeAll;
+            
             var colliders = GetComponents<BoxCollider>().ToList();
             colliders.ForEach(collider =>
             {
-                if(!collider.isTrigger)
-                {
-                    collider.enabled = false;
-                }
+                //if(!collider.isTrigger)
+                //{
+                //    collider.enabled = false;
+                //}
+                collider.enabled = false;
             });
             rb.useGravity = false;
-            //isBeingHeld = true;
-            //CmdOnPickUp();
         }
 
         public void Drop()
@@ -71,24 +62,15 @@ namespace UGP
             player.CmdRemoveItemAuthority(item_network_identity);
             Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + item_network_identity.hasAuthority.ToString());
             
-            player.CmdSetHolding(false);
+            player.CmdSetHolding(false, "");
             player.CmdSetItemBeingHeld(false, item_network_identity);
-            //CmdOnDrop();
-            //transform.parent = null;
 
-
-            //transform.parent = null;
-            //var item_pos = _parent.position;
-            //var item_pos = _parent.position;
-            //rb.MovePosition(item_pos);
-            //model.SetActive(true);
-            //CmdEnableItemModel();
-            //GetComponent<BoxCollider>().enabled = true;
             var colliders = GetComponents<BoxCollider>().ToList();
             colliders.ForEach(collider =>
             {
                 collider.enabled = true;
             });
+
             rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
