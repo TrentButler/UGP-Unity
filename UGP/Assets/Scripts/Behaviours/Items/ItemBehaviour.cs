@@ -36,6 +36,7 @@ namespace UGP
         public void PickUp(PlayerInteractionBehaviour interaction)
         {   
             player = interaction;
+            player.item = this;
             var string_type = _I.GetType().ToString();
             player.CmdSetHolding(true, string_type);
             player.CmdSetItemBeingHeld(true, item_network_identity);
@@ -45,14 +46,14 @@ namespace UGP
 
             rb.MovePosition(player.HoldingItemPosition.position);
             
-            var colliders = GetComponents<BoxCollider>().ToList();
+            var colliders = GetComponents<Collider>().ToList();
             colliders.ForEach(collider =>
             {
-                //if(!collider.isTrigger)
-                //{
-                //    collider.enabled = false;
-                //}
-                collider.enabled = false;
+                if (!collider.isTrigger)
+                {
+                    collider.enabled = false;
+                }
+                //collider.enabled = false;
             });
             rb.useGravity = false;
         }
@@ -64,8 +65,9 @@ namespace UGP
             
             player.CmdSetHolding(false, "");
             player.CmdSetItemBeingHeld(false, item_network_identity);
+            player.item = null;
 
-            var colliders = GetComponents<BoxCollider>().ToList();
+            var colliders = GetComponents<Collider>().ToList();
             colliders.ForEach(collider =>
             {
                 collider.enabled = true;
@@ -83,7 +85,7 @@ namespace UGP
         {
             if (other.tag == "Player")
             {
-                var player_identity = other.GetComponent<NetworkIdentity>();
+                var player_identity = other.GetComponentInParent<NetworkIdentity>();
 
                 if(player_identity.isLocalPlayer && !isBeingHeld)
                 {
@@ -94,7 +96,7 @@ namespace UGP
 
                 //var player_holding_transform = other.transform.Find("ItemHoldPosition");
 
-                var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
+                var player_interaction = other.GetComponentInParent<PlayerInteractionBehaviour>();
 
                 if (player_interaction != null)
                 {
@@ -137,6 +139,7 @@ namespace UGP
         private void OnTriggerExit(Collider other)
         {
             ItemCanvas.SetActive(false);
+            player = null;
         }
 
         void Start()

@@ -53,6 +53,13 @@ namespace UGP
             isDead = Dead;
             if(isDead)
             {
+                var holding_item = interaction.isHolding;
+                if(holding_item)
+                {
+                    interaction.DropItem();
+                    interaction.item.Drop();
+                }
+                
                 CmdSpawnRagdoll();
             }
         }

@@ -7,6 +7,10 @@ namespace UGP
 {
     public class NetworkUserControl : NetworkBehaviour
     {
+        //CONVERT THIS TO A SCRIPTABLE OBJECT
+        //INPUT CONFIGURATION
+        //LIST ALL THE BUTTON/AXIS NEEDED FOR THE GAME
+
         public string InputHorizontal = "Horizontal";
         public string InputVertical = "Vertical";
         public string CameraInputHorizontal = "Mouse X";
@@ -20,7 +24,7 @@ namespace UGP
         {
             if(!isLocalPlayer)
             {
-                if(hasAuthority)
+                if(hasAuthority && !isServer)
                 {
                     var _h = Input.GetAxis(InputHorizontal);
                     var _v = Input.GetAxis(InputVertical);

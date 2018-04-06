@@ -48,7 +48,12 @@ namespace UGP
         [Command] private void CmdFireRound()
         {
             var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
-            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+            var b_rb = b.GetComponent<Rigidbody>();
+
+            var force = GunBarrel.TransformDirection(Vector3.forward) * WeaponRange;
+            b_rb.rotation = GunBarrel.rotation;
+            b_rb.velocity = force;
+
             NetworkServer.Spawn(b);
             Destroy(b, 4);
         }
@@ -183,7 +188,7 @@ namespace UGP
 
             var vehicleThrottle = GetComponent<DefaultVehicleController>().currentVehicleThrottle;
             var vehicleStrafe = GetComponent<DefaultVehicleController>().currentVehicleStrafe;
-            Vector3 moveVector = new Vector3(vehicleStrafe, 0, vehicleThrottle);
+            Vector3 moveVector = new Vector3(0, 0, vehicleThrottle);
             
             if(moveVector.magnitude <= 0)
             {
@@ -251,7 +256,7 @@ namespace UGP
         private void Fire()
         {
             //SINGLE-FIRE
-            if (Input.GetKeyDown(KeyCode.RightControl))
+            if (Input.GetMouseButtonDown(0))
             {
                 if(!hasFired)
                 {
@@ -271,7 +276,7 @@ namespace UGP
 
             //AUTOMATIC FIRE
             //LIMIT THE RATE OF FIRE
-            if (Input.GetKey(KeyCode.RightControl))
+            if (Input.GetMouseButton(0))
             {
                 automatic_timer += Time.deltaTime;
                 if (automatic_timer > AutomaticFireRate)
@@ -284,19 +289,6 @@ namespace UGP
             else
             {
                 automatic_timer = 0.0f;
-            }
-        }
-
-        private void Awake()
-        {
-            if (!isLocalPlayer)
-            {
-                if(hasAuthority)
-                {
-                    return;
-                }
-
-                return;
             }
         }
 
@@ -343,10 +335,10 @@ namespace UGP
             {
                 if(hasAuthority && !isServer)
                 {
-                    //Aim();
+                    Aim();
                     Fire();
 
-                    //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+                    Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
                     return;
                 }
 

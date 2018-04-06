@@ -14,7 +14,7 @@ namespace UGP
         public PlayerBehaviour p;
         public Transform HoldingItemPosition;
         [SyncVar(hook = "OnisHoldingChange")] public bool isHolding = false;
-        [SyncVar(hook = "OnItemChange")] [HideInInspector] public string current_item = "";
+        [SyncVar(hook = "OnItemChange")] public string current_item = "";
 
         private void OnItemChange(string itemChange)
         {
@@ -31,19 +31,57 @@ namespace UGP
         public GameObject ammoModel;
         public GameObject repairKitModel;
         public Animator Ani;
+        public NetworkAnimator NetworkAni;
+
+        public ItemBehaviour item;
 
         #region COMMAND_FUNCTIONS
-        [Command] public void CmdSetHolding(bool holding, string item_type)
+        [Command]
+        public void CmdSetHolding(bool holding, string item_type)
         {
             isHolding = holding;
             current_item = item_type;
-            RpcSetCurrentItem(current_item);
+            //switch (current_item)
+            //{
+            //    case "":
+            //        {
+            //            CurrentItemModel = EmptyItem;
+            //            //CurrentItemModel.SetActive(false);
+            //            break;
+            //        }
+
+            //    case "UGP.AmmoBox":
+            //        {
+            //            CurrentItemModel = ammoModel;
+            //            break;
+            //        }
+
+            //    case "UGP.Fuel":
+            //        {
+            //            CurrentItemModel = fuelModel;
+            //            break;
+            //        }
+
+            //    case "UGP.RepairKit":
+            //        {
+            //            CurrentItemModel = repairKitModel;
+            //            break;
+            //        }
+
+            //    default:
+            //        {
+            //            break;
+            //        }
+            //}
+            //RpcSetCurrentItem(current_item);
         }
-        [Command] public void CmdSetItemBeingHeld(bool holding, NetworkIdentity item)
+        [Command]
+        public void CmdSetItemBeingHeld(bool holding, NetworkIdentity item)
         {
             item.GetComponent<ItemBehaviour>().isBeingHeld = holding;
         }
-        [Command] public void CmdAssignVehicleAuthority(NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdAssignVehicleAuthority(NetworkIdentity vehicleIdentity)
         {
             var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
@@ -53,19 +91,23 @@ namespace UGP
             //INVOKE THESE FUNCTIONS ON THE SERVER
             vehicleNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
-        [Command] public void CmdSetVehicleActive(bool active, NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdSetVehicleActive(bool active, NetworkIdentity vehicleIdentity)
         {
             vehicleIdentity.GetComponent<VehicleBehaviour>().vehicleActive = active;
         }
-        [Command] public void CmdSetPlayerInSeat(bool inSeat, NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdSetPlayerInSeat(bool inSeat, NetworkIdentity vehicleIdentity)
         {
             vehicleIdentity.GetComponent<VehicleBehaviour>().playerInSeat = inSeat;
         }
-        [Command] public void CmdSetVehicleColor(Color color, NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdSetVehicleColor(Color color, NetworkIdentity vehicleIdentity)
         {
             vehicleIdentity.GetComponent<VehicleBehaviour>().vColor = color;
         }
-        [Command] public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
+        [Command]
+        public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
         {
             //Debug.Log(player.gameObject.name + " ASSIGN AUTHORITY TO: " + gameObject.name);
             var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
@@ -77,7 +119,8 @@ namespace UGP
             itemNetworkIdentity.AssignClientAuthority(localPlayerConn);
             //localPlayerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
-        [Command] public void CmdRemoveItemAuthority(NetworkIdentity itemIdentity)
+        [Command]
+        public void CmdRemoveItemAuthority(NetworkIdentity itemIdentity)
         {
             //Debug.Log(player.gameObject.name + " REMOVE AUTHORITY FROM: " + gameObject.name);
 
@@ -91,53 +134,14 @@ namespace UGP
         }
         #endregion
 
-        [ClientRpc] public void RpcSetCurrentItem(string item)
-        {
-            if(isLocalPlayer)
-            {
-                switch(item)
-                {
-                    case "":
-                        {
-                            CurrentItemModel = EmptyItem;
-                            CurrentItemModel.SetActive(false);
-                            break;
-                        }
-
-                    case "UGP.AmmoBox":
-                        {
-                            CurrentItemModel = ammoModel;
-                            break;
-                        }
-
-                    case "UGP.Fuel":
-                        {
-                            CurrentItemModel = fuelModel;
-                            break;
-                        }
-
-                    case "UGP.RepairKit":
-                        {
-                            CurrentItemModel = repairKitModel;
-                            break;
-                        }
-
-                    default:
-                        {
-                            break;
-                        }
-                }
-            }
-        }
-
         public void PickUpItem()
         {
-            Ani.SetTrigger("PickUpItem");
+            NetworkAni.SetTrigger("PickUpItem");
         }
 
         public void DropItem()
         {
-            Ani.SetTrigger("DropItem");
+            NetworkAni.SetTrigger("DropItem");
         }
 
         //NEEDS WORK
@@ -193,7 +197,7 @@ namespace UGP
                         Debug.Log("VEHICLE TAKE REPAIR");
 
                         //p.CmdRemoveVehicleAuthority(vehicleIdentity);
-                        
+
 
                         //CmdRemoveItemAuthority(itemIdentity);
                         //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
@@ -224,7 +228,7 @@ namespace UGP
                 var vActive = v.vehicleActive;
                 var vehicleIdentity = v.GetComponent<NetworkIdentity>();
 
-                if(!isHolding) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM
+                if (!isHolding) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM
                 {
                     if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
                     {
@@ -248,23 +252,74 @@ namespace UGP
 
         private void Start()
         {
-            if(!isLocalPlayer)
+            if (!isLocalPlayer)
             {
                 return;
             }
-
-            CurrentItemModel = EmptyItem;
         }
 
         private void FixedUpdate()
         {
-            if(isHolding)
+            if (isHolding)
             {
-                CurrentItemModel.SetActive(true);
+                //CurrentItemModel.SetActive(true);
+                //var old_item = CurrentItemModel;
+
+                switch (current_item)
+                {
+                    case "":
+                        {
+                            EmptyItem.SetActive(true);
+
+                            ammoModel.SetActive(false);
+                            fuelModel.SetActive(false);
+                            repairKitModel.SetActive(false);
+                            break;
+                        }
+
+                    case "UGP.AmmoBox":
+                        {
+                            ammoModel.SetActive(true);
+
+                            EmptyItem.SetActive(false);
+                            fuelModel.SetActive(false);
+                            repairKitModel.SetActive(false);
+                            break;
+                        }
+
+                    case "UGP.Fuel":
+                        {
+                            fuelModel.SetActive(true);
+
+                            ammoModel.SetActive(false);
+                            EmptyItem.SetActive(false);
+                            repairKitModel.SetActive(false);
+                            break;
+                        }
+
+                    case "UGP.RepairKit":
+                        {
+                            repairKitModel.SetActive(true);
+
+                            fuelModel.SetActive(false);
+                            ammoModel.SetActive(false);
+                            EmptyItem.SetActive(false);
+                            break;
+                        }
+
+                    default:
+                        {
+                            break;
+                        }
+                }
             }
             else
             {
-                CurrentItemModel.SetActive(false);
+                EmptyItem.SetActive(true);
+
+                ammoModel.SetActive(false);
+                fuelModel.SetActive(false);
+                repairKitModel.SetActive(false);
             }
         }
     }

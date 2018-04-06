@@ -31,7 +31,7 @@ namespace UGP
             if(collision.collider.tag == "Player")
             {
                 var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
-                player_behaviour.CmdTakeDamage(DamageDealt);
+                player_behaviour.CmdTakeDamage(DamageDealt * 999999);
                 Destroy(gameObject);
             }
         }
