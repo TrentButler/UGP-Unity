@@ -23,6 +23,7 @@ namespace UGP
         private void OnisHoldingChange(bool holdingChange)
         {
             isHolding = holdingChange;
+            Ani.SetBool("HoldingItem", isHolding);
         }
 
         private GameObject CurrentItemModel;
@@ -136,12 +137,18 @@ namespace UGP
 
         public void PickUpItem()
         {
-            NetworkAni.SetTrigger("PickUpItem");
+            if(!isHolding)
+            {
+                NetworkAni.SetTrigger("PickUpItem");
+            }
         }
 
         public void DropItem()
         {
-            NetworkAni.SetTrigger("DropItem");
+            if(isHolding)
+            {
+                NetworkAni.SetTrigger("DropItem");
+            }
         }
 
         //NEEDS WORK
@@ -248,6 +255,34 @@ namespace UGP
                     }
                 }
             }
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(!isLocalPlayer)
+            {
+                return;
+            }
+
+            var contact_points = collision.contacts.ToList();
+            contact_points.ForEach(contact =>
+            {
+                if(contact.thisCollider.CompareTag("Hand"))
+                {
+                    var item_behaviour = contact.otherCollider.GetComponent<ItemBehaviour>();
+
+                    if(item_behaviour != null)
+                    {
+                        //player.PickUpItem();
+                        item_behaviour.PickUp(this);
+                    }
+
+                    //if(contact.otherCollider.CompareTag("Item"))
+                    //{
+                        
+                    //}
+                }
+            });
         }
 
         private void Start()

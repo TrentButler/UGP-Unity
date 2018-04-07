@@ -56,6 +56,7 @@ namespace UGP
                 //collider.enabled = false;
             });
             rb.useGravity = false;
+            rb.velocity = Vector3.zero;
         }
 
         public void Drop()
@@ -76,7 +77,15 @@ namespace UGP
             rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
-            rb.MovePosition(player.HoldingItemPosition.position);
+
+            var drop_position = player.HoldingItemPosition.position;
+            drop_position.x += 2;
+            //drop_position.y -= 2;
+
+            rb.MovePosition(drop_position);
+            rb.velocity = Vector3.zero;
+
+            //rb.MovePosition(drop_position);
 
             player = null; //REMOVE REFRENCE TO PLAYER
         }
@@ -103,14 +112,14 @@ namespace UGP
                     player = player_interaction;
                 }
 
-                if (Input.GetKeyDown(KeyCode.F))
-                {
-                    if (!player_interaction.isHolding && !isBeingHeld && !isServer)
-                    {
-                        player.PickUpItem();
-                        PickUp(player);
-                    }
-                }
+                //if (Input.GetKeyDown(KeyCode.F))
+                //{
+                //    if (!player_interaction.isHolding && !isBeingHeld && !isServer)
+                //    {
+                //        player.PickUpItem();
+                //        PickUp(player);
+                //    }
+                //}
             }
 
             if (other.tag == "Vehicle")
@@ -139,7 +148,10 @@ namespace UGP
         private void OnTriggerExit(Collider other)
         {
             ItemCanvas.SetActive(false);
-            player = null;
+            if(!isBeingHeld)
+            {
+                player = null;
+            }
         }
 
         void Start()
@@ -190,16 +202,16 @@ namespace UGP
                 rb.MoveRotation(player.HoldingItemPosition.rotation);
             }
 
-            if (Input.GetKeyDown(KeyCode.RightAlt))
-            {
-                Debug.Log("RIGHT ALT KEY PRESS");
-                if (isBeingHeld && !isServer && hasAuthority)
-                {
-                    //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
-                    player.DropItem();
-                    Drop();
-                }
-            }
+            //if (Input.GetKeyDown(KeyCode.RightAlt))
+            //{
+            //    Debug.Log("RIGHT ALT KEY PRESS");
+            //    if (isBeingHeld && !isServer && hasAuthority)
+            //    {
+            //        //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
+            //        player.DropItem();
+            //        Drop();
+            //    }
+            //}
         }
 
         private void LateUpdate()

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -23,6 +24,7 @@ namespace UGP
         public PlayerUIBehaviour ui;
 
         public Animator ani;
+        public List<Collider> colliders;
 
         #region SYNCED_VARIABLES
         [SyncVar(hook = "OnPlayerHealthChange")] public float playerHealth;
@@ -231,8 +233,13 @@ namespace UGP
                 CmdRemoveVehicleAuthority(vehicleIdentity);
                 exitTimer = 0.0f; //RESET THE TIMER
 
-                transform.position = vehicle.seat.position;
-                transform.rotation = vehicle.seat.rotation;
+                var rb = GetComponent<Rigidbody>();
+                rb.velocity = Vector3.zero;
+                rb.MovePosition(vehicle.seat.position);
+                rb.MoveRotation(vehicle.seat.rotation);
+
+                //transform.position = vehicle.seat.position;
+                //transform.rotation = vehicle.seat.rotation;
 
                 vehicle = null;
             }
@@ -288,6 +295,8 @@ namespace UGP
             {
                 ani = GetComponent<Animator>();
             }
+
+            colliders = GetComponents<Collider>().ToList();
         }
 
         private void FixedUpdate()
@@ -318,6 +327,44 @@ namespace UGP
                 VirtualCamera.SetActive(true);
                 ic.enabled = true;
                 interaction.enabled = true;
+
+                //MAKE THE ANIMATOR CONTROLLER TRANSITION BACK TO IDLE STATE IF A ITEM IS NOT BEING HELD
+                if(Input.GetKeyDown(KeyCode.F))
+                {
+                    if(!interaction.isHolding)
+                    {
+                        interaction.PickUpItem();
+                    }
+                }
+
+                if(Input.GetKeyDown(KeyCode.RightAlt))
+                {
+                    if(interaction.isHolding)
+                    {
+                        //colliders.ForEach(collider =>
+                        //{
+                        //    if (collider.CompareTag("Hand"))
+                        //    {
+                        //        collider.enabled = false;
+                        //    }
+                        //});
+
+                        interaction.DropItem();
+                        interaction.item.Drop();
+                    }
+                }
+
+                //if(!interaction.isHolding)
+                //{
+                //    colliders.ForEach(collider =>
+                //    {
+                //        if (collider.CompareTag("Hand"))
+                //        {
+                //            collider.enabled = true;
+                //        }
+                //    });
+                //}
+
                 //UpdatePlayerUI();
             }
         }
