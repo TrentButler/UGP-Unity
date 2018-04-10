@@ -330,9 +330,9 @@ namespace UGP
                 VirtualCamera.SetActive(true);
                 ic.enabled = true;
                 interaction.enabled = true;
-
-                //MAKE THE ANIMATOR CONTROLLER TRANSITION BACK TO IDLE STATE IF A ITEM IS NOT BEING HELD
-                //CHANGE THIS TO THE INPUTCONTROLLER
+                
+                //PICKUP ITEM
+                //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
                 if(Input.GetKeyDown(KeyCode.F))
                 {
                     colliders.ForEach(collider =>
@@ -349,7 +349,9 @@ namespace UGP
                     }
                 }
 
-                if(Input.GetKeyDown(KeyCode.RightAlt))
+                //DROP ITEM
+                //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
+                if (Input.GetKeyDown(KeyCode.RightAlt))
                 {
                     if(interaction.isHolding)
                     {

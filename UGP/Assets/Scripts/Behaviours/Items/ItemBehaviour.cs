@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 namespace UGP
 {
     //NEEDS WORK
-    //DISABLE THE ITEM GAMEOBJECT'S MODEL ACROSS ALL CLIENTS IF IT IS BEING HELD
+    //IMPLEMENT PLAYER THROW ITEM TO VEHICLE MECHANIC
     public class ItemBehaviour : NetworkBehaviour
     {
         public Text ItemName;
@@ -95,31 +95,18 @@ namespace UGP
             if (other.tag == "Player")
             {
                 var player_identity = other.GetComponentInParent<NetworkIdentity>();
-
-                if(player_identity.isLocalPlayer && !isBeingHeld)
+                if (player_identity.isLocalPlayer && !isBeingHeld)
                 {
                     Debug.Log("Press F To Pick Up " + _I.name);
                     ItemName.text = ItemConfig.name;
                     ItemCanvas.SetActive(true);
                 }
-
-                //var player_holding_transform = other.transform.Find("ItemHoldPosition");
-
+                
                 var player_interaction = other.GetComponentInParent<PlayerInteractionBehaviour>();
-
                 if (player_interaction != null)
                 {
                     player = player_interaction;
                 }
-
-                //if (Input.GetKeyDown(KeyCode.F))
-                //{
-                //    if (!player_interaction.isHolding && !isBeingHeld && !isServer)
-                //    {
-                //        player.PickUpItem();
-                //        PickUp(player);
-                //    }
-                //}
             }
 
             if (other.tag == "Vehicle")
@@ -131,18 +118,16 @@ namespace UGP
 
                 if (isBeingHeld && player.isLocalPlayer)
                 {
-                    //TYPE CAST THE ITEM CONFIG AS A REPAIR KIT
-                    //INVOKE THE FUNCTION 'TakeHealth' ON THE VEHICLE
-                    var string_type = _I.GetType().ToString();
-                    player.CmdAssignVehicleAuthority(vehicle_identity);
+                    var string_type = _I.GetType().ToString(); //GET THE TYPE OF ITEM
+                    player.CmdAssignVehicleAuthority(vehicle_identity); //ASSIGN THE VEHICLE 'AUTHORITY'
 
                     if (vehicle_identity.hasAuthority)
                     {
-                        player.DropItem();
-                        player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity);
-                        player.p.CmdRemoveVehicleAuthority(vehicle_identity);
+                        player.DropItem(); //REMOVE THE ITEM FROM THE PLAYER
+                        player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity); //USE THE ITEM ON THE VEHICLE
+                        player.p.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
 
-                        NetworkServer.Destroy(gameObject);
+                        NetworkServer.Destroy(gameObject); //DESTROY THIS ITEM ON SERVER AND ALL CLIENTS
                     }
                 }
             }
@@ -150,6 +135,7 @@ namespace UGP
         private void OnTriggerExit(Collider other)
         {
             ItemCanvas.SetActive(false);
+
             if(!isBeingHeld)
             {
                 player = null;
@@ -185,36 +171,18 @@ namespace UGP
 
         void FixedUpdate()
         {
-            //if(isServer)
-            //{
-            //    UpdateItem();
-            //}
-
             if (isBeingHeld && !isServer && hasAuthority)
             {
                 ItemCanvas.SetActive(false);
-                //var item_pos = _parent.position;
-                //rb.MovePosition(item_pos);
-                //rb.MovePosition(player.HoldingItemPosition.position);
-                //rb.position = _parent.position;
-                //model.SetActive(false);
-                //rb.isKinematic = true;
 
+                //CLEAN THIS UP,
+                //CONSIDER THE 'THROW ITEM TO VEHICLE MECHANIC'
+                //MIGHT NEED TO DISABLE THIS/RE-ENABLE THE ITEM MODEL WHEN THE PLAYER THROWS IT, 
+                //VEHICLE CANNOT DRIVE OVER AN ITEM AND USE IT
                 rb.MovePosition(player.HoldingItemPosition.position);
                 rb.velocity = Vector3.zero;
                 rb.MoveRotation(player.HoldingItemPosition.rotation);
             }
-
-            //if (Input.GetKeyDown(KeyCode.RightAlt))
-            //{
-            //    Debug.Log("RIGHT ALT KEY PRESS");
-            //    if (isBeingHeld && !isServer && hasAuthority)
-            //    {
-            //        //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
-            //        player.DropItem();
-            //        Drop();
-            //    }
-            //}
         }
 
         private void LateUpdate()
