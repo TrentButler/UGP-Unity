@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 using UnityEditor;
 #endif
 
-
 namespace UGP
 {
     //NEEDS WORK
@@ -15,6 +14,7 @@ namespace UGP
     {
         public List<GameObject> VehiclePrefabs;
         public List<GameObject> ItemPrefabs;
+        public List<GameObject> BuildingPrefabs;
 
         public Transform OriginVehicleSpawn;
 
@@ -175,12 +175,23 @@ namespace UGP
             NetworkServer.Shutdown();
         }
 
+        public void SpawnBuildings()
+        {
+            BuildingPrefabs.ForEach(building =>
+            {
+                building.SetActive(true);
+                //var b = Instantiate(building);
+                //NetworkServer.Spawn(b);
+            });
+        }
+
         private void Start()
         {
             spawnOnPlayerCount = false;
             if (isServer)
             {
                 server_camera = Camera.main.gameObject;
+                SpawnBuildings();
             }
         }
 
