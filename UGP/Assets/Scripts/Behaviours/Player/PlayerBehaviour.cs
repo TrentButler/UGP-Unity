@@ -42,8 +42,6 @@ namespace UGP
             if (playerHealth <= 0.0f)
             {
                 isDead = true;
-                ic.enabled = false;
-                interaction.enabled = false;
             }
         }
         private void OnMaxHealthAssign(float assignMaxHealth)
@@ -60,6 +58,9 @@ namespace UGP
                 {
                     interaction.DropItem();
                     interaction.item.Drop();
+                    interaction.CmdSetHolding(false, "");
+                    ic.enabled = false;
+                    interaction.enabled = false;
                 }
                 
                 CmdSpawnRagdoll();
@@ -166,6 +167,8 @@ namespace UGP
         }
         [ClientRpc] private void RpcRespawn(Vector3 pos, Quaternion rot)
         {
+            interaction.enabled = true;
+
             if(isLocalPlayer)
             {
                 playerHealth = _p.MaxHealth;

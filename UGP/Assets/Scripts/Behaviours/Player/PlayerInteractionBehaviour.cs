@@ -171,7 +171,7 @@ namespace UGP
                         CmdSetHolding(false, "");
                         //CmdSetItemBeingHeld(false, itemIdentity);
 
-                        Destroy(itemIdentity.gameObject);
+                        //Destroy(itemIdentity.gameObject);
                         break;
                     }
 
@@ -191,7 +191,7 @@ namespace UGP
                         CmdSetHolding(false, "");
                         //CmdSetItemBeingHeld(false, itemIdentity);
 
-                        Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
+                        //Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
                         break;
                     }
 
@@ -211,7 +211,7 @@ namespace UGP
                         CmdSetHolding(false, "");
                         //CmdSetItemBeingHeld(false, itemIdentity);
 
-                        Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
+                        //Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
                         break;
                     }
 
@@ -271,16 +271,10 @@ namespace UGP
                 {
                     var item_behaviour = contact.otherCollider.GetComponent<ItemBehaviour>();
 
-                    if(item_behaviour != null)
+                    if(item_behaviour != null && !item_behaviour.isBeingHeld)
                     {
-                        //player.PickUpItem();
                         item_behaviour.PickUp(this);
                     }
-
-                    //if(contact.otherCollider.CompareTag("Item"))
-                    //{
-                        
-                    //}
                 }
             });
         }

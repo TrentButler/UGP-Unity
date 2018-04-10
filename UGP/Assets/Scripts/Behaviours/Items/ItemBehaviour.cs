@@ -141,6 +141,8 @@ namespace UGP
                         player.DropItem();
                         player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity);
                         player.p.CmdRemoveVehicleAuthority(vehicle_identity);
+
+                        NetworkServer.Destroy(gameObject);
                     }
                 }
             }
