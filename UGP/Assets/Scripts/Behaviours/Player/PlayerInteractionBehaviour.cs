@@ -292,8 +292,30 @@ namespace UGP
                 return;
             }
         }
-
+        
         private void FixedUpdate()
+        {
+            if(!isLocalPlayer)
+            {
+                return;
+            }
+
+            if (isHolding)
+            {
+                //REFACTOR TO INPUTCONTROLLER.BUTTON YOU NEED
+                //INPUTCONTROLLER.HOLDOUTITEM
+                if (Input.GetMouseButton(1))
+                {
+                    Ani.SetBool("UsingItem", true);
+                }
+                else
+                {
+                    Ani.SetBool("UsingItem", false);
+                }
+            }
+        }
+
+        private void LateUpdate()
         {
             if (isHolding)
             {

@@ -329,9 +329,18 @@ namespace UGP
                 interaction.enabled = true;
 
                 //MAKE THE ANIMATOR CONTROLLER TRANSITION BACK TO IDLE STATE IF A ITEM IS NOT BEING HELD
+                //CHANGE THIS TO THE INPUTCONTROLLER
                 if(Input.GetKeyDown(KeyCode.F))
                 {
-                    if(!interaction.isHolding)
+                    colliders.ForEach(collider =>
+                    {
+                        if (collider.CompareTag("Hand"))
+                        {
+                            collider.enabled = true;
+                        }
+                    });
+
+                    if (!interaction.isHolding)
                     {
                         interaction.PickUpItem();
                     }
@@ -341,31 +350,18 @@ namespace UGP
                 {
                     if(interaction.isHolding)
                     {
-                        //colliders.ForEach(collider =>
-                        //{
-                        //    if (collider.CompareTag("Hand"))
-                        //    {
-                        //        collider.enabled = false;
-                        //    }
-                        //});
+                        colliders.ForEach(collider =>
+                        {
+                            if (collider.CompareTag("Hand"))
+                            {
+                                collider.enabled = false;
+                            }
+                        });
 
                         interaction.DropItem();
                         interaction.item.Drop();
                     }
                 }
-
-                //if(!interaction.isHolding)
-                //{
-                //    colliders.ForEach(collider =>
-                //    {
-                //        if (collider.CompareTag("Hand"))
-                //        {
-                //            collider.enabled = true;
-                //        }
-                //    });
-                //}
-
-                //UpdatePlayerUI();
             }
         }
 

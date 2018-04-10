@@ -197,6 +197,7 @@ namespace UGP
                 //rb.position = _parent.position;
                 //model.SetActive(false);
                 //rb.isKinematic = true;
+
                 rb.MovePosition(player.HoldingItemPosition.position);
                 rb.velocity = Vector3.zero;
                 rb.MoveRotation(player.HoldingItemPosition.rotation);
