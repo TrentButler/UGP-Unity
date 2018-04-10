@@ -428,5 +428,18 @@ namespace UGP
                 ColorChangeOff();
             }
         }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(collision.collider.CompareTag("Player"))
+            {
+                var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                var impact_velocity = collision.relativeVelocity;
+
+                player_behaviour.CmdTakeDamage(impact_velocity.magnitude);
+
+                Debug.Log("HIT PLAYER FOR " + impact_velocity.magnitude.ToString() + " DAMAGE");
+            }
+        }
     }
 }
