@@ -15,6 +15,8 @@ namespace UGP
         public PlayerBehaviour PlayerBrain;
         public Animator Ani;
 
+        public InGameNetworkBehaviour server;
+
         public void OnDamageChange(float damageChange)
         {
             Damage = Mathf.Clamp(damageChange, 0, 999999);
@@ -29,10 +31,12 @@ namespace UGP
                 player_behaviour.CmdTakeDamage(Damage);
             }
         }
-        [Command] public void CmdHitPlayer(NetworkIdentity player, Vector3 force)
+        [Command] public void CmdHitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer, Vector3 force)
         {
-            RpcHitPlayer(player, force);
+            RpcHitPlayer(otherPlayer, force);
+            server.HitPlayer(localPlayer, otherPlayer);
         }
+
 
         private void Start()
         {

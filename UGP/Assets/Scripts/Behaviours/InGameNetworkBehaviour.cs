@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -81,6 +82,39 @@ namespace UGP
             #endregion
         }
         #endregion
+
+        [SyncVar(hook = "OnScoreboardTextChange")] public string scoreboardText;
+        public Text scoreboard;
+
+        private void OnScoreboardTextChange(string textChange)
+        {
+            scoreboardText += textChange;
+            RpcScoreboardTextChange(textChange);
+        }
+
+        public void HitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer)
+        {
+            if (!isServer)
+            {
+                return;
+            }
+
+            var localPlayerName = localPlayer.GetComponent<PlayerBehaviour>().playerName;
+            var otherPlayerName = otherPlayer.GetComponent<PlayerBehaviour>().playerName;
+
+            scoreboardText += localPlayerName + " HIT " + otherPlayerName + "\n";
+
+            var otherPlayerDead = otherPlayer.GetComponent<PlayerBehaviour>().isDead;
+            if (otherPlayerDead)
+            {
+                scoreboardText += localPlayerName + " KILLED " + otherPlayerName + "\n";
+            }
+        }
+
+        [ClientRpc] public void RpcScoreboardTextChange(string textChange)
+        {
+            scoreboardText += textChange;
+        }
 
         public void RespawnPlayer(NetworkIdentity playerIdentity)
         {
@@ -168,7 +202,6 @@ namespace UGP
             }
         }
 
-
         public void ClearRagdolls()
         {
             var allragdoll = GameObject.FindGameObjectsWithTag("Ragdoll").ToList();
@@ -177,8 +210,6 @@ namespace UGP
                 NetworkServer.Destroy(allragdoll[i]);
             }
         }
-
-
 
         public void ResetServer()
         {
