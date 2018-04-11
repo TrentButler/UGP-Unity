@@ -168,6 +168,18 @@ namespace UGP
             }
         }
 
+
+        public void ClearRagdolls()
+        {
+            var allragdoll = GameObject.FindGameObjectsWithTag("Ragdoll").ToList();
+            for(int i = 0; i < allragdoll.Count; i++)
+            {
+                NetworkServer.Destroy(allragdoll[i]);
+            }
+        }
+
+
+
         public void ResetServer()
         {
             NetworkServer.ClearLocalObjects();

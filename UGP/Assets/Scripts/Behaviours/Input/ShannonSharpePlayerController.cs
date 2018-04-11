@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -23,6 +24,16 @@ namespace UGP
         {
             if (Input.GetMouseButton(1))
             {
+                var colliders = GetComponents<Collider>().ToList();
+                colliders.ForEach(collider =>
+                {
+                    if (collider.CompareTag("Hand"))
+                    {
+                        collider.enabled = true;
+                    }
+                });
+
+
                 Ani.SetBool("Fighting", true);
                 if(Input.GetMouseButtonDown(0))
                 {

@@ -26,12 +26,15 @@ namespace UGP
         public Animator ani;
         public List<Collider> colliders;
 
+        public Rigidbody rb;
+
         #region SYNCED_VARIABLES
         [SyncVar(hook = "OnPlayerHealthChange")] public float playerHealth;
         [SyncVar(hook = "OnisDeadChange")] public bool isDead;
         [SyncVar] public bool isDriving;
         [SyncVar] public Color vehicleColor;
         [SyncVar(hook = "OnMaxHealthAssign")] public float MaxHealth;
+        [SyncVar(hook = "OnPlayerNameChange")] public string playerName;
         #endregion
 
         #region SYNCVAR_HOOK_FUNCTIONS
@@ -42,8 +45,6 @@ namespace UGP
             if (playerHealth <= 0.0f)
             {
                 isDead = true;
-                ic.enabled = false;
-                interaction.enabled = false;
             }
         }
         private void OnMaxHealthAssign(float assignMaxHealth)
@@ -60,10 +61,17 @@ namespace UGP
                 {
                     interaction.DropItem();
                     interaction.item.Drop();
+                    interaction.CmdSetHolding(false, "");
+                    ic.enabled = false;
+                    interaction.enabled = false;
                 }
                 
                 CmdSpawnRagdoll();
             }
+        }
+        private void OnPlayerNameChange(string nameChange)
+        {
+            playerName = nameChange;
         }
         #endregion
 
@@ -166,6 +174,8 @@ namespace UGP
         }
         [ClientRpc] private void RpcRespawn(Vector3 pos, Quaternion rot)
         {
+            interaction.enabled = true;
+
             if(isLocalPlayer)
             {
                 playerHealth = _p.MaxHealth;
@@ -213,6 +223,30 @@ namespace UGP
             vehicle = vehicleBehaviour;
         }
 
+        public void RemovePlayerFromVehicle()
+        {
+            CmdSetDriving(false);
+            var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
+            interaction.CmdSetVehicleActive(false, vehicleIdentity);
+            interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
+
+            //vehicle.CmdRemovePlayer();
+            vehicle.seatedPlayer = null;
+            CmdRemoveVehicleAuthority(vehicleIdentity);
+
+            exitTimer = 0.0f; //RESET THE TIMER
+
+            var rb = GetComponent<Rigidbody>();
+            rb.velocity = Vector3.zero;
+            rb.MovePosition(vehicle.seat.position);
+            rb.MoveRotation(vehicle.seat.rotation);
+
+            //transform.position = vehicle.seat.position;
+            //transform.rotation = vehicle.seat.rotation;
+
+            vehicle = null;
+        }
+
         private void ExitVehicleWithTimer()
         {
             if (Input.GetKey(KeyCode.F))
@@ -230,7 +264,11 @@ namespace UGP
                 var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
                 interaction.CmdSetVehicleActive(false, vehicleIdentity);
                 interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
+
+                //vehicle.CmdRemovePlayer();
+                vehicle.seatedPlayer = null;
                 CmdRemoveVehicleAuthority(vehicleIdentity);
+
                 exitTimer = 0.0f; //RESET THE TIMER
 
                 var rb = GetComponent<Rigidbody>();
@@ -327,45 +365,43 @@ namespace UGP
                 VirtualCamera.SetActive(true);
                 ic.enabled = true;
                 interaction.enabled = true;
-
-                //MAKE THE ANIMATOR CONTROLLER TRANSITION BACK TO IDLE STATE IF A ITEM IS NOT BEING HELD
+                
+                //PICKUP ITEM
+                //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
                 if(Input.GetKeyDown(KeyCode.F))
                 {
-                    if(!interaction.isHolding)
+                    colliders.ForEach(collider =>
+                    {
+                        if (collider.CompareTag("Hand"))
+                        {
+                            collider.enabled = true;
+                        }
+                    });
+
+                    if (!interaction.isHolding)
                     {
                         interaction.PickUpItem();
                     }
                 }
 
-                if(Input.GetKeyDown(KeyCode.RightAlt))
+                //DROP ITEM
+                //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
+                if (Input.GetKeyDown(KeyCode.RightAlt))
                 {
                     if(interaction.isHolding)
                     {
-                        //colliders.ForEach(collider =>
-                        //{
-                        //    if (collider.CompareTag("Hand"))
-                        //    {
-                        //        collider.enabled = false;
-                        //    }
-                        //});
+                        colliders.ForEach(collider =>
+                        {
+                            if (collider.CompareTag("Hand"))
+                            {
+                                collider.enabled = false;
+                            }
+                        });
 
                         interaction.DropItem();
                         interaction.item.Drop();
                     }
                 }
-
-                //if(!interaction.isHolding)
-                //{
-                //    colliders.ForEach(collider =>
-                //    {
-                //        if (collider.CompareTag("Hand"))
-                //        {
-                //            collider.enabled = true;
-                //        }
-                //    });
-                //}
-
-                //UpdatePlayerUI();
             }
         }
 

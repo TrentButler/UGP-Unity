@@ -13,11 +13,18 @@ namespace UGP
         
         public GameObject PlayerUI;
         public GameObject PlayerDeadCanvas;
+        public GameObject SettingsCanvas;
         public Slider HealthSlider;
+        public GameObject PlayerNameTag;
         public Text PlayerNameText;
         public string GotoSceneString;
         public Button MainMenuButton;
         public Button RespawnButton;
+
+        public void ExitApplication()
+        {
+            Application.Quit();
+        }
 
         public void GotoScene()
         {
@@ -25,8 +32,10 @@ namespace UGP
             {
                 GotoSceneString = "00.PickAScene";
             }
-
+            
             var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            var network_manager = netManager.GetComponent<NetworkManager>();
+            network_manager.StopClient();
             Destroy(netManager);
 
             SceneManager.LoadScene(GotoSceneString);
@@ -53,23 +62,48 @@ namespace UGP
             }
 
             HealthSlider.maxValue = PlayerBrain.MaxHealth;
-            PlayerNameText.text = PlayerBrain.gameObject.name;
+            PlayerNameText.text = PlayerBrain.playerName;
+        }
+
+        private void FixedUpdate()
+        {
+            if(!isLocalPlayer)
+            {
+                return;
+            }
+
+            //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                SettingsCanvas.SetActive(true);
+                Cursor.visible = true;
+            }
+            else
+            {
+                SettingsCanvas.SetActive(false);
+            }
         }
 
         private void LateUpdate()
         {
+            PlayerNameText.text = PlayerBrain.playerName;
+
             if (isServer)
             {
+                PlayerNameTag.SetActive(true);
                 PlayerUI.SetActive(false);
                 PlayerDeadCanvas.SetActive(false);
             }
 
             if (!isLocalPlayer)
             {
+                PlayerNameTag.SetActive(true);
                 return;
             }
 
-            if(HealthSlider.maxValue <= 0.0f)
+            PlayerNameTag.SetActive(false);
+
+            if (HealthSlider.maxValue <= 0.0f)
             {
                 HealthSlider.maxValue = PlayerBrain.MaxHealth;
             }
@@ -80,6 +114,7 @@ namespace UGP
             {
                 PlayerUI.SetActive(false);
                 PlayerDeadCanvas.SetActive(true);
+                PlayerNameTag.SetActive(false);
                 Cursor.visible = true;
             }
             else
