@@ -69,6 +69,7 @@ namespace UGP
                     {
                         var other_player_behaviour = collision.gameObject.GetComponentInParent<PlayerBehaviour>();
                         var other_network_identity = collision.gameObject.GetComponentInParent<NetworkIdentity>();
+                        var local_network_identity = GetComponent<NetworkIdentity>();
 
                         if (other_player_behaviour.isLocalPlayer)
                         {
@@ -78,11 +79,11 @@ namespace UGP
                         if(Ani.GetBool("Fighting"))
                         {
                             Debug.Log(collision.gameObject.name + "@ " + impact_velocity.magnitude.ToString() + " Force");
-                            CmdHitPlayer(other_network_identity, impact_velocity * KnockBack);
+                            CmdHitPlayer(local_network_identity, other_network_identity, impact_velocity * KnockBack);
                         }
                     }
                 }
-
+                
                 //if(point.otherCollider.CompareTag("Hand"))
                 //{
                 //    var player_behaviour = point.otherCollider.GetComponent<PlayerBehaviour>();
