@@ -22,8 +22,11 @@ namespace UGP
         public Vehicle VehicleConfig;
         [HideInInspector] public Vehicle _v;
 
+        //CREATE A SCRIPT FOR THIS
+        //VEHICLEUIBEHAVIOUR
         #region UI
         public GameObject vehicleUI;
+        public GameObject enterVehicleUI;
         public Slider HealthSlider;
         public Slider FuelSlider;
         #endregion
@@ -478,12 +481,17 @@ namespace UGP
 
         private void LateUpdate()
         {
+            var rb = GetComponent<Rigidbody>();
+            
             if (vehicleActive)
             {
+                rb.isKinematic = false;
                 ColorChangeOn();
+                enterVehicleUI.SetActive(false);
             }
             else
             {
+                rb.isKinematic = true;
                 ColorChangeOff();
             }
         }
@@ -499,6 +507,24 @@ namespace UGP
 
                 Debug.Log("HIT PLAYER FOR " + impact_velocity.magnitude.ToString() + " DAMAGE");
             }
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                //ENABLE THE ENTERVEHICLE UI
+                var player_network_identity = other.GetComponentInParent<NetworkIdentity>();
+                if(player_network_identity.isLocalPlayer && !vehicleActive && !playerInSeat)
+                {
+                    enterVehicleUI.SetActive(true);
+                }
+            }
+        }
+        private void OnTriggerExit(Collider other)
+        {
+            //DISABLE THE ENTERVEHICLE UI
+            enterVehicleUI.SetActive(false);
         }
     }
 }
