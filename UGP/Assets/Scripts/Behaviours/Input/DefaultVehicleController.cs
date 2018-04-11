@@ -220,6 +220,7 @@ namespace UGP
                 {
                     var move_direction = transform.TransformDirection((accelerationVector + strafeVector));
                     //APPLY FORCES
+                    rb.isKinematic = false;
                     rb.AddForce(move_direction, ForceMode.Impulse);
                 }
                 else
@@ -230,6 +231,7 @@ namespace UGP
             else
             {
                 rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO USER CONTROL
+                rb.isKinematic = true;
             }
 
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);

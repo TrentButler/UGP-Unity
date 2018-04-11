@@ -13,21 +13,76 @@ namespace UGP
     {
         public PlayerBehaviour p;
         public Transform HoldingItemPosition;
-        [SyncVar] public bool isHolding = false;
+        [SyncVar(hook = "OnisHoldingChange")] public bool isHolding = false;
+        [SyncVar(hook = "OnItemChange")] public string current_item = "";
 
-        public GameObject ItemModel;
+        private void OnItemChange(string itemChange)
+        {
+            current_item = itemChange;
+        }
+        private void OnisHoldingChange(bool holdingChange)
+        {
+            isHolding = holdingChange;
+            Ani.SetBool("HoldingItem", isHolding);
+        }
+
+        private GameObject CurrentItemModel;
+        public GameObject EmptyItem;
+        public GameObject fuelModel;
+        public GameObject ammoModel;
+        public GameObject repairKitModel;
         public Animator Ani;
+        public NetworkAnimator NetworkAni;
+
+        public ItemBehaviour item;
 
         #region COMMAND_FUNCTIONS
-        [Command] public void CmdSetHolding(bool holding)
+        [Command]
+        public void CmdSetHolding(bool holding, string item_type)
         {
             isHolding = holding;
+            current_item = item_type;
+            //switch (current_item)
+            //{
+            //    case "":
+            //        {
+            //            CurrentItemModel = EmptyItem;
+            //            //CurrentItemModel.SetActive(false);
+            //            break;
+            //        }
+
+            //    case "UGP.AmmoBox":
+            //        {
+            //            CurrentItemModel = ammoModel;
+            //            break;
+            //        }
+
+            //    case "UGP.Fuel":
+            //        {
+            //            CurrentItemModel = fuelModel;
+            //            break;
+            //        }
+
+            //    case "UGP.RepairKit":
+            //        {
+            //            CurrentItemModel = repairKitModel;
+            //            break;
+            //        }
+
+            //    default:
+            //        {
+            //            break;
+            //        }
+            //}
+            //RpcSetCurrentItem(current_item);
         }
-        [Command] public void CmdSetItemBeingHeld(bool holding, NetworkIdentity item)
+        [Command]
+        public void CmdSetItemBeingHeld(bool holding, NetworkIdentity item)
         {
             item.GetComponent<ItemBehaviour>().isBeingHeld = holding;
         }
-        [Command] public void CmdAssignVehicleAuthority(NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdAssignVehicleAuthority(NetworkIdentity vehicleIdentity)
         {
             var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
@@ -37,19 +92,23 @@ namespace UGP
             //INVOKE THESE FUNCTIONS ON THE SERVER
             vehicleNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
-        [Command] public void CmdSetVehicleActive(bool active, NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdSetVehicleActive(bool active, NetworkIdentity vehicleIdentity)
         {
             vehicleIdentity.GetComponent<VehicleBehaviour>().vehicleActive = active;
         }
-        [Command] public void CmdSetPlayerInSeat(bool inSeat, NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdSetPlayerInSeat(bool inSeat, NetworkIdentity vehicleIdentity)
         {
             vehicleIdentity.GetComponent<VehicleBehaviour>().playerInSeat = inSeat;
         }
-        [Command] public void CmdSetVehicleColor(Color color, NetworkIdentity vehicleIdentity)
+        [Command]
+        public void CmdSetVehicleColor(Color color, NetworkIdentity vehicleIdentity)
         {
             vehicleIdentity.GetComponent<VehicleBehaviour>().vColor = color;
         }
-        [Command] public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
+        [Command]
+        public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
         {
             //Debug.Log(player.gameObject.name + " ASSIGN AUTHORITY TO: " + gameObject.name);
             var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
@@ -61,7 +120,8 @@ namespace UGP
             itemNetworkIdentity.AssignClientAuthority(localPlayerConn);
             //localPlayerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
-        [Command] public void CmdRemoveItemAuthority(NetworkIdentity itemIdentity)
+        [Command]
+        public void CmdRemoveItemAuthority(NetworkIdentity itemIdentity)
         {
             //Debug.Log(player.gameObject.name + " REMOVE AUTHORITY FROM: " + gameObject.name);
 
@@ -77,12 +137,18 @@ namespace UGP
 
         public void PickUpItem()
         {
-            Ani.SetTrigger("PickUpItem");
+            if(!isHolding)
+            {
+                NetworkAni.SetTrigger("PickUpItem");
+            }
         }
 
         public void DropItem()
         {
-            Ani.SetTrigger("DropItem");
+            if(isHolding)
+            {
+                NetworkAni.SetTrigger("DropItem");
+            }
         }
 
         //NEEDS WORK
@@ -90,62 +156,48 @@ namespace UGP
         {
             switch (itemType)
             {
-                case "UGP.RepairKit":
+                case "UGP.AmmoBox":
                     {
-                        //CmdAssignVehicleAuthority(vehicleIdentity);
+                        var ammo_item = itemIdentity.GetComponent<ItemBehaviour>()._I as AmmoBox;
 
-                        var repair_item = itemIdentity.GetComponent<ItemBehaviour>()._I as RepairKit;
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeHealth(repair_item.RepairFactor);
-                        Debug.Log("VEHICLE TAKE REPAIR");
+                        var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
+                        if(!vehicle_destroyed)
+                        {
+                            vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeAmmunition(ammo_item.Assault, ammo_item.Shotgun, ammo_item.Sniper, ammo_item.Rocket);
+                            Debug.Log("VEHICLE TAKE AMMO");
+                        }
 
-                        //p.CmdRemoveVehicleAuthority(vehicleIdentity);
-                        
-
-                        //CmdRemoveItemAuthority(itemIdentity);
-                        //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
-                        CmdSetHolding(false);
-                        //CmdSetItemBeingHeld(false, itemIdentity);
-
-                        Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
+                        CmdSetHolding(false, "");
                         break;
                     }
 
                 case "UGP.Fuel":
                     {
-                        //CmdAssignVehicleAuthority(vehicleIdentity);
-
                         var refuel_item = itemIdentity.GetComponent<ItemBehaviour>()._I as Fuel;
-                        Debug.Log("VEHICLE TAKE FUEL");
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdRefuel(refuel_item.RefuelFactor);
-                        //var current_fuel = vehicleIdentity.GetComponent<VehicleBehaviour>().vehicleFuel;
 
-                        //p.CmdRemoveVehicleAuthority(vehicleIdentity);
+                        var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
+                        if(!vehicle_destroyed)
+                        {
+                            vehicleIdentity.GetComponent<VehicleBehaviour>().CmdRefuel(refuel_item.RefuelFactor);
+                            Debug.Log("VEHICLE TAKE FUEL");
+                        }
 
-                        //CmdRemoveItemAuthority(item);
-                        //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
-                        CmdSetHolding(false);
-                        //CmdSetItemBeingHeld(false, itemIdentity);
-
-                        Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
+                        CmdSetHolding(false, "");
                         break;
                     }
 
-                case "UGP.AmmoBox":
+                case "UGP.RepairKit":
                     {
-                        //CmdAssignVehicleAuthority(vehicleIdentity);
+                        var repair_item = itemIdentity.GetComponent<ItemBehaviour>()._I as RepairKit;
 
-                        var ammo_item = itemIdentity.GetComponent<ItemBehaviour>()._I as AmmoBox;
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeAmmunition(ammo_item.Assault, ammo_item.Shotgun, ammo_item.Sniper, ammo_item.Rocket);
-                        Debug.Log("VEHICLE TAKE AMMO");
+                        var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
+                        if(!vehicle_destroyed)
+                        {
+                            vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeHealth(repair_item.RepairFactor);
+                            Debug.Log("VEHICLE TAKE REPAIR");
+                        }
 
-                        //p.CmdRemoveVehicleAuthority(vehicleIdentity);
-
-                        //CmdRemoveItemAuthority(itemIdentity);
-                        //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
-                        CmdSetHolding(false);
-                        //CmdSetItemBeingHeld(false, itemIdentity);
-
-                        Destroy(itemIdentity.gameObject);
+                        CmdSetHolding(false, "");
                         break;
                     }
 
@@ -169,7 +221,7 @@ namespace UGP
                 var vActive = v.vehicleActive;
                 var vehicleIdentity = v.GetComponent<NetworkIdentity>();
 
-                if(!isHolding) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM
+                if (!isHolding && !v.isDestroyed) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM, OR IF THE VEHICLE IS DESTROYED
                 {
                     if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
                     {
@@ -185,21 +237,130 @@ namespace UGP
                             CmdSetPlayerInSeat(true, vehicleIdentity);
                             CmdSetVehicleColor(p.vehicleColor, vehicleIdentity);
                             CmdAssignVehicleAuthority(vehicleIdentity);
+
+                            //var player_network_identity = GetComponent<NetworkIdentity>();
+                            //v.CmdSetPlayer(player_network_identity);
+                            v.seatedPlayer = p;
                         }
                     }
                 }
             }
         }
 
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(!isLocalPlayer)
+            {
+                return;
+            }
+
+            var contact_points = collision.contacts.ToList();
+            contact_points.ForEach(contact =>
+            {
+                if(contact.thisCollider.CompareTag("Hand"))
+                {
+                    var item_behaviour = contact.otherCollider.GetComponent<ItemBehaviour>();
+
+                    if(item_behaviour != null && !item_behaviour.isBeingHeld)
+                    {
+                        item_behaviour.PickUp(this);
+                    }
+                }
+            });
+        }
+
+        private void Start()
+        {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+        }
+        
         private void FixedUpdate()
         {
-            if(isHolding)
+            if(!isLocalPlayer)
             {
-                ItemModel.SetActive(true);
+                return;
+            }
+
+            if (isHolding)
+            {
+                //REFACTOR TO INPUTCONTROLLER.BUTTONYOUNEED
+                //INPUTCONTROLLER.HOLDOUTITEM
+                if (Input.GetMouseButton(1))
+                {
+                    Ani.SetBool("UsingItem", true);
+                }
+                else
+                {
+                    Ani.SetBool("UsingItem", false);
+                }
+            }
+        }
+
+        private void LateUpdate()
+        {
+            if (isHolding)
+            {
+                //CurrentItemModel.SetActive(true);
+                //var old_item = CurrentItemModel;
+
+                switch (current_item)
+                {
+                    case "":
+                        {
+                            EmptyItem.SetActive(true);
+
+                            ammoModel.SetActive(false);
+                            fuelModel.SetActive(false);
+                            repairKitModel.SetActive(false);
+                            break;
+                        }
+
+                    case "UGP.AmmoBox":
+                        {
+                            ammoModel.SetActive(true);
+
+                            EmptyItem.SetActive(false);
+                            fuelModel.SetActive(false);
+                            repairKitModel.SetActive(false);
+                            break;
+                        }
+
+                    case "UGP.Fuel":
+                        {
+                            fuelModel.SetActive(true);
+
+                            ammoModel.SetActive(false);
+                            EmptyItem.SetActive(false);
+                            repairKitModel.SetActive(false);
+                            break;
+                        }
+
+                    case "UGP.RepairKit":
+                        {
+                            repairKitModel.SetActive(true);
+
+                            fuelModel.SetActive(false);
+                            ammoModel.SetActive(false);
+                            EmptyItem.SetActive(false);
+                            break;
+                        }
+
+                    default:
+                        {
+                            break;
+                        }
+                }
             }
             else
             {
-                ItemModel.SetActive(false);
+                EmptyItem.SetActive(true);
+
+                ammoModel.SetActive(false);
+                fuelModel.SetActive(false);
+                repairKitModel.SetActive(false);
             }
         }
     }

@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 namespace UGP
 {
     //NEEDS WORK
-    //DISABLE THE ITEM GAMEOBJECT'S MODEL ACROSS ALL CLIENTS IF IT IS BEING HELD
+    //IMPLEMENT PLAYER THROW ITEM TO VEHICLE MECHANIC
     public class ItemBehaviour : NetworkBehaviour
     {
         public Text ItemName;
@@ -21,49 +21,42 @@ namespace UGP
         private Rigidbody rb;
         private PlayerInteractionBehaviour player;
         private NetworkIdentity item_network_identity;
-        [SyncVar] public bool isBeingHeld = false;
+        [SyncVar(hook = "OnisBeingHeldChange")] public bool isBeingHeld = false;
 
         [Command] public void CmdSetHolding(bool holding)
         {
             isBeingHeld = holding;
         }
 
+        public void OnisBeingHeldChange(bool beingHeldChange)
+        {
+            isBeingHeld = beingHeldChange;
+        }
+
         public void PickUp(PlayerInteractionBehaviour interaction)
         {   
             player = interaction;
-            player.CmdSetHolding(true);
+            player.item = this;
+            var string_type = _I.GetType().ToString();
+            player.CmdSetHolding(true, string_type);
             player.CmdSetItemBeingHeld(true, item_network_identity);
 
             player.CmdAssignItemAuthority(item_network_identity);
             Debug.Log("ATTEMPT TO ASSIGN AUTHORITY: EXPECTED = True, RESULT = " + item_network_identity.hasAuthority.ToString());
 
-            //PARENT THE 'ITEM' TO THE PLAYER
-            //TURN GRAVITY OFF FOR THE ITEM
-            //PlayerHand = parent;
-            //transform.SetParent(PlayerHand);
-            //interaction.Child.target = transform;
-            //var item_pos = Vector3.zero;
-            //var item_pos = _parent.TransformPoint(Vector3.zero);
-            //rb.MovePosition(item_pos);
-            //rb.MovePosition(PlayerHand.position);
-            //rb.position = _parent.position;
-
-            //model.SetActive(false);
-            //CmdDisableItemModel();
             rb.MovePosition(player.HoldingItemPosition.position);
-
-            //rb.constraints = RigidbodyConstraints.FreezeAll;
-            var colliders = GetComponents<BoxCollider>().ToList();
+            
+            var colliders = GetComponents<Collider>().ToList();
             colliders.ForEach(collider =>
             {
-                if(!collider.isTrigger)
+                if (!collider.isTrigger)
                 {
                     collider.enabled = false;
                 }
+                //collider.enabled = false;
             });
             rb.useGravity = false;
-            //isBeingHeld = true;
-            //CmdOnPickUp();
+            rb.velocity = Vector3.zero;
         }
 
         public void Drop()
@@ -71,28 +64,28 @@ namespace UGP
             player.CmdRemoveItemAuthority(item_network_identity);
             Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + item_network_identity.hasAuthority.ToString());
             
-            player.CmdSetHolding(false);
+            player.CmdSetHolding(false, "");
             player.CmdSetItemBeingHeld(false, item_network_identity);
-            //CmdOnDrop();
-            //transform.parent = null;
+            player.item = null;
 
-
-            //transform.parent = null;
-            //var item_pos = _parent.position;
-            //var item_pos = _parent.position;
-            //rb.MovePosition(item_pos);
-            //model.SetActive(true);
-            //CmdEnableItemModel();
-            //GetComponent<BoxCollider>().enabled = true;
-            var colliders = GetComponents<BoxCollider>().ToList();
+            var colliders = GetComponents<Collider>().ToList();
             colliders.ForEach(collider =>
             {
                 collider.enabled = true;
             });
+
             rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
-            rb.MovePosition(player.HoldingItemPosition.position);
+
+            var drop_position = player.HoldingItemPosition.position;
+            drop_position.x += 2;
+            //drop_position.y -= 2;
+
+            rb.MovePosition(drop_position);
+            rb.velocity = Vector3.zero;
+
+            //rb.MovePosition(drop_position);
 
             player = null; //REMOVE REFRENCE TO PLAYER
         }
@@ -101,31 +94,18 @@ namespace UGP
         {
             if (other.tag == "Player")
             {
-                var player_identity = other.GetComponent<NetworkIdentity>();
-
-                if(player_identity.isLocalPlayer && !isBeingHeld)
+                var player_identity = other.GetComponentInParent<NetworkIdentity>();
+                if (player_identity.isLocalPlayer && !isBeingHeld)
                 {
                     Debug.Log("Press F To Pick Up " + _I.name);
                     ItemName.text = ItemConfig.name;
                     ItemCanvas.SetActive(true);
                 }
-
-                //var player_holding_transform = other.transform.Find("ItemHoldPosition");
-
-                var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
-
+                
+                var player_interaction = other.GetComponentInParent<PlayerInteractionBehaviour>();
                 if (player_interaction != null)
                 {
                     player = player_interaction;
-                }
-
-                if (Input.GetKeyDown(KeyCode.F))
-                {
-                    if (!player_interaction.isHolding && !isBeingHeld && !isServer)
-                    {
-                        player.PickUpItem();
-                        PickUp(player);
-                    }
                 }
             }
 
@@ -136,18 +116,18 @@ namespace UGP
                 var vehicle_behaviour = other.GetComponentInParent<VehicleBehaviour>();
                 var vehicle_identity = other.GetComponentInParent<NetworkIdentity>();
 
-                if (isBeingHeld && player.isLocalPlayer)
+                if (isBeingHeld && player.isLocalPlayer && !vehicle_behaviour.isDestroyed)
                 {
-                    //TYPE CAST THE ITEM CONFIG AS A REPAIR KIT
-                    //INVOKE THE FUNCTION 'TakeHealth' ON THE VEHICLE
-                    var string_type = _I.GetType().ToString();
-                    player.CmdAssignVehicleAuthority(vehicle_identity);
+                    var string_type = _I.GetType().ToString(); //GET THE TYPE OF ITEM
+                    player.CmdAssignVehicleAuthority(vehicle_identity); //ASSIGN THE VEHICLE 'AUTHORITY'
 
                     if (vehicle_identity.hasAuthority)
                     {
-                        player.DropItem();
-                        player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity);
-                        player.p.CmdRemoveVehicleAuthority(vehicle_identity);
+                        player.DropItem(); //REMOVE THE ITEM FROM THE PLAYER
+                        player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity); //USE THE ITEM ON THE VEHICLE
+                        player.p.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
+
+                        NetworkServer.Destroy(gameObject); //DESTROY THIS ITEM ON SERVER AND ALL CLIENTS
                     }
                 }
             }
@@ -155,6 +135,11 @@ namespace UGP
         private void OnTriggerExit(Collider other)
         {
             ItemCanvas.SetActive(false);
+
+            if(!isBeingHeld)
+            {
+                player = null;
+            }
         }
 
         void Start()
@@ -186,34 +171,17 @@ namespace UGP
 
         void FixedUpdate()
         {
-            //if(isServer)
-            //{
-            //    UpdateItem();
-            //}
-
             if (isBeingHeld && !isServer && hasAuthority)
             {
                 ItemCanvas.SetActive(false);
-                //var item_pos = _parent.position;
-                //rb.MovePosition(item_pos);
-                //rb.MovePosition(player.HoldingItemPosition.position);
-                //rb.position = _parent.position;
-                //model.SetActive(false);
-                //rb.isKinematic = true;
+
+                //CLEAN THIS UP,
+                //CONSIDER THE 'THROW ITEM TO VEHICLE MECHANIC'
+                //MIGHT NEED TO DISABLE THIS/RE-ENABLE THE ITEM MODEL WHEN THE PLAYER THROWS IT, 
+                //VEHICLE CANNOT DRIVE OVER AN ITEM AND USE IT
                 rb.MovePosition(player.HoldingItemPosition.position);
                 rb.velocity = Vector3.zero;
                 rb.MoveRotation(player.HoldingItemPosition.rotation);
-            }
-
-            if (Input.GetKeyDown(KeyCode.RightAlt))
-            {
-                Debug.Log("RIGHT ALT KEY PRESS");
-                if (isBeingHeld && !isServer && hasAuthority)
-                {
-                    //var player_interaction = other.GetComponent<PlayerInteractionBehaviour>();
-                    player.DropItem();
-                    Drop();
-                }
             }
         }
 
