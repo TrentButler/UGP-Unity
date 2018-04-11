@@ -116,7 +116,7 @@ namespace UGP
                 var vehicle_behaviour = other.GetComponentInParent<VehicleBehaviour>();
                 var vehicle_identity = other.GetComponentInParent<NetworkIdentity>();
 
-                if (isBeingHeld && player.isLocalPlayer)
+                if (isBeingHeld && player.isLocalPlayer && !vehicle_behaviour.isDestroyed)
                 {
                     var string_type = _I.GetType().ToString(); //GET THE TYPE OF ITEM
                     player.CmdAssignVehicleAuthority(vehicle_identity); //ASSIGN THE VEHICLE 'AUTHORITY'

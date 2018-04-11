@@ -26,12 +26,15 @@ namespace UGP
         public Animator ani;
         public List<Collider> colliders;
 
+        public Rigidbody rb;
+
         #region SYNCED_VARIABLES
         [SyncVar(hook = "OnPlayerHealthChange")] public float playerHealth;
         [SyncVar(hook = "OnisDeadChange")] public bool isDead;
         [SyncVar] public bool isDriving;
         [SyncVar] public Color vehicleColor;
         [SyncVar(hook = "OnMaxHealthAssign")] public float MaxHealth;
+        [SyncVar(hook = "OnPlayerNameChange")] public string playerName;
         #endregion
 
         #region SYNCVAR_HOOK_FUNCTIONS
@@ -65,6 +68,10 @@ namespace UGP
                 
                 CmdSpawnRagdoll();
             }
+        }
+        private void OnPlayerNameChange(string nameChange)
+        {
+            playerName = nameChange;
         }
         #endregion
 
@@ -216,6 +223,30 @@ namespace UGP
             vehicle = vehicleBehaviour;
         }
 
+        public void RemovePlayerFromVehicle()
+        {
+            CmdSetDriving(false);
+            var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
+            interaction.CmdSetVehicleActive(false, vehicleIdentity);
+            interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
+
+            //vehicle.CmdRemovePlayer();
+            vehicle.seatedPlayer = null;
+            CmdRemoveVehicleAuthority(vehicleIdentity);
+
+            exitTimer = 0.0f; //RESET THE TIMER
+
+            var rb = GetComponent<Rigidbody>();
+            rb.velocity = Vector3.zero;
+            rb.MovePosition(vehicle.seat.position);
+            rb.MoveRotation(vehicle.seat.rotation);
+
+            //transform.position = vehicle.seat.position;
+            //transform.rotation = vehicle.seat.rotation;
+
+            vehicle = null;
+        }
+
         private void ExitVehicleWithTimer()
         {
             if (Input.GetKey(KeyCode.F))
@@ -233,7 +264,11 @@ namespace UGP
                 var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
                 interaction.CmdSetVehicleActive(false, vehicleIdentity);
                 interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
+
+                //vehicle.CmdRemovePlayer();
+                vehicle.seatedPlayer = null;
                 CmdRemoveVehicleAuthority(vehicleIdentity);
+
                 exitTimer = 0.0f; //RESET THE TIMER
 
                 var rb = GetComponent<Rigidbody>();

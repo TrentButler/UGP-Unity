@@ -28,11 +28,16 @@ namespace UGP
         public Slider FuelSlider;
         #endregion
 
+        #region ParticleSystems
+        public ParticleSystem VehicleDestroyedParticle; 
+        #endregion
+
         public Transform seat;
         public Animator ani;
 
         #region SYNCED_VARIABLES
-        [SyncVar] public bool vehicleActive; //ADD FUNCTION TO TRIGGER VEHICLE DESTROYED EVENT???? (hook = "OnVehicleDestroyed")
+        [SyncVar] public bool vehicleActive;
+        [SyncVar(hook = "OnIsDestroyedChange")] public bool isDestroyed = false;
         [SyncVar] public Color vColor;
         [SyncVar] public bool playerInSeat = false;
         [SyncVar] private float max_health, max_fuel;
@@ -40,6 +45,8 @@ namespace UGP
         [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
         [SyncVar] public int Assault, Shotgun, Sniper, Rocket;
         #endregion
+
+        public PlayerBehaviour seatedPlayer;
 
         #region COMMAND_FUNCTIONS
         [Command] public void CmdTakeHealth(float healthTaken)
@@ -59,6 +66,7 @@ namespace UGP
             if (vehicleHealth <= 0.0f)
             {
                 vehicleActive = false;
+                isDestroyed = true;
             }
         }
         [Command] public void CmdRefuel(float refuel)
@@ -103,6 +111,22 @@ namespace UGP
             Rocket -= rocket;
             Rocket = Mathf.Clamp(Rocket, 0, 999);
         }
+
+        [Command] public void CmdSetPlayer(NetworkIdentity playerNetworkIdentity)
+        {
+            seatedPlayer = playerNetworkIdentity.GetComponent<PlayerBehaviour>();
+            RpcSetPlayer(playerNetworkIdentity);
+        }
+        [Command] public void CmdRemovePlayer()
+        {
+            seatedPlayer = null;
+            RpcRemovePlayer();
+        }
+        [Command] public void CmdVehicleDestroyed()
+        {
+            VehicleDestroyedParticle.Play();
+            RpcVehicleDestroyed();
+        }
         #endregion
 
         #region CLIENTRPC_FUNCTIONS
@@ -110,8 +134,41 @@ namespace UGP
         {
             vehicleActive = active;
         }
+        [ClientRpc] public void RpcSetPlayer(NetworkIdentity playerNetworkIdentity)
+        {
+            seatedPlayer = playerNetworkIdentity.GetComponent<PlayerBehaviour>();
+        }
+        [ClientRpc] public void RpcRemovePlayer()
+        {
+            seatedPlayer = null;
+        }
+        [ClientRpc] public void RpcVehicleDestroyed()
+        {
+            VehicleDestroyedParticle.Play();
+        }
         #endregion
 
+        public void OnIsDestroyedChange(bool destroyedChange)
+        {
+            isDestroyed = destroyedChange;
+            if (isDestroyed)
+            { 
+                //CHECK FOR THE PLAYER
+                //REMOVE THE PLAYER FROM THE VEHICLE
+                //KILL THE PLAYER
+                //PLAY EXPLOSION
+                //DESTROY THE VEHICLE
+
+                if(seatedPlayer != null)
+                {
+                    seatedPlayer.CmdTakeDamage(999999);
+                    seatedPlayer.RemovePlayerFromVehicle();
+                }
+
+                VehicleDestroyedParticle.Play();
+                CmdVehicleDestroyed();
+            }
+        }
         public void OnVehicleHealthChange(float healthChange)
         {
             //RpcUpdateVehicleHealth(healthChange);
@@ -120,6 +177,7 @@ namespace UGP
             if (vehicleHealth <= 0.0f)
             {
                 vehicleActive = false;
+                isDestroyed = true;
             }
 
             //HealthSlider.value = vehicleHealth;
@@ -155,31 +213,32 @@ namespace UGP
                 + sSniper + "\n" + sRocket;
         }
 
-        private void UpdateVehicle()
-        {
-            //- SERVER ONLY
-            //- CHECK IF VEHICLE FUEL OR HEALTH IS BELOW ZERO(0)
-            //- SET VEHICLE ACTIVE TO FALSE
+        //private void UpdateVehicle()
+        //{
+        //    //- SERVER ONLY
+        //    //- CHECK IF VEHICLE FUEL OR HEALTH IS BELOW ZERO(0)
+        //    //- SET VEHICLE ACTIVE TO FALSE
 
-            if (vehicleHealth <= 0.0f)
-            {
-                RpcSetVehicleActive(false);
-                Debug.Log("VEHICLE OUT OF HEALTH");
-            }
+        //    if (vehicleHealth <= 0.0f)
+        //    {
+        //        RpcSetVehicleActive(false);
+        //        Rpc
+        //        Debug.Log("VEHICLE OUT OF HEALTH");
+        //    }
 
-            if (vehicleFuel <= 0.0f)
-            {
-                RpcSetVehicleActive(false);
-                Debug.Log("VEHICLE OUT OF FUEL");
-            }
-            else
-            {
-                if (vehicleHealth > 0.0f && playerInSeat)
-                {
-                    RpcSetVehicleActive(true);
-                }
-            }
-        }
+        //    if (vehicleFuel <= 0.0f)
+        //    {
+        //        RpcSetVehicleActive(false);
+        //        Debug.Log("VEHICLE OUT OF FUEL");
+        //    }
+        //    else
+        //    {
+        //        if (vehicleHealth > 0.0f && playerInSeat)
+        //        {
+        //            RpcSetVehicleActive(true);
+        //        }
+        //    }
+        //}
 
         public void ColorChangeOn()
         {
@@ -344,11 +403,11 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if (isServer)
-            {
-                UpdateVehicle();
-                return;
-            }
+            //if (isServer)
+            //{
+            //    UpdateVehicle();
+            //    return;
+            //}
 
             if (!isLocalPlayer)
             {
@@ -381,7 +440,7 @@ namespace UGP
                     return;
                 }
 
-                if(!playerInSeat)
+                if (!playerInSeat)
                 {
                     vehicleUI.SetActive(false);
                 }

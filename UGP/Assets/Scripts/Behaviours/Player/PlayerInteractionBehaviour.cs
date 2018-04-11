@@ -158,60 +158,46 @@ namespace UGP
             {
                 case "UGP.AmmoBox":
                     {
-                        //CmdAssignVehicleAuthority(vehicleIdentity);
-
                         var ammo_item = itemIdentity.GetComponent<ItemBehaviour>()._I as AmmoBox;
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeAmmunition(ammo_item.Assault, ammo_item.Shotgun, ammo_item.Sniper, ammo_item.Rocket);
-                        Debug.Log("VEHICLE TAKE AMMO");
 
-                        //p.CmdRemoveVehicleAuthority(vehicleIdentity);
+                        var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
+                        if(!vehicle_destroyed)
+                        {
+                            vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeAmmunition(ammo_item.Assault, ammo_item.Shotgun, ammo_item.Sniper, ammo_item.Rocket);
+                            Debug.Log("VEHICLE TAKE AMMO");
+                        }
 
-                        //CmdRemoveItemAuthority(itemIdentity);
-                        //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
                         CmdSetHolding(false, "");
-                        //CmdSetItemBeingHeld(false, itemIdentity);
-
-                        //Destroy(itemIdentity.gameObject);
                         break;
                     }
 
                 case "UGP.Fuel":
                     {
-                        //CmdAssignVehicleAuthority(vehicleIdentity);
-
                         var refuel_item = itemIdentity.GetComponent<ItemBehaviour>()._I as Fuel;
-                        Debug.Log("VEHICLE TAKE FUEL");
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdRefuel(refuel_item.RefuelFactor);
-                        //var current_fuel = vehicleIdentity.GetComponent<VehicleBehaviour>().vehicleFuel;
 
-                        //p.CmdRemoveVehicleAuthority(vehicleIdentity);
+                        var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
+                        if(!vehicle_destroyed)
+                        {
+                            vehicleIdentity.GetComponent<VehicleBehaviour>().CmdRefuel(refuel_item.RefuelFactor);
+                            Debug.Log("VEHICLE TAKE FUEL");
+                        }
 
-                        //CmdRemoveItemAuthority(item);
-                        //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
                         CmdSetHolding(false, "");
-                        //CmdSetItemBeingHeld(false, itemIdentity);
-
-                        //Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
                         break;
                     }
 
                 case "UGP.RepairKit":
                     {
-                        //CmdAssignVehicleAuthority(vehicleIdentity);
-
                         var repair_item = itemIdentity.GetComponent<ItemBehaviour>()._I as RepairKit;
-                        vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeHealth(repair_item.RepairFactor);
-                        Debug.Log("VEHICLE TAKE REPAIR");
 
-                        //p.CmdRemoveVehicleAuthority(vehicleIdentity);
+                        var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
+                        if(!vehicle_destroyed)
+                        {
+                            vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeHealth(repair_item.RepairFactor);
+                            Debug.Log("VEHICLE TAKE REPAIR");
+                        }
 
-
-                        //CmdRemoveItemAuthority(itemIdentity);
-                        //Debug.Log("ATTEMPT TO REMOVE AUTHORITY: EXPECTED = False, RESULT = " + itemIdentity.hasAuthority.ToString());
                         CmdSetHolding(false, "");
-                        //CmdSetItemBeingHeld(false, itemIdentity);
-
-                        //Destroy(itemIdentity.gameObject); //DESTROY THE GAMEOBJECT WHEN USED
                         break;
                     }
 
@@ -235,7 +221,7 @@ namespace UGP
                 var vActive = v.vehicleActive;
                 var vehicleIdentity = v.GetComponent<NetworkIdentity>();
 
-                if (!isHolding) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM
+                if (!isHolding && !v.isDestroyed) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM, OR IF THE VEHICLE IS DESTROYED
                 {
                     if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
                     {
@@ -251,6 +237,10 @@ namespace UGP
                             CmdSetPlayerInSeat(true, vehicleIdentity);
                             CmdSetVehicleColor(p.vehicleColor, vehicleIdentity);
                             CmdAssignVehicleAuthority(vehicleIdentity);
+
+                            //var player_network_identity = GetComponent<NetworkIdentity>();
+                            //v.CmdSetPlayer(player_network_identity);
+                            v.seatedPlayer = p;
                         }
                     }
                 }
@@ -296,7 +286,7 @@ namespace UGP
 
             if (isHolding)
             {
-                //REFACTOR TO INPUTCONTROLLER.BUTTON YOU NEED
+                //REFACTOR TO INPUTCONTROLLER.BUTTONYOUNEED
                 //INPUTCONTROLLER.HOLDOUTITEM
                 if (Input.GetMouseButton(1))
                 {
