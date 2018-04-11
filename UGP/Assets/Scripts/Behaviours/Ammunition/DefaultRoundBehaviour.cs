@@ -21,10 +21,25 @@ namespace UGP
 
         private void OnCollisionEnter(Collision collision)
         {
+            //NEEDS WORK
+            //WILL NOT INVOKE THE METHOD 'CmdTakeDamge' IF THE VEHICLE DOES NOT HAVE 'AUTHORITY'
+            //WILL WORK IF THERE IS ANOTHER PLAYER IN THE VEHICLE
             if (collision.collider.tag == "Vehicle")
             {
                 var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
                 vehicle_behaviour.CmdTakeDamage(DamageDealt);
+                Destroy(gameObject);
+            }
+
+            if(collision.collider.tag == "Player")
+            {
+                var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                var player_rb = collision.collider.GetComponentInParent<Rigidbody>();
+                var contact_point = collision.contacts[0].point;
+
+                player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point);
+
+                player_behaviour.CmdTakeDamage(DamageDealt * 999999);
                 Destroy(gameObject);
             }
         }

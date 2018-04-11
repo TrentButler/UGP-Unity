@@ -39,16 +39,23 @@ namespace UGP
         private float semiauto_timer = 0;
         private bool hasFired = false;
 
+        [Range(0.0f, 999999.0f)] public float ShotStrength = 500.0f;
         public float WeaponRange;
         public float AimCooldown;
         public int roundsFired = 0;
         private Vector3 barrelLookAt;
         public VehicleBehaviour v;
 
-        [Command] private void CmdFireRound()
+        [Command] private void CmdFireRound(Vector3 position, Quaternion rotation, float strength)
         {
-            var b = Instantiate(bulletPrefab, GunBarrel.position, GunBarrel.rotation);
-            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
+            var b = Instantiate(bulletPrefab, position, rotation);
+
+            var b_rb = b.GetComponent<Rigidbody>();
+
+            var force = b_rb.transform.forward.normalized * strength;
+            //b_rb.rotation = GunBarrel.rotation;
+            b_rb.velocity = force;
+
             NetworkServer.Spawn(b);
             Destroy(b, 4);
         }
@@ -65,7 +72,7 @@ namespace UGP
                             //v._v.ammunition.Assault -= 1;
                             v.CmdUseAmmunition(1, 0, 0, 0);
                             //audio.Play();
-                            CmdFireRound();
+                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -81,7 +88,7 @@ namespace UGP
                         {
                             v.CmdUseAmmunition(0, 1, 0, 0);
                             //audio.Play();
-                            CmdFireRound();
+                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -96,7 +103,7 @@ namespace UGP
                         if (sniper > 0)
                         {
                             v.CmdUseAmmunition(0, 0, 1, 0);
-                            CmdFireRound();
+                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
                             //audio.Play();
                         }
                         else
@@ -113,7 +120,7 @@ namespace UGP
                         {
                             v.CmdUseAmmunition(0, 0, 0, 1);
                             //audio.Play();
-                            CmdFireRound();
+                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -183,7 +190,7 @@ namespace UGP
 
             var vehicleThrottle = GetComponent<DefaultVehicleController>().currentVehicleThrottle;
             var vehicleStrafe = GetComponent<DefaultVehicleController>().currentVehicleStrafe;
-            Vector3 moveVector = new Vector3(vehicleStrafe, 0, vehicleThrottle);
+            Vector3 moveVector = new Vector3(0, 0, vehicleThrottle);
             
             if(moveVector.magnitude <= 0)
             {
@@ -251,7 +258,7 @@ namespace UGP
         private void Fire()
         {
             //SINGLE-FIRE
-            if (Input.GetKeyDown(KeyCode.RightControl))
+            if (Input.GetMouseButtonDown(0))
             {
                 if(!hasFired)
                 {
@@ -271,7 +278,7 @@ namespace UGP
 
             //AUTOMATIC FIRE
             //LIMIT THE RATE OF FIRE
-            if (Input.GetKey(KeyCode.RightControl))
+            if (Input.GetMouseButton(0))
             {
                 automatic_timer += Time.deltaTime;
                 if (automatic_timer > AutomaticFireRate)
@@ -284,19 +291,6 @@ namespace UGP
             else
             {
                 automatic_timer = 0.0f;
-            }
-        }
-
-        private void Awake()
-        {
-            if (!isLocalPlayer)
-            {
-                if(hasAuthority)
-                {
-                    return;
-                }
-
-                return;
             }
         }
 
@@ -343,10 +337,10 @@ namespace UGP
             {
                 if(hasAuthority && !isServer)
                 {
-                    //Aim();
+                    Aim();
                     Fire();
 
-                    //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+                    Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
                     return;
                 }
 
