@@ -76,11 +76,14 @@ namespace UGP
             if (Input.GetKey(KeyCode.Escape))
             {
                 SettingsCanvas.SetActive(true);
+                Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
             }
             else
             {
                 SettingsCanvas.SetActive(false);
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
             }
         }
 
