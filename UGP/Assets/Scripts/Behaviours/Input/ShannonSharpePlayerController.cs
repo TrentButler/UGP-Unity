@@ -76,6 +76,7 @@ namespace UGP
             rot[2] = 0.0f;
 
             rb.rotation = rot;
+            //controller.transform.rotation = rot;
         }
 
         public override void Move(float x, float y)
@@ -121,9 +122,10 @@ namespace UGP
         public override void Rotate(float xRot, float yRot, float zRot)
         {
             var rotate_vector = new Vector3(0, xRot * TurnSpeed, 0);
-            //controller.transform.Rotate(rotate_vector * TurnSpeed);
+            
             if(rotate_vector.magnitude > 0.0f)
             {
+                //controller.transform.Rotate(rotate_vector * TurnSpeed);
                 rb.constraints = RigidbodyConstraints.None;
                 rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
                 rb.MoveRotation(rb.rotation * Quaternion.Euler(rotate_vector));

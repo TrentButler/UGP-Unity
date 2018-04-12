@@ -164,7 +164,7 @@ namespace UGP
 
                 if(seatedPlayer != null)
                 {
-                    seatedPlayer.CmdTakeDamage(999999);
+                    //seatedPlayer.CmdTakeDamage(999999);
                     seatedPlayer.RemovePlayerFromVehicle();
                 }
 
@@ -483,6 +483,14 @@ namespace UGP
         {
             var rb = GetComponent<Rigidbody>();
             
+            if(isDestroyed)
+            {
+                ColorChangeOff();
+                VehicleDestroyedParticle.Play();
+                rb.isKinematic = true;
+                return;
+            }
+
             if (vehicleActive)
             {
                 rb.isKinematic = false;
@@ -500,12 +508,20 @@ namespace UGP
         {
             if(collision.collider.CompareTag("Player"))
             {
-                var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
-                var impact_velocity = collision.relativeVelocity;
+                if(playerInSeat)
+                {
+                    var vehicle_network_identity = GetComponent<NetworkIdentity>();
+                    var driver_network_identity = seatedPlayer.GetComponent<NetworkIdentity>();
+                    var otherPlayer_network_identity = collision.collider.GetComponentInParent<NetworkIdentity>();
+                    var otherPlayer_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var impact_velocity = collision.relativeVelocity;
 
-                player_behaviour.CmdTakeDamage(impact_velocity.magnitude);
+                    otherPlayer_behaviour.CmdTakeDamage(driver_network_identity, impact_velocity.magnitude);
 
-                Debug.Log("HIT PLAYER FOR " + impact_velocity.magnitude.ToString() + " DAMAGE");
+                    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                    server.VehicleHitPlayer(vehicle_network_identity, otherPlayer_network_identity);
+                    //Debug.Log("HIT PLAYER FOR " + impact_velocity.magnitude.ToString() + " DAMAGE");
+                }
             }
         }
 

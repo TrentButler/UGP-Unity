@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 namespace UGP
@@ -8,6 +9,7 @@ namespace UGP
     public class DefaultRoundBehaviour : MonoBehaviour
     {
         [Range(1, 999)] public float DamageDealt;
+        public NetworkIdentity owner;
 
         void Start()
         {
@@ -31,15 +33,23 @@ namespace UGP
                 Destroy(gameObject);
             }
 
-            if(collision.collider.tag == "Player")
+            if (collision.collider.tag == "Player")
             {
-                var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
-                var player_rb = collision.collider.GetComponentInParent<Rigidbody>();
                 var contact_point = collision.contacts[0].point;
+                var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
 
-                player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point);
+                var player_rb = collision.collider.GetComponentInParent<Rigidbody>(); // GET THE RAGDOLL RIGIDBODY
+                player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point); //ADD THIS FORCE TO THE RAGDOLL
 
-                player_behaviour.CmdTakeDamage(DamageDealt * 999999);
+                if (owner != null)
+                {
+                    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
+                    player_behaviour.CmdTakeDamage(owner, DamageDealt * 999999);
+
+                    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                    server.PlayerShot(owner, player_networkIdentity, "DEBUG WEAPON");
+                }
+
                 Destroy(gameObject);
             }
         }

@@ -81,16 +81,22 @@ namespace UGP
             playerHealth += healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
         }
-        [Command] public void CmdTakeDamage(float healthTaken)
+        [Command] public void CmdTakeDamage(NetworkIdentity attacker, float healthTaken)
         {
-            Debug.Log("Player Take Damage");
             playerHealth -= healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
+
+            //Debug.Log("Player Take Damage");
             if (playerHealth <= 0.0f)
             {
+                var server = FindObjectOfType<InGameNetworkBehaviour>();
+                var localPlayer = GetComponent<NetworkIdentity>();
+                server.KillPlayer(attacker, localPlayer);
+
                 isDead = true;
-                //isDriving = false;
+                isDriving = false;
                 ic.enabled = false;
+                interaction.isHolding = false;
                 interaction.enabled = false;
             }
         }
@@ -293,8 +299,14 @@ namespace UGP
         private void Start()
         {
             if (!isLocalPlayer)
-            {
+            {   
                 VirtualCamera.SetActive(false);
+                //CHARACTERCONTROLLER COLLISION CALLBACKS
+                //var rb = gameObject.AddComponent<Rigidbody>();
+                //rb.constraints = RigidbodyConstraints.FreezeAll;
+                //rb.useGravity = false;
+                ////rb.isKinematic = true;
+
                 return;
             }
 

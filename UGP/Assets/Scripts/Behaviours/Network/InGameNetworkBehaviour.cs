@@ -89,7 +89,7 @@ namespace UGP
         private void OnScoreboardTextChange(string textChange)
         {
             scoreboardText += textChange;
-            RpcScoreboardTextChange(textChange);
+            CmdScoreboardTextChange(scoreboardText);
         }
 
         public void HitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer)
@@ -102,15 +102,57 @@ namespace UGP
             var localPlayerName = localPlayer.GetComponent<PlayerBehaviour>().playerName;
             var otherPlayerName = otherPlayer.GetComponent<PlayerBehaviour>().playerName;
 
-            scoreboardText += localPlayerName + " HIT " + otherPlayerName + "\n";
+            var localPlayerHealth = localPlayer.GetComponent<PlayerBehaviour>().playerHealth;
+            var otherPlayerHealth = otherPlayer.GetComponent<PlayerBehaviour>().playerHealth;
 
-            var otherPlayerDead = otherPlayer.GetComponent<PlayerBehaviour>().isDead;
-            if (otherPlayerDead)
-            {
-                scoreboardText += localPlayerName + " KILLED " + otherPlayerName + "\n";
-            }
+            string localPlayerInfo = localPlayerName + " HP: " + localPlayerHealth;
+            string otherPlayerInfo = localPlayerName + " HP: " + otherPlayerHealth;
+
+            scoreboardText += localPlayerInfo + " HIT " + otherPlayerInfo + "\n";
         }
 
+        public void VehicleHitPlayer(NetworkIdentity vehicle, NetworkIdentity player)
+        {
+            if(!isServer)
+            {
+                return;
+            }
+
+            var vehicleName = vehicle.gameObject.name;
+            var playerName = player.GetComponent<PlayerBehaviour>().playerName;
+
+            scoreboardText += playerName + " HIT BY A " + vehicleName + "\n";
+        }
+
+        //NEEDS WORK
+        public void PlayerShot(NetworkIdentity attacker, NetworkIdentity player, string weapon)
+        {
+            if(!isServer)
+            {
+                return;
+            }
+
+            var attackerName = attacker.GetComponent<PlayerBehaviour>().playerName;
+            var playerName = player.GetComponent<PlayerBehaviour>().playerName;
+        }
+
+        public void KillPlayer(NetworkIdentity attacker, NetworkIdentity player)
+        {
+            if(!isServer)
+            {
+                return;
+            }
+
+            var attackerName = attacker.GetComponent<PlayerBehaviour>().playerName;
+            var playerName = player.GetComponent<PlayerBehaviour>().playerName;
+
+            scoreboardText += attackerName + " KILLED " + playerName + "\n";
+        }
+
+        [Command] public void CmdScoreboardTextChange(string textChange)
+        {
+            RpcScoreboardTextChange(textChange);
+        }
         [ClientRpc] public void RpcScoreboardTextChange(string textChange)
         {
             scoreboardText += textChange;
@@ -211,6 +253,12 @@ namespace UGP
             }
         }
 
+        public void ClearScoreboard()
+        {
+            //scoreboardText = "";
+            //RpcScoreboardTextChange(scoreboardText);
+        }
+
         public void ResetServer()
         {
             NetworkServer.ClearLocalObjects();
@@ -230,24 +278,29 @@ namespace UGP
 
         private void Start()
         {
-            spawnOnPlayerCount = false;
-            if (isServer)
+            if(!isServer)
             {
-                server_camera = Camera.main.gameObject;
-                SpawnBuildings();
+                return;
             }
+
+            spawnOnPlayerCount = false;
+            
+            server_camera = Camera.main.gameObject;
+            //SpawnBuildings();
         }
 
         private void FixedUpdate()
         {
-            if (isServer)
+            if(!isServer)
             {
-                FreeLookCamera();
+                return;
+            }
 
-                if (spawnOnPlayerCount)
-                {
-                    SpawnVehiclesOnPlayerCount();
-                }
+            FreeLookCamera();
+
+            if (spawnOnPlayerCount)
+            {
+                SpawnVehiclesOnPlayerCount();
             }
         }
 

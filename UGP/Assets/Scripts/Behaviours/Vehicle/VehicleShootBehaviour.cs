@@ -46,9 +46,11 @@ namespace UGP
         private Vector3 barrelLookAt;
         public VehicleBehaviour v;
 
-        [Command] private void CmdFireRound(Vector3 position, Quaternion rotation, float strength)
+        [Command] private void CmdFireRound(NetworkIdentity owner, Vector3 position, Quaternion rotation, float strength)
         {
             var b = Instantiate(bulletPrefab, position, rotation);
+            var bulletBehaviour = b.GetComponent<DefaultRoundBehaviour>();
+            bulletBehaviour.owner = owner;
 
             var b_rb = b.GetComponent<Rigidbody>();
 
@@ -62,6 +64,8 @@ namespace UGP
 
         private void Shoot()
         {
+            var networkIdentity = GetComponent<NetworkIdentity>();
+
             switch (w)
             {
                 case Weapon.ASSAULT:
@@ -72,7 +76,7 @@ namespace UGP
                             //v._v.ammunition.Assault -= 1;
                             v.CmdUseAmmunition(1, 0, 0, 0);
                             //audio.Play();
-                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -88,7 +92,7 @@ namespace UGP
                         {
                             v.CmdUseAmmunition(0, 1, 0, 0);
                             //audio.Play();
-                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -103,7 +107,7 @@ namespace UGP
                         if (sniper > 0)
                         {
                             v.CmdUseAmmunition(0, 0, 1, 0);
-                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                             //audio.Play();
                         }
                         else
@@ -120,7 +124,7 @@ namespace UGP
                         {
                             v.CmdUseAmmunition(0, 0, 0, 1);
                             //audio.Play();
-                            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
