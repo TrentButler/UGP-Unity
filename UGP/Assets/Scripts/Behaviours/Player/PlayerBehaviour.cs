@@ -65,7 +65,12 @@ namespace UGP
                     ic.enabled = false;
                     interaction.enabled = false;
                 }
-                
+
+                colliders.ForEach(collider =>
+                {
+                    collider.enabled = false;
+                });
+
                 CmdSpawnRagdoll();
             }
         }
@@ -98,6 +103,8 @@ namespace UGP
                 ic.enabled = false;
                 interaction.isHolding = false;
                 interaction.enabled = false;
+
+
             }
         }
         [Command] private void CmdSetHealth(float health)
@@ -187,6 +194,11 @@ namespace UGP
                 playerHealth = _p.MaxHealth;
                 isDead = false;
                 isDriving = false;
+
+                colliders.ForEach(collider =>
+                {
+                    collider.enabled = true;
+                });
 
                 CmdSetHealth(_p.MaxHealth);
                 CmdSetMaxHealth(_p.MaxHealth);
@@ -302,11 +314,21 @@ namespace UGP
             {   
                 VirtualCamera.SetActive(false);
                 //CHARACTERCONTROLLER COLLISION CALLBACKS
-                //var rb = gameObject.AddComponent<Rigidbody>();
-                //rb.constraints = RigidbodyConstraints.FreezeAll;
-                //rb.useGravity = false;
-                ////rb.isKinematic = true;
+                var rb = gameObject.AddComponent<Rigidbody>();
 
+                if(isClient)
+                {
+                    var playercontroller = GetComponent<ShannonSharpePlayerController>();
+                    //Destroy(playercontroller);
+                    //playercontroller.controller = null;
+                    //playercontroller.enabled = false;
+                    //var character_controller = GetComponent<CharacterController>();
+                    //Destroy(character_controller);
+                }
+
+                rb.constraints = RigidbodyConstraints.FreezeAll;
+                rb.useGravity = false;
+                //rb.isKinematic = true;
                 return;
             }
 
