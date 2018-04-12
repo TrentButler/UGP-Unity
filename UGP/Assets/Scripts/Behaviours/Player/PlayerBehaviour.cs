@@ -66,6 +66,9 @@ namespace UGP
                     interaction.enabled = false;
                 }
 
+                var controller = GetComponent<CharacterController>();
+                controller.detectCollisions = false;
+
                 colliders.ForEach(collider =>
                 {
                     collider.enabled = false;
@@ -199,6 +202,12 @@ namespace UGP
                 {
                     collider.enabled = true;
                 });
+
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                var controller = GetComponent<CharacterController>();
+                controller.detectCollisions = true;
 
                 CmdSetHealth(_p.MaxHealth);
                 CmdSetMaxHealth(_p.MaxHealth);
@@ -386,6 +395,9 @@ namespace UGP
 
             if (isDriving)
             {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
                 VirtualCamera.SetActive(false);
                 ic.enabled = false;
                 interaction.enabled = false;
@@ -396,6 +408,9 @@ namespace UGP
             }
             else
             {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
                 VirtualCamera.SetActive(true);
                 ic.enabled = true;
                 interaction.enabled = true;

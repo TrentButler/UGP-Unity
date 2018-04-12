@@ -26,6 +26,8 @@ namespace UGP
             {
                 var player_behaviour = otherPlayer.GetComponent<PlayerBehaviour>();
                 //GetComponent<Rigidbody>().AddForce(force, ForceMode.Impulse);
+                var controller = GetComponent<CharacterController>();
+                controller.Move(force);
                 player_behaviour.CmdTakeDamage(localPlayer, Damage);
             }
         }
@@ -91,9 +93,11 @@ namespace UGP
             {
                 return;
             }
-
+            
             if (other.tag == "Hand")
             {
+                var hand_velocity = other.transform.forward.normalized;
+
                 var attacker_player_behaviour = other.gameObject.GetComponentInParent<PlayerBehaviour>();
                 var attacker_network_identity = attacker_player_behaviour.GetComponent<NetworkIdentity>();
 

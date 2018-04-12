@@ -22,6 +22,7 @@ namespace UGP
         public float vehiclePositionOffset;
         public float ItemPositionOffset = 5.0f;
         private bool spawnOnPlayerCount;
+        [Range(1, 500)] public int TextCountLimit = 200;
 
         #region ServerCamera
         private GameObject server_camera;
@@ -88,8 +89,16 @@ namespace UGP
 
         private void OnScoreboardTextChange(string textChange)
         {
-            scoreboardText += textChange;
-            CmdScoreboardTextChange(scoreboardText);
+            if (scoreboardText.Length > TextCountLimit)
+            {
+                scoreboardText = "";
+            }
+            else
+            {
+                scoreboardText += textChange;
+            }
+
+            //CmdScoreboardTextChange(scoreboardText);
         }
 
         public void HitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer)
