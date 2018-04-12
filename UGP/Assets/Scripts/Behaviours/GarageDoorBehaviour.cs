@@ -1,18 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 #if UNITY_EDITOR
 using UnityEditor.Networking;
 #endif
-using UnityEngine.SceneManagement;
 
 namespace UGP
 {
     public class GarageDoorBehaviour : MonoBehaviour
     {
-        public PlayerMovementBehaviour playerstater;
-        public PlayerState state;
-        public Network Net;
+        public GameObject playerstater;
+        public GameObject triggerEventPos;
 
         public bool opengaragedoor;
         public Transform GarageDoor;
@@ -20,30 +20,43 @@ namespace UGP
 
 
         public Transform DoorStopper;
-
-
-
+        [Range(-99999.0f, 9999.0f)] public float MaxDoorOpen;
+        [Range(-99999.0f, 9999.0f)] public float MinDoorOpen;
 
 
         public void GarageDoorOpen()
         {
-            var up = new Vector3(0.0f, 0.0f, 1 * OpenSpeed);
-
-            if (playerstater.state == PlayerState.viewing)
+            var door_z_value = GarageDoor.transform.position.z;
+            if(door_z_value < MaxDoorOpen)
             {
-                opengaragedoor = true;
-                GarageDoor.Translate(up * Time.deltaTime);
+                GarageDoor.Translate(Vector3.forward * Time.deltaTime);
             }
+
+            //var up = new Vector3(0.0f, 0.0f, 0.25f * OpenSpeed);
+
+            //if (playerstater.transform.position == triggerEventPos.transform.position)
+            //{
+            //    opengaragedoor = true;
+            //    GarageDoor.Translate(up * Time.deltaTime);
+            //}
         }
         public void GarageDoorClose()
         {
-            var up = new Vector3(0.0f, 0.0f, -1 * OpenSpeed);
 
-            if (playerstater.state == PlayerState.viewing)
+            var door_z_value = GarageDoor.transform.position.z;
+            if (door_z_value > MinDoorOpen)
             {
-                opengaragedoor = false;
-                GarageDoor.Translate(up * Time.deltaTime);
+                GarageDoor.Translate(-Vector3.forward * Time.deltaTime);
             }
+
+
+            //var up = new Vector3(0.0f, 0.0f, -0.25f * OpenSpeed);
+
+            //if (playerstater.transform.position != triggerEventPos.transform.position)
+            //{
+            //    opengaragedoor = false;
+            //    GarageDoor.Translate(up * Time.deltaTime);
+            //}
         }
 
       
@@ -65,7 +78,6 @@ namespace UGP
                 var maxHeight = GarageDoor.position;
                 maxHeight.y = MaxHeight.y;
                 GarageDoor.position = maxHeight;
-                SceneManager.LoadScene("03.GarageTestTrack");
                 
             }
             if (GarageDoor.position.y <= MinHeight.y)
@@ -83,5 +95,20 @@ namespace UGP
                 GarageDoorClose();
             }
         }
+
+
+        void OnTriggerStay(Collider other)
+        {
+            if(other.CompareTag("Player"))
+            {
+                GarageDoorOpen();
+            }
+        }
+
+        void OnTriggerExit(Collider other)
+        {
+            GarageDoorClose();
+        }
+
     }
 }
