@@ -110,8 +110,13 @@ namespace UGP
 
                 if (attacker_player_behaviour.ani.GetBool("Fighting"))
                 {
-                    Debug.Log("GOT HIT BY PLAYER");
-                    CmdHitPlayer(attacker_network_identity, localPlayer_network_identity, Vector3.up * KnockBack);
+                    var isDead = GetComponent<PlayerBehaviour>();
+
+                    if (!isDead)
+                    {
+                        Debug.Log("GOT HIT BY PLAYER");
+                        CmdHitPlayer(attacker_network_identity, localPlayer_network_identity, Vector3.up * KnockBack);
+                    }
                 }
             }
         }
