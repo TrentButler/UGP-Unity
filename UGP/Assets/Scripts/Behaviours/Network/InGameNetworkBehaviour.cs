@@ -285,6 +285,12 @@ namespace UGP
             });
         }
 
+        public void Spawn(GameObject go, Vector3 pos, Quaternion rot)
+        {
+            var _go = Instantiate(go, pos, rot);
+            NetworkServer.Spawn(_go);
+        }
+
         private void Start()
         {
             if(!isServer)
