@@ -10,13 +10,13 @@ using UnityEditor.Networking;
 
 namespace UGP
 {
-    public class GarageDoorBehaviour : MonoBehaviour
+    public class GarageDoorBehaviour : NetworkBehaviour
     {
         public GameObject playerstater;
         public GameObject triggerEventPos;
 
-        //[SyncVar(hook = "OnOpenGarageDoorChange")]
-        public bool opengaragedoor;
+        [SyncVar(hook = "OnOpenGarageDoorChange")] public bool opengaragedoor;
+
         public Transform GarageDoor;
         public float OpenSpeed;
         public Vector3 Direction;
@@ -26,28 +26,25 @@ namespace UGP
         public Vector3 MaxDoorBounds;
         public Vector3 MinDoorBounds;
 
-        //public void OnOpenGarageDoorChange(bool doorChange)
-        //{
-        //    opengaragedoor = doorChange;
-        //    CmdGarageDoorChange(doorChange);
-        //}
+        public void OnOpenGarageDoorChange(bool doorChange)
+        {
+            opengaragedoor = doorChange;
+            CmdGarageDoorChange(doorChange);
+        }
 
-        //[Command]
-        //public void CmdGarageDoorChange(bool doorChange)
-        //{
-        //    RpcGarageDoorChange(doorChange);
-        //}
+        [Command] public void CmdGarageDoorChange(bool doorChange)
+        {
+            RpcGarageDoorChange(doorChange);
+        }
 
-        //[ClientRpc]
-        //public void RpcGarageDoorChange(bool doorChange)
-        //{
-        //    opengaragedoor = doorChange;
-        //}
-
+        [ClientRpc] public void RpcGarageDoorChange(bool doorChange)
+        {
+            opengaragedoor = doorChange;
+        }
 
         public void GarageDoorOpen()
         {
-            Debug.Log("OPENING DOOR");
+            //Debug.Log("OPENING DOOR");
 
             //CONVERT TO LOCAL SPACE
             var current_x = GarageDoor.transform.localPosition.x;
@@ -84,7 +81,7 @@ namespace UGP
         }
         public void GarageDoorClose()
         {
-            Debug.Log("CLOSING DOOR");
+            //Debug.Log("CLOSING DOOR");
 
             //CONVERT TO LOCAL SPACE
             var current_x = GarageDoor.transform.localPosition.x;
@@ -176,10 +173,10 @@ namespace UGP
 
         void OnTriggerEnter(Collider other)
         {
-            //if (!isServer)
-            //{
-            //    return;
-            //}
+            if (!isServer)
+            {
+                return;
+            }
 
             //DISPLAY OPEN DOOR UI
             //IF I KEY PRESS, TOGGLE DOOR OPENING
@@ -187,7 +184,7 @@ namespace UGP
 
             Debug.Log(other.name);
 
-            if (other.tag == "Player" || other.tag == "Hand")
+            if (other.tag == "Hand")
             {
                 Debug.Log("PLAYER ATTEMPT TO OPEN DOOR");
 

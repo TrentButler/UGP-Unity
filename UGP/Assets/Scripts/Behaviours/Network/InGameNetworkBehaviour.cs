@@ -15,7 +15,6 @@ namespace UGP
     {
         public List<GameObject> VehiclePrefabs;
         public List<GameObject> ItemPrefabs;
-        public List<GameObject> BuildingPrefabs;
 
         public Transform OriginVehicleSpawn;
 
@@ -277,11 +276,10 @@ namespace UGP
 
         public void SpawnBuildings()
         {
-            BuildingPrefabs.ForEach(building =>
+            var allBuildings = FindObjectsOfType<BuildingBehaviour>().ToList();
+            allBuildings.ForEach(building =>
             {
-                building.SetActive(true);
-                //var b = Instantiate(building);
-                //NetworkServer.Spawn(b);
+                building.ServerSpawn(this);
             });
         }
 
@@ -290,7 +288,11 @@ namespace UGP
             var _go = Instantiate(go, pos, rot);
             NetworkServer.Spawn(_go);
         }
-
+        public void Spawn(GameObject go)
+        {
+            NetworkServer.Spawn(go);
+        }
+        
         private void Start()
         {
             if(!isServer)
@@ -301,7 +303,7 @@ namespace UGP
             spawnOnPlayerCount = false;
             
             server_camera = Camera.main.gameObject;
-            //SpawnBuildings();
+            SpawnBuildings();
         }
 
         private void FixedUpdate()

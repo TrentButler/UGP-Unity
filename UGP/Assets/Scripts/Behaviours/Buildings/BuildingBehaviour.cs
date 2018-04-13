@@ -16,6 +16,8 @@ namespace UGP
         public List<GameObject> ItemPrefabs;
         public List<Transform> ItemSpawns;
 
+        public List<GameObject> Doors;
+
         private InGameNetworkBehaviour server;
 
         public void Spawn()
@@ -42,8 +44,43 @@ namespace UGP
                         //var i = Instantiate(item, spawn.position, spawn.rotation);
                         //NetworkServer.Spawn(i);
                     });
+
+                    Doors.ForEach(door =>
+                    {
+                        var door_behaviour = door.GetComponent<DoorBehaviour>();
+                        door_behaviour.SpawnButtons();
+                    });
                 }
             }
+        }
+
+        public void ServerSpawn(InGameNetworkBehaviour s)
+        {
+            server = s;
+            //SPAWN THE VEHICLE 
+            //var vehicle_index = Random.Range(0, VehilcePrefabs.Count);
+            var vehicle_index = 0;
+            //var vehicle = Instantiate(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation);
+            //NetworkServer.Spawn(vehicle);
+
+            server.Spawn(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation); //SPAWN THE VEHICLE
+
+            //SPAWN THE ITEMS
+            ItemPrefabs.ForEach(item =>
+            {
+                var spawnPoint = Random.Range(0, ItemSpawns.Count);
+                var spawn = ItemSpawns[spawnPoint];
+                server.Spawn(item, spawn.position, spawn.rotation);
+
+                //var i = Instantiate(item, spawn.position, spawn.rotation);
+                //NetworkServer.Spawn(i);
+            });
+
+            Doors.ForEach(door =>
+            {
+                var door_behaviour = door.GetComponent<DoorBehaviour>();
+                door_behaviour.SpawnButtons();
+            });
         }
 
         private void CheckisServer()
