@@ -93,10 +93,10 @@ namespace UGP
             {
                 return;
             }
-            
+
             if (other.tag == "Hand")
             {
-                var hand_velocity = other.transform.forward.normalized;
+                var impact_direction = other.transform.forward.normalized;
 
                 var attacker_player_behaviour = other.gameObject.GetComponentInParent<PlayerBehaviour>();
                 var attacker_network_identity = attacker_player_behaviour.GetComponent<NetworkIdentity>();
@@ -113,7 +113,7 @@ namespace UGP
                     if (!PlayerBrain.isDead)
                     {
                         Debug.Log("GOT HIT BY PLAYER");
-                        CmdHitPlayer(attacker_network_identity, localPlayer_network_identity, Vector3.up * KnockBack);
+                        CmdHitPlayer(attacker_network_identity, localPlayer_network_identity, impact_direction * KnockBack);
                     }
                 }
             }

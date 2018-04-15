@@ -38,8 +38,11 @@ namespace UGP
                 var contact_point = collision.contacts[0].point;
                 var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
 
-                var player_rb = collision.collider.GetComponentInParent<Rigidbody>(); // GET THE RAGDOLL RIGIDBODY
-                player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point); //ADD THIS FORCE TO THE RAGDOLL
+                //var player_rb = collision.collider.GetComponentInParent<Rigidbody>(); // GET THE RAGDOLL RIGIDBODY
+                //player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point); //ADD THIS FORCE TO THE RAGDOLL
+
+                var controller = player_behaviour.GetComponent<CharacterController>();
+                controller.Move(collision.relativeVelocity);
 
                 if (owner != null)
                 {

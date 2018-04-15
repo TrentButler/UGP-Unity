@@ -66,6 +66,7 @@ namespace UGP
             
             player.CmdSetHolding(false, "");
             player.CmdSetItemBeingHeld(false, item_network_identity);
+            isBeingHeld = false;
             player.item = null;
 
             var colliders = GetComponents<Collider>().ToList();
@@ -92,6 +93,10 @@ namespace UGP
         
         private void OnTriggerStay(Collider other)
         {
+            if(isServer)
+            {
+                return;
+            }
             if (other.tag == "Player")
             {
                 var player_identity = other.GetComponentInParent<NetworkIdentity>();
@@ -106,6 +111,18 @@ namespace UGP
                 if (player_interaction != null)
                 {
                     player = player_interaction;
+                }
+            }
+
+            if (other.CompareTag("Hand"))
+            {
+                var player_interaction = other.GetComponentInParent<PlayerInteractionBehaviour>();
+                if (player_interaction != null)
+                {
+                    if (!player_interaction.isHolding && !isBeingHeld)
+                    {
+                        PickUp(player_interaction);
+                    }
                 }
             }
 
@@ -132,6 +149,7 @@ namespace UGP
                 }
             }
         }
+
         private void OnTriggerExit(Collider other)
         {
             ItemCanvas.SetActive(false);

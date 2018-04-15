@@ -247,26 +247,27 @@ namespace UGP
             }
         }
 
-        private void OnCollisionEnter(Collision collision)
+        private void OnTriggerEnter(Collider other)
         {
-            if(!isLocalPlayer)
+            if (other.CompareTag("Ammo"))
             {
-                return;
-            }
+                var impact_directon = other.transform.forward.normalized;
+                var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
 
-            var contact_points = collision.contacts.ToList();
-            contact_points.ForEach(contact =>
-            {
-                if(contact.thisCollider.CompareTag("Hand"))
+                if (ammo_behaviour.owner != null)
                 {
-                    var item_behaviour = contact.otherCollider.GetComponent<ItemBehaviour>();
+                    var player_networkIdentity = GetComponent<NetworkIdentity>();
+                    p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
 
-                    if(item_behaviour != null && !item_behaviour.isBeingHeld)
-                    {
-                        item_behaviour.PickUp(this);
-                    }
+                    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                    server.PlayerShot(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
                 }
-            });
+
+                var controller = GetComponent<CharacterController>();
+                controller.Move(impact_directon * 4);
+
+                Destroy(other.gameObject);
+            }
         }
 
         private void Start()
@@ -305,6 +306,14 @@ namespace UGP
             {
                 //CurrentItemModel.SetActive(true);
                 //var old_item = CurrentItemModel;
+                var colliders = GetComponents<Collider>().ToList();
+                colliders.ForEach(collider =>
+                {
+                    if (collider.CompareTag("Hand"))
+                    {
+                        collider.enabled = false;
+                    }
+                });
 
                 switch (current_item)
                 {
@@ -356,6 +365,15 @@ namespace UGP
             }
             else
             {
+                var colliders = GetComponents<Collider>().ToList();
+                colliders.ForEach(collider =>
+                {
+                    if (collider.CompareTag("Hand"))
+                    {
+                        collider.enabled = true;
+                    }
+                });
+
                 EmptyItem.SetActive(true);
 
                 ammoModel.SetActive(false);

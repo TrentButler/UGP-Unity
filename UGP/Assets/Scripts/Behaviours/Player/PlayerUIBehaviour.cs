@@ -82,8 +82,6 @@ namespace UGP
             else
             {
                 SettingsCanvas.SetActive(false);
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
             }
         }
 
@@ -118,6 +116,7 @@ namespace UGP
                 PlayerUI.SetActive(false);
                 PlayerDeadCanvas.SetActive(true);
                 PlayerNameTag.SetActive(false);
+                Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
             else

@@ -22,6 +22,7 @@ namespace UGP
         public NetworkUserControl ic;
         public PlayerInteractionBehaviour interaction;
         public PlayerUIBehaviour ui;
+        public Vector3 Gravity = new Vector3(0, -4.0f, 0);
 
         public Animator ani;
         public List<Collider> colliders;
@@ -56,16 +57,6 @@ namespace UGP
             isDead = Dead;
             if(isDead)
             {
-                var holding_item = interaction.isHolding;
-                if(holding_item)
-                {
-                    interaction.DropItem();
-                    interaction.item.Drop();
-                    interaction.CmdSetHolding(false, "");
-                    ic.enabled = false;
-                    interaction.enabled = false;
-                }
-
                 var controller = GetComponent<CharacterController>();
                 controller.detectCollisions = false;
 
@@ -73,6 +64,17 @@ namespace UGP
                 {
                     collider.enabled = false;
                 });
+
+                var holding_item = interaction.isHolding;
+                if(holding_item)
+                {
+                    interaction.DropItem();
+                    interaction.item.isBeingHeld = false;
+                    interaction.item.Drop();
+                    interaction.CmdSetHolding(false, "");
+                    ic.enabled = false;
+                    interaction.enabled = false;
+                }
 
                 CmdSpawnRagdoll();
             }
@@ -263,13 +265,13 @@ namespace UGP
 
             exitTimer = 0.0f; //RESET THE TIMER
 
-            var rb = GetComponent<Rigidbody>();
-            rb.velocity = Vector3.zero;
-            rb.MovePosition(vehicle.seat.position);
-            rb.MoveRotation(vehicle.seat.rotation);
+            //var rb = GetComponent<Rigidbody>();
+            //rb.velocity = Vector3.zero;
+            //rb.MovePosition(vehicle.seat.position);
+            //rb.MoveRotation(vehicle.seat.rotation);
 
-            //transform.position = vehicle.seat.position;
-            //transform.rotation = vehicle.seat.rotation;
+            transform.position = vehicle.seat.position;
+            transform.rotation = vehicle.seat.rotation;
 
             vehicle = null;
         }
@@ -287,6 +289,7 @@ namespace UGP
 
             if (exitTimer >= TimeToExitVehicle)
             {
+                isDriving = false;
                 CmdSetDriving(false);
                 var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
                 interaction.CmdSetVehicleActive(false, vehicleIdentity);
@@ -298,13 +301,13 @@ namespace UGP
 
                 exitTimer = 0.0f; //RESET THE TIMER
 
-                var rb = GetComponent<Rigidbody>();
-                rb.velocity = Vector3.zero;
-                rb.MovePosition(vehicle.seat.position);
-                rb.MoveRotation(vehicle.seat.rotation);
+                //var rb = GetComponent<Rigidbody>();
+                //rb.velocity = Vector3.zero;
+                //rb.MovePosition(vehicle.seat.position);
+                //rb.MoveRotation(vehicle.seat.rotation);
 
-                //transform.position = vehicle.seat.position;
-                //transform.rotation = vehicle.seat.rotation;
+                transform.position = vehicle.seat.position;
+                transform.rotation = vehicle.seat.rotation;
 
                 vehicle = null;
             }
@@ -388,8 +391,10 @@ namespace UGP
                 return;
             }
 
-            if(isDead)
+            if (isDead)
             {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
                 return;
             }
 
@@ -403,6 +408,9 @@ namespace UGP
                 interaction.enabled = false;
 
                 ani.SetFloat("Walk", 0.0f);
+
+                transform.position = vehicle.seat.position;
+                transform.rotation = vehicle.seat.rotation;
 
                 ExitVehicleWithTimer(); //EXIT THE VEHICLE
             }
@@ -468,6 +476,9 @@ namespace UGP
                 }
                 else
                 {
+                    var controller = GetComponent<CharacterController>();
+                    controller.Move(Gravity);
+
                     model.SetActive(true);
                 }
             }

@@ -17,29 +17,50 @@ namespace UGP
 
         [SyncVar(hook = "OnOpenGarageDoorChange")] public bool opengaragedoor;
 
-        public Transform GarageDoor;
-        public float OpenSpeed;
+        [SyncVar] public Transform GarageDoor;
+        [SyncVar] public float OpenSpeed;
         public Vector3 Direction;
 
         public GameObject DoorStop;
 
-        public Vector3 MaxDoorBounds;
-        public Vector3 MinDoorBounds;
+        [SyncVar(hook = "OnMaxDoorBoundsChange")] public Vector3 MaxDoorBounds;
+        [SyncVar(hook = "OnMinDoorBoundsChange")] public Vector3 MinDoorBounds;
 
         public void OnOpenGarageDoorChange(bool doorChange)
         {
             opengaragedoor = doorChange;
             CmdGarageDoorChange(doorChange);
         }
+        public void OnMaxDoorBoundsChange(Vector3 boundsChange)
+        {
+            MaxDoorBounds = boundsChange;
+        }
+        public void OnMinDoorBoundsChange(Vector3 boundsChange)
+        {
+            MinDoorBounds = boundsChange;
+        }
 
         [Command] public void CmdGarageDoorChange(bool doorChange)
         {
             RpcGarageDoorChange(doorChange);
         }
-
         [ClientRpc] public void RpcGarageDoorChange(bool doorChange)
         {
             opengaragedoor = doorChange;
+        }
+
+
+        [ClientRpc] public void RpcSyncDoorTransform(NetworkIdentity Door)
+        {
+            var door_behaviour = Door.GetComponent<GarageDoorBehaviour>();
+            Debug.Log(door_behaviour.GarageDoor.name);
+
+            GarageDoor = door_behaviour.GarageDoor;
+        }
+        [Command] public void CmdSyncDoorTransform()
+        {
+            var network_identity = GetComponent<NetworkIdentity>();
+            RpcSyncDoorTransform(network_identity);
         }
 
         public void GarageDoorOpen()
@@ -137,38 +158,36 @@ namespace UGP
 
         void LateUpdate()
         {
-            //var MaxHeight = new Vector3(0, 10, 0);
-            //var MinHeight = new Vector3(0, -0.75f, 0);
 
-
-            //if(GarageDoor.position.y >= MaxHeight.y)
-            //{
-            //    var maxHeight = GarageDoor.position;
-            //    maxHeight.y = MaxHeight.y;
-            //    GarageDoor.position = maxHeight;
-
-            //}
-            //if (GarageDoor.position.y <= MinHeight.y)
-            //{
-            //    var minHeight = GarageDoor.position;
-            //    minHeight.y = MinHeight.y;
-            //    GarageDoor.position = minHeight;
-            //}
-
-            //if (!isServer)
-            //{
-            //    return;
-            //}
-
-            if (opengaragedoor == true)
+            //NEEDS WORK
+            //NETWORKIDENTITY NEEDS AUTHORITY TO INVOKE THE CMD METHODS
+            if(!isServer)
             {
-                GarageDoorOpen();
-            }
-            if (opengaragedoor == false)
-            {
-                GarageDoorClose();
+                if (GarageDoor == null)
+                {
+                    //var network_identity = GetComponent<NetworkIdentity>();
+                    //var server = FindObjectOfType<InGameNetworkBehaviour>();
+
+                    //server.RpcAssignObjectAuthority(network_identity);
+                    //if(network_identity.hasAuthority)
+                    //{
+                    //    CmdSyncDoorTransform();
+                    //    server.RpcRemoveObjectAuthority(network_identity);
+                    //}
+                }
             }
 
+            if(GarageDoor != null)
+            {
+                if (opengaragedoor == true)
+                {
+                    GarageDoorOpen();
+                }
+                if (opengaragedoor == false)
+                {
+                    GarageDoorClose();
+                }
+            }
         }
 
         void OnTriggerEnter(Collider other)

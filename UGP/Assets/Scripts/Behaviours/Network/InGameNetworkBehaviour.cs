@@ -166,6 +166,25 @@ namespace UGP
             scoreboardText += textChange;
         }
 
+        [ClientRpc] public void RpcAssignObjectAuthority(NetworkIdentity objectIdentity)
+        {
+            var server_network_identity = GetComponent<NetworkIdentity>();
+            var server_connection = server_network_identity.connectionToClient;
+
+            var objectNetworkIdentity = objectIdentity;
+            
+            objectNetworkIdentity.AssignClientAuthority(server_connection);
+        }
+        [ClientRpc] public void RpcRemoveObjectAuthority(NetworkIdentity objectIdentity)
+        {
+            var server_network_identity = GetComponent<NetworkIdentity>();
+            var server_connection = server_network_identity.connectionToClient;
+
+            var objectNetworkIdentity = objectIdentity;
+
+            objectNetworkIdentity.RemoveClientAuthority(server_connection);
+        }
+
         public void RespawnPlayer(NetworkIdentity playerIdentity)
         {
             //RESPAWN THE PLAYER AT ONE OF THE NETWORKSTARTPOSITIONS

@@ -503,28 +503,7 @@ namespace UGP
                 ColorChangeOff();
             }
         }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            if(collision.collider.CompareTag("Player"))
-            {
-                if(playerInSeat)
-                {
-                    var vehicle_network_identity = GetComponent<NetworkIdentity>();
-                    var driver_network_identity = seatedPlayer.GetComponent<NetworkIdentity>();
-                    var otherPlayer_network_identity = collision.collider.GetComponentInParent<NetworkIdentity>();
-                    var otherPlayer_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
-                    var impact_velocity = collision.relativeVelocity;
-
-                    otherPlayer_behaviour.CmdTakeDamage(driver_network_identity, impact_velocity.magnitude);
-
-                    var server = FindObjectOfType<InGameNetworkBehaviour>();
-                    server.VehicleHitPlayer(vehicle_network_identity, otherPlayer_network_identity);
-                    //Debug.Log("HIT PLAYER FOR " + impact_velocity.magnitude.ToString() + " DAMAGE");
-                }
-            }
-        }
-
+        
         private void OnTriggerStay(Collider other)
         {
             if (other.CompareTag("Player"))
