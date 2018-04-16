@@ -112,6 +112,23 @@ namespace UGP
 
             }
         }
+        [Command] public void CmdTakeDamage_Normal(float healthTaken)
+        {
+            playerHealth -= healthTaken;
+            playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
+
+            //Debug.Log("Player Take Damage");
+            if (playerHealth <= 0.0f)
+            {
+                var localPlayer = GetComponent<NetworkIdentity>();
+
+                isDead = true;
+                isDriving = false;
+                ic.enabled = false;
+                interaction.isHolding = false;
+                interaction.enabled = false;
+            }
+        }
         [Command] private void CmdSetHealth(float health)
         {
             playerHealth = health;

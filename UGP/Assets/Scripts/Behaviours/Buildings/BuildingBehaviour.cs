@@ -32,7 +32,10 @@ namespace UGP
                     //var vehicle = Instantiate(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation);
                     //NetworkServer.Spawn(vehicle);
 
-                    server.Spawn(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation); //SPAWN THE VEHICLE
+                    if (VehiclePrefabs.Count > 0)
+                    {
+                        server.Spawn(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation); //SPAWN THE VEHICLE
+                    }
 
                     //SPAWN THE ITEMS
                     ItemPrefabs.ForEach(item =>
@@ -63,7 +66,10 @@ namespace UGP
             //var vehicle = Instantiate(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation);
             //NetworkServer.Spawn(vehicle);
 
-            server.Spawn(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation); //SPAWN THE VEHICLE
+            if(VehiclePrefabs.Count > 0)
+            {
+                server.Spawn(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation); //SPAWN THE VEHICLE
+            }
 
             //SPAWN THE ITEMS
             ItemPrefabs.ForEach(item =>

@@ -19,15 +19,19 @@ namespace UGP
         public Vector3 DoorClosed;
         [Range(1.0f, 999.0f)] public float ColliderScale = 1.5f;
 
-
-        //NEEDS WORK
-        //LOSS OF 'GARAGEDOORBEHAVIOUR' INFORMATION WHEN CLIENT CONNECTS TO SERVER
+        private void Start()
+        {
+            gameObject.name = "DOOR @ :" + transform.position.ToString();
+        }
+        
         public void SpawnButtons()
         {
             //SPAWN ALL OF THE BUTTONS FOR THIS DOOR ON THE SERVER
             //ADD THE 'GARAGEDOORBEHAVIOUR' TO THE FIRST BUTTON
             var server = FindObjectOfType<InGameNetworkBehaviour>();
             GameObject parentButton = null;
+
+            var door_id = "DOOR @ :" + transform.position.ToString();
             
             for(int i = 0; i < ButtonSpawns.Count; i++)
             {
@@ -42,6 +46,7 @@ namespace UGP
                     _col.isTrigger = true;
 
                     var _behaviour = _button.GetComponent<GarageDoorBehaviour>();
+                    _behaviour.DoorName = door_id.ToString();
                     _behaviour.OpenSpeed = DoorOpenSpeed;
                     _behaviour.GarageDoor = transform;
                     _behaviour.MaxDoorBounds = DoorOpen;
@@ -53,7 +58,6 @@ namespace UGP
                 }
 
                 var button = Instantiate(ButtonModel, ButtonSpawns[i].position, ButtonSpawns[i].rotation);
-
                 button.transform.SetParent(parentButton.transform);
 
                 var col = parentButton.AddComponent<BoxCollider>();

@@ -164,7 +164,7 @@ namespace UGP
 
                 if(seatedPlayer != null)
                 {
-                    //seatedPlayer.CmdTakeDamage(999999);
+                    seatedPlayer.CmdTakeDamage_Normal(999999);
                     seatedPlayer.RemovePlayerFromVehicle();
                 }
 

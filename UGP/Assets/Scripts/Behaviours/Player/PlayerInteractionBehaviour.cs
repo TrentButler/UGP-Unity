@@ -254,14 +254,18 @@ namespace UGP
                 var impact_directon = other.transform.forward.normalized;
                 var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
 
-                if (ammo_behaviour.owner != null)
-                {
-                    var player_networkIdentity = GetComponent<NetworkIdentity>();
-                    p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+                //if (ammo_behaviour.owner != null)
+                //{
+                //    var player_networkIdentity = GetComponent<NetworkIdentity>();
+                //    p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
 
-                    var server = FindObjectOfType<InGameNetworkBehaviour>();
-                    server.PlayerShot(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
-                }
+                //    //var server = FindObjectOfType<InGameNetworkBehaviour>();
+                //    //server.PlayerShot(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
+                //}
+
+                var player_networkIdentity = GetComponent<NetworkIdentity>();
+                //p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+                p.CmdTakeDamage_Normal(ammo_behaviour.DamageDealt * 999999);
 
                 var controller = GetComponent<CharacterController>();
                 controller.Move(impact_directon * 4);

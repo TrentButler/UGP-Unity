@@ -311,6 +311,11 @@ namespace UGP
         {
             NetworkServer.Spawn(go);
         }
+
+        public void Server_Destroy(GameObject go)
+        {
+            NetworkServer.Destroy(go);
+        }
         
         private void Start()
         {
@@ -346,7 +351,6 @@ namespace UGP
         }
     }
 
-
 #if UNITY_EDITOR
     [CustomEditor(typeof(InGameNetworkBehaviour))]
     public class InspectorInGameNetworkBehaviour : Editor
@@ -366,6 +370,11 @@ namespace UGP
             if (GUILayout.Button("TOGGLE SPAWN VEHICLE PER PLAYER"))
             {
                 mytarget.ToggleVehicleSpawning();
+            }
+            GUILayout.Space(10);
+            if (GUILayout.Button("SPAWN BUILDINGS"))
+            {
+                mytarget.SpawnBuildings();
             }
         }
     }

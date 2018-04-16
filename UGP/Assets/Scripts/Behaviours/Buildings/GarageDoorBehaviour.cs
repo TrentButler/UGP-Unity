@@ -17,15 +17,21 @@ namespace UGP
 
         [SyncVar(hook = "OnOpenGarageDoorChange")] public bool opengaragedoor;
 
-        [SyncVar] public Transform GarageDoor;
+        public Transform GarageDoor;
         [SyncVar] public float OpenSpeed;
         public Vector3 Direction;
 
         public GameObject DoorStop;
 
+        [SyncVar(hook = "OnDoorNameChange")] public string DoorName;
+
         [SyncVar(hook = "OnMaxDoorBoundsChange")] public Vector3 MaxDoorBounds;
         [SyncVar(hook = "OnMinDoorBoundsChange")] public Vector3 MinDoorBounds;
 
+        public void OnDoorNameChange(string nameChange)
+        {
+            DoorName = nameChange;
+        }
         public void OnOpenGarageDoorChange(bool doorChange)
         {
             opengaragedoor = doorChange;
@@ -48,21 +54,7 @@ namespace UGP
         {
             opengaragedoor = doorChange;
         }
-
-
-        [ClientRpc] public void RpcSyncDoorTransform(NetworkIdentity Door)
-        {
-            var door_behaviour = Door.GetComponent<GarageDoorBehaviour>();
-            Debug.Log(door_behaviour.GarageDoor.name);
-
-            GarageDoor = door_behaviour.GarageDoor;
-        }
-        [Command] public void CmdSyncDoorTransform()
-        {
-            var network_identity = GetComponent<NetworkIdentity>();
-            RpcSyncDoorTransform(network_identity);
-        }
-
+        
         public void GarageDoorOpen()
         {
             //Debug.Log("OPENING DOOR");
@@ -158,22 +150,14 @@ namespace UGP
 
         void LateUpdate()
         {
-
             //NEEDS WORK
             //NETWORKIDENTITY NEEDS AUTHORITY TO INVOKE THE CMD METHODS
             if(!isServer)
             {
                 if (GarageDoor == null)
                 {
-                    //var network_identity = GetComponent<NetworkIdentity>();
-                    //var server = FindObjectOfType<InGameNetworkBehaviour>();
-
-                    //server.RpcAssignObjectAuthority(network_identity);
-                    //if(network_identity.hasAuthority)
-                    //{
-                    //    CmdSyncDoorTransform();
-                    //    server.RpcRemoveObjectAuthority(network_identity);
-                    //}
+                    var target_door = GameObject.Find(DoorName);
+                    GarageDoor = target_door.transform;
                 }
             }
 
