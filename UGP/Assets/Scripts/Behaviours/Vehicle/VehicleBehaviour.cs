@@ -32,7 +32,8 @@ namespace UGP
         #endregion
 
         #region ParticleSystems
-        public ParticleSystem VehicleDestroyedParticle; 
+        public ParticleSystem VehicleDestroyedParticle;
+        public ParticleSystem BurningVehicleParticle;
         #endregion
 
         public Transform seat;
@@ -164,11 +165,13 @@ namespace UGP
 
                 if(seatedPlayer != null)
                 {
-                    seatedPlayer.CmdTakeDamage_Normal(999999);
+                    seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999);
                     seatedPlayer.RemovePlayerFromVehicle();
                 }
 
+                vehicleActive = false;
                 VehicleDestroyedParticle.Play();
+                BurningVehicleParticle.Play();
                 CmdVehicleDestroyed();
             }
         }

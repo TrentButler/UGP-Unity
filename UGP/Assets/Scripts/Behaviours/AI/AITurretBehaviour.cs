@@ -38,7 +38,6 @@ namespace UGP
                 automatic_timer += Time.deltaTime;
                 if (automatic_timer > AutomaticFireRate)
                 {
-                    Debug.Log("SHOT FIRED");
                     Shoot();
                     automatic_timer = 0.0f;
                 }
@@ -74,23 +73,20 @@ namespace UGP
             var server = FindObjectOfType<InGameNetworkBehaviour>();
 
             var b = Instantiate(AmmoPrefab, Gun.position, Gun.rotation);
-            //var bulletBehaviour = b.GetComponent<DefaultRoundBehaviour>();
-            //bulletBehaviour.owner = owner;
+            var bulletBehaviour = b.GetComponent<DefaultRoundBehaviour>();
+            bulletBehaviour.s_owner = gameObject.name;
 
             var b_rb = b.GetComponent<Rigidbody>();
 
             var force = b_rb.transform.forward.normalized * BulletPower;
             b_rb.velocity = force;
 
-            server.Spawn(b);
-            //Destroy(b, 4);
+            server.Spawn(b); //NO WAY TO DESTROY WITH A TIMER
         }
 
         private void OfflineShoot()
         {
             var b = Instantiate(AmmoPrefab, Gun.position, Gun.rotation);
-            //var bulletBehaviour = b.GetComponent<DefaultRoundBehaviour>();
-            //bulletBehaviour.owner = owner;
 
             var b_rb = b.GetComponent<Rigidbody>();
 
@@ -112,9 +108,24 @@ namespace UGP
             //AIM AND SHOOT AT THE PLAYER
             if(other.CompareTag("Player"))
             {
-                Aim(other.transform);
-                isShooting = true;
-                OfflineFire();
+                var player_behaviour = other.GetComponentInParent<PlayerBehaviour>();
+                if(!player_behaviour.isDead)
+                {
+                    if(player_behaviour.isDriving)
+                    {
+                        Aim(other.transform);
+                        isShooting = true;
+                        //OfflineFire();
+                        Fire();
+                    }
+                    else
+                    {
+                        Aim(player_behaviour.Center);
+                        isShooting = true;
+                        //OfflineFire();
+                        Fire();
+                    }
+                }
             }
         }
         private void OnTriggerExit(Collider other)

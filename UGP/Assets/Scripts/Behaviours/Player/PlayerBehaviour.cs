@@ -15,6 +15,7 @@ namespace UGP
         public Player PlayerConfig;
         [HideInInspector] public Player _p;
 
+        public Transform Center;
         public VehicleBehaviour vehicle;
         public float TimeToExitVehicle;
         public float TimeToDestroyRagdoll = 10.0f;
@@ -101,18 +102,16 @@ namespace UGP
             {
                 var server = FindObjectOfType<InGameNetworkBehaviour>();
                 var localPlayer = GetComponent<NetworkIdentity>();
-                server.KillPlayer(attacker, localPlayer);
+                server.PlayerKilledByPlayer(attacker, localPlayer);
 
                 isDead = true;
                 isDriving = false;
                 ic.enabled = false;
                 interaction.isHolding = false;
                 interaction.enabled = false;
-
-
             }
         }
-        [Command] public void CmdTakeDamage_Normal(float healthTaken)
+        [Command] public void CmdTakeDamage_Other(string attacker, float healthTaken)
         {
             playerHealth -= healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
@@ -120,7 +119,9 @@ namespace UGP
             //Debug.Log("Player Take Damage");
             if (playerHealth <= 0.0f)
             {
+                var server = FindObjectOfType<InGameNetworkBehaviour>();
                 var localPlayer = GetComponent<NetworkIdentity>();
+                server.PlayerKilledByOther(attacker, localPlayer);
 
                 isDead = true;
                 isDriving = false;
@@ -272,6 +273,7 @@ namespace UGP
         public void RemovePlayerFromVehicle()
         {
             CmdSetDriving(false);
+            isDriving = false;
             var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
             interaction.CmdSetVehicleActive(false, vehicleIdentity);
             interaction.CmdSetPlayerInSeat(false, vehicleIdentity);

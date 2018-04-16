@@ -3287,7 +3287,7 @@ Prefab:
     - target: {fileID: 224687720965768148, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -121.666664
       objectReference: {fileID: 0}
     - target: {fileID: 224978750096477994, guid: 947e950339249af4196f55a87198909a,
         type: 2}
@@ -3307,7 +3307,7 @@ Prefab:
     - target: {fileID: 224978750096477994, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -243.33333
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 947e950339249af4196f55a87198909a, type: 2}
@@ -5449,16 +5449,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 18
       objectReference: {fileID: 0}
-    - target: {fileID: 114728263373366114, guid: 015eaae25481ce44cb44eb348709c40d,
-        type: 2}
-      propertyPath: RightHand
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 114728263373366114, guid: 015eaae25481ce44cb44eb348709c40d,
-        type: 2}
-      propertyPath: LeftHand
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 1499516513290062, guid: 015eaae25481ce44cb44eb348709c40d, type: 2}
       propertyPath: m_IsActive
       value: 0
@@ -6114,7 +6104,7 @@ Prefab:
     - target: {fileID: 224527031771975018, guid: 86583eaf0acb94746a1cf3bd8fe4b6df,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -15
       objectReference: {fileID: 0}
     - target: {fileID: 1747705463045482, guid: 86583eaf0acb94746a1cf3bd8fe4b6df, type: 2}
       propertyPath: m_IsActive
@@ -6977,7 +6967,7 @@ Prefab:
     - target: {fileID: 114640835714761928, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
         type: 2}
       propertyPath: m_SpawnPrefabs.Array.size
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
       propertyPath: m_LocalPosition.x
@@ -7101,6 +7091,12 @@ Prefab:
       propertyPath: m_SpawnPrefabs.Array.data[9]
       value: 
       objectReference: {fileID: 1534243780155308, guid: 75cc783c2c9ed5f43bd7801ed228b5e2,
+        type: 2}
+    - target: {fileID: 114640835714761928, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: m_SpawnPrefabs.Array.data[10]
+      value: 
+      objectReference: {fileID: 1777122563482306, guid: 149673a0bbe071846b71e1d2d3da57b0,
         type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
@@ -9431,7 +9427,7 @@ MonoBehaviour:
   DamageDealt: 25
   AutomaticFireRate: 2.5
   AimSpeed: 1
-  BulletPower: 100
+  BulletPower: 200
   DEBUGTarget: {fileID: 0}
   isShooting: 0
   Gun: {fileID: 1740058981}

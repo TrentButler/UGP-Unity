@@ -249,6 +249,8 @@ namespace UGP
 
         private void OnTriggerEnter(Collider other)
         {
+            Debug.Log(other.name);
+
             if (other.CompareTag("Ammo"))
             {
                 var impact_directon = other.transform.forward.normalized;
@@ -265,10 +267,10 @@ namespace UGP
 
                 var player_networkIdentity = GetComponent<NetworkIdentity>();
                 //p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
-                p.CmdTakeDamage_Normal(ammo_behaviour.DamageDealt * 999999);
+                p.CmdTakeDamage_Other(ammo_behaviour.s_owner, ammo_behaviour.DamageDealt * 999999);
 
-                var controller = GetComponent<CharacterController>();
-                controller.Move(impact_directon * 4);
+                //var controller = GetComponent<CharacterController>();
+                //controller.Move(impact_directon * 4);
 
                 Destroy(other.gameObject);
             }

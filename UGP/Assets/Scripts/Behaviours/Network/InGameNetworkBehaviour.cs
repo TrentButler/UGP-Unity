@@ -100,7 +100,7 @@ namespace UGP
             //CmdScoreboardTextChange(scoreboardText);
         }
 
-        public void HitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer)
+        public void PlayerHitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer)
         {
             if (!isServer)
             {
@@ -118,7 +118,6 @@ namespace UGP
 
             scoreboardText += localPlayerInfo + " HIT " + otherPlayerInfo + "\n";
         }
-
         public void VehicleHitPlayer(NetworkIdentity vehicle, NetworkIdentity player)
         {
             if(!isServer)
@@ -131,9 +130,8 @@ namespace UGP
 
             scoreboardText += playerName + " HIT BY A " + vehicleName + "\n";
         }
-
-        //NEEDS WORK
-        public void PlayerShot(NetworkIdentity attacker, NetworkIdentity player, string weapon)
+        
+        public void PlayerShotByPlayer(NetworkIdentity attacker, NetworkIdentity player, string weapon)
         {
             if(!isServer)
             {
@@ -142,9 +140,21 @@ namespace UGP
 
             var attackerName = attacker.GetComponent<PlayerBehaviour>().playerName;
             var playerName = player.GetComponent<PlayerBehaviour>().playerName;
+
+            scoreboardText += attackerName + " SHOT " + playerName + "\n";
+        }
+        public void PlayerShotByOther(string attacker, NetworkIdentity player, string weapon)
+        {
+            if (!isServer)
+            {
+                return;
+            }
+            
+            var playerName = player.GetComponent<PlayerBehaviour>().playerName;
+            scoreboardText += attacker + " SHOT " + playerName + "\n";
         }
 
-        public void KillPlayer(NetworkIdentity attacker, NetworkIdentity player)
+        public void PlayerKilledByPlayer(NetworkIdentity attacker, NetworkIdentity player)
         {
             if(!isServer)
             {
@@ -155,6 +165,16 @@ namespace UGP
             var playerName = player.GetComponent<PlayerBehaviour>().playerName;
 
             scoreboardText += attackerName + " KILLED " + playerName + "\n";
+        }
+        public void PlayerKilledByOther(string attacker, NetworkIdentity player)
+        {
+            if (!isServer)
+            {
+                return;
+            }
+            
+            var playerName = player.GetComponent<PlayerBehaviour>().playerName;
+            scoreboardText += attacker + " KILLED " + playerName + "\n";
         }
 
         [Command] public void CmdScoreboardTextChange(string textChange)

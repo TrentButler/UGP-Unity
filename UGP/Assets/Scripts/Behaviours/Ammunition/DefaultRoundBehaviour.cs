@@ -10,6 +10,7 @@ namespace UGP
     {
         [Range(1, 999)] public float DamageDealt;
         public NetworkIdentity owner;
+        public string s_owner;
 
         void Start()
         {
@@ -41,17 +42,22 @@ namespace UGP
                 //var player_rb = collision.collider.GetComponentInParent<Rigidbody>(); // GET THE RAGDOLL RIGIDBODY
                 //player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point); //ADD THIS FORCE TO THE RAGDOLL
 
+                //var controller = player_behaviour.GetComponent<CharacterController>();
+                //controller.Move(collision.relativeVelocity);
+
+                //if (owner != null)
+                //{
+                //    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
+                //    player_behaviour.CmdTakeDamage(owner, DamageDealt * 999999);
+
+                //    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                //    server.PlayerShot(owner, player_networkIdentity, "DEBUG WEAPON");
+                //}
+
                 var controller = player_behaviour.GetComponent<CharacterController>();
-                controller.Move(collision.relativeVelocity);
+                controller.Move(transform.forward.normalized * 1.5f);
 
-                if (owner != null)
-                {
-                    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
-                    player_behaviour.CmdTakeDamage(owner, DamageDealt * 999999);
-
-                    var server = FindObjectOfType<InGameNetworkBehaviour>();
-                    server.PlayerShot(owner, player_networkIdentity, "DEBUG WEAPON");
-                }
+                player_behaviour.CmdTakeDamage_Other(s_owner, DamageDealt * 999999);
 
                 Destroy(gameObject);
             }
