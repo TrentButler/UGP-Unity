@@ -12,13 +12,10 @@ namespace UGP
         [Range(1f, 999.0f)] public float AimSpeed; //AIM SPEED
         [Range(1f, 999.0f)] public float BulletPower;
 
-        public Transform DEBUGTarget;
-
         private float automatic_timer = 0;
         public bool isShooting;
 
         public Transform Gun;
-        public Transform Barrel;
 
         private void Aim(Transform Target)
         {
@@ -26,7 +23,6 @@ namespace UGP
             //Quaternion lookhere = Quaternion.LookRotation(direction);
             //Gun.rotation = Quaternion.Slerp(Gun.rotation, lookhere, AimSpeed * Time.smoothDeltaTime);
             Gun.LookAt(Target);
-            Barrel.LookAt(Target);
         }
 
         private void Fire()

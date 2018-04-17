@@ -177,6 +177,17 @@ namespace UGP
             scoreboardText += attacker + " KILLED " + playerName + "\n";
         }
 
+        public void PlayerFinishRace(NetworkIdentity player, string Results)
+        {
+            if (!isServer)
+            {
+                return;
+            }
+
+            var playerName = player.GetComponent<PlayerBehaviour>().playerName;
+            scoreboardText += playerName + Results;
+        }
+
         [Command] public void CmdScoreboardTextChange(string textChange)
         {
             RpcScoreboardTextChange(textChange);
