@@ -64,7 +64,7 @@ namespace UGP
 
         private void Shoot()
         {
-            var networkIdentity = GetComponent<NetworkIdentity>();
+            var networkIdentity = v.seatedPlayer.GetComponent<NetworkIdentity>();
 
             switch (w)
             {

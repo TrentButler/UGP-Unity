@@ -24,11 +24,11 @@ namespace UGP
         [SyncVar] public float EndOfRaceTimer;
         [SyncVar] private float timer = 0.0f;
 
-        [ClientRpc]
-        public void RpcRestartRace()
+        [ClientRpc] public void RpcRestartRace(string scene)
         {
-            NetworkServer.Reset();
-            SceneManager.LoadScene("03.Race");
+            NetworkManager.singleton.ServerChangeScene(scene);
+            //NetworkServer.Reset();
+            //SceneManager.LoadScene("03.Race");
         }
 
         private void EndOfRace()
@@ -37,18 +37,18 @@ namespace UGP
 
             EndOfRaceText.text = "RACE COMPLETE \n";
             EndOfRaceText.text += "TIME REMAINING: " + RaceTimer.ToString() + "\n";
-            EndOfRaceText.text += "RACE RESTART IN: " + timer.ToString();
+            EndOfRaceText.text += "RACE RESTART IN: " + timer.ToString() + "\n";
             var _i = 1;
             for (int i = finished_players.Count; i > 0; i--)
             {
-                EndOfRaceText.text += _i.ToString() + ". " + finished_players[i].name + "\n";
+                EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
                 _i++;
             }
 
             timer -= Time.deltaTime;
             if (timer <= 0.0f)
             {
-                RpcRestartRace();
+                RpcRestartRace("99.debug");
             }
         }
 
@@ -102,7 +102,7 @@ namespace UGP
 
                 for (int i = 0; i < players.Count; i++)
                 {
-                    _t += (i + 1).ToString() + ". " + players[i].name + "\n";
+                    _t += (i + 1).ToString() + ". " + players[i].playerName + "\n";
                 }
             }
 
@@ -110,6 +110,16 @@ namespace UGP
             LiveRaceText.text = _t;
         }
 
+        private void LateUpdate()
+        {
+            finished_players.ForEach(player =>
+            {
+                if (player.isLocalPlayer)
+                {
+                    ResultsPanel.SetActive(true);
+                }
+            });
+        }
 
         //NEEDS WORK
         //INVOKE A CMD CALL TO DISABLE THE PLAYER MODEL ON THE SERVER/CONNECTED CLIENTS
@@ -118,42 +128,59 @@ namespace UGP
         //ENABLE THE END OF RACE CANVAS FOR THIS PLAYER
         private void OnTriggerStay(Collider other)
         {
+            if(!isServer)
+            {
+                return;
+            }
+
             if (other.CompareTag("Player"))
             {
-                Debug.Log("COLLISION WITH PLAYER");
-
                 var p_behaviour = other.GetComponentInParent<PlayerBehaviour>();
-                var p_netIdentity = other.GetComponentInParent<NetworkIdentity>();
+                if(p_behaviour.isActive)
+                {
+                    Debug.Log("COLLISION WITH PLAYER");
+                    var p_netIdentity = other.GetComponentInParent<NetworkIdentity>();
 
-                Debug.Log(p_behaviour.gameObject.name + " FINISHED");
-                server.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
-                finished_players.Add(p_behaviour);
+                    Debug.Log(p_behaviour.gameObject.name + " FINISHED");
+                    server.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
+                    finished_players.Add(p_behaviour);
 
-                var ic = p_behaviour.ic;
-                ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
-                p_behaviour.model.SetActive(false);
-                //p_behaviour.enabled = false;
+                    var ic = p_behaviour.ic;
+                    ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
+                    p_behaviour.isActive = false;
+                    p_behaviour.RpcSetActive(false);  
+                }
             }
 
             if (other.CompareTag("Vehicle"))
             {
-                Debug.Log("COLLISION WITH VEHICLE");
-                var v_behaviour = other.GetComponentInParent<VehicleBehaviour>();
-                players.ForEach(player =>
+                var vehicle_behaviour = other.GetComponentInParent<VehicleBehaviour>();
+                if(vehicle_behaviour.seatedPlayer != null)
                 {
-                    if (player.vehicle == v_behaviour)
-                    {
-                        Debug.Log(player.gameObject.name + " FINISHED");
+                    vehicle_behaviour.seatedPlayer.RemovePlayerFromVehicle();
+                }
 
-                        finished_players.Add(player);
+                server.Server_Destroy(vehicle_behaviour.gameObject);
 
-                        var ic = player.ic;
-                        ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
-                        player.model.SetActive(false);
-                        //player.enabled = false;
-                        Destroy(v_behaviour.gameObject);
-                    }
-                });
+                #region OLD
+                //Debug.Log("COLLISION WITH VEHICLE");
+                //var v_behaviour = other.GetComponentInParent<VehicleBehaviour>();
+                //players.ForEach(player =>
+                //{
+                //    if (player.vehicle == v_behaviour)
+                //    {
+                //        Debug.Log(player.gameObject.name + " FINISHED");
+
+                //        finished_players.Add(player);
+
+                //        var ic = player.ic;
+                //        ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
+                //        player.model.SetActive(false);
+                //        //player.enabled = false;
+                //        Destroy(v_behaviour.gameObject);
+                //    }
+                //}); 
+                #endregion
             }
         }
     }

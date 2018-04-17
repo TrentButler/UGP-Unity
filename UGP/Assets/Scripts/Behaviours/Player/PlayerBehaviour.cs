@@ -32,9 +32,10 @@ namespace UGP
 
         #region SYNCED_VARIABLES
         [SyncVar(hook = "OnPlayerHealthChange")] public float playerHealth;
+        [SyncVar(hook = "OnisActiveChange")] public bool isActive;
         [SyncVar(hook = "OnisDeadChange")] public bool isDead;
-        [SyncVar] public bool isDriving;
-        [SyncVar] public Color vehicleColor;
+        [SyncVar(hook = "OnisDrivingChange")] public bool isDriving;
+        [SyncVar(hook = "OnVehicleColorChange")] public Color vehicleColor;
         [SyncVar(hook = "OnMaxHealthAssign")] public float MaxHealth;
         [SyncVar(hook = "OnPlayerNameChange")] public string playerName;
         #endregion
@@ -52,6 +53,10 @@ namespace UGP
         private void OnMaxHealthAssign(float assignMaxHealth)
         {
             MaxHealth = assignMaxHealth;
+        }
+        private void OnisActiveChange(bool Active)
+        {
+            isActive = Active;
         }
         private void OnisDeadChange(bool Dead)
         {
@@ -79,6 +84,14 @@ namespace UGP
 
                 CmdSpawnRagdoll();
             }
+        }
+        private void OnisDrivingChange(bool Driving)
+        {
+            isDriving = Driving;
+        }
+        private void OnVehicleColorChange(Color color)
+        {
+            vehicleColor = color;
         }
         private void OnPlayerNameChange(string nameChange)
         {
@@ -137,6 +150,10 @@ namespace UGP
         [Command] private void CmdSetMaxHealth(float maxHealth)
         {
             MaxHealth = maxHealth;
+        }
+        [Command] public void CmdSetActive(bool active)
+        {
+            isActive = active;
         }
         [Command] private void CmdSetisDead(bool dead)
         {
@@ -215,6 +232,7 @@ namespace UGP
             if(isLocalPlayer)
             {
                 playerHealth = _p.MaxHealth;
+                isActive = true;
                 isDead = false;
                 isDriving = false;
 
@@ -231,11 +249,20 @@ namespace UGP
 
                 CmdSetHealth(_p.MaxHealth);
                 CmdSetMaxHealth(_p.MaxHealth);
+                CmdSetActive(true);
                 CmdSetisDead(false);
                 CmdSetDriving(false);
                 transform.position = pos;
                 transform.rotation = rot;
                 LookAt(transform);
+            }
+        }
+        [ClientRpc] public void RpcSetActive(bool active)
+        {
+            if(isLocalPlayer)
+            {
+                CmdSetActive(active);
+                isActive = active;
             }
         }
         #endregion
@@ -391,6 +418,7 @@ namespace UGP
             
             CmdSetHealth(_p.MaxHealth);
             CmdSetMaxHealth(_p.MaxHealth);
+            CmdSetActive(true);
             CmdSetisDead(false);
             CmdSetDriving(false);
 
@@ -483,23 +511,30 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if (isDead)
+            if(isActive)
             {
-                model.SetActive(false);
-            }
-            else
-            {
-                if (isDriving)
+                if (isDead)
                 {
                     model.SetActive(false);
                 }
                 else
                 {
-                    var controller = GetComponent<CharacterController>();
-                    controller.Move(Gravity);
+                    if (isDriving)
+                    {
+                        model.SetActive(false);
+                    }
+                    else
+                    {
+                        var controller = GetComponent<CharacterController>();
+                        controller.Move(Gravity);
 
-                    model.SetActive(true);
+                        model.SetActive(true);
+                    }
                 }
+            }
+            else
+            {
+                model.SetActive(false);
             }
         }
     }

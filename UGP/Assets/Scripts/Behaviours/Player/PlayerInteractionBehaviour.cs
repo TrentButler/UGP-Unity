@@ -251,23 +251,29 @@ namespace UGP
         {
             Debug.Log(other.name);
 
+
+            //NEEDS WORK
             if (other.CompareTag("Ammo"))
             {
                 var impact_directon = other.transform.forward.normalized;
                 var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
 
-                //if (ammo_behaviour.owner != null)
-                //{
-                //    var player_networkIdentity = GetComponent<NetworkIdentity>();
-                //    p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+                if (ammo_behaviour.owner != null)
+                {
+                    var player_networkIdentity = GetComponent<NetworkIdentity>();
+                    if (ammo_behaviour.owner == player_networkIdentity)
+                    {
+                        return;
+                    }
+                    p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
 
-                //    //var server = FindObjectOfType<InGameNetworkBehaviour>();
-                //    //server.PlayerShot(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
-                //}
+                    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                    server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
+                }
 
-                var player_networkIdentity = GetComponent<NetworkIdentity>();
-                //p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
-                p.CmdTakeDamage_Other(ammo_behaviour.s_owner, ammo_behaviour.DamageDealt * 999999);
+                //var player_networkIdentity = GetComponent<NetworkIdentity>();
+                ////p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+                //p.CmdTakeDamage_Other(ammo_behaviour.s_owner, ammo_behaviour.DamageDealt * 999999);
 
                 //var controller = GetComponent<CharacterController>();
                 //controller.Move(impact_directon * 4);
