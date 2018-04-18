@@ -227,6 +227,17 @@ namespace UGP
             var player_behaviour = playerIdentity.GetComponent<PlayerBehaviour>();
             player_behaviour.OnRespawn(spawn.transform);
         }
+        public void ServerRespawnPlayer(NetworkIdentity playerIdentity)
+        {
+            //RESPAWN THE PLAYER AT ONE OF THE NETWORKSTARTPOSITIONS
+            //MAYBE TRY TO INVOKE THE PLAYERBEHAVIOUR'S START FUNCTION
+            var spawnPoints = FindObjectsOfType<NetworkStartPosition>().ToList();
+            var randomSpawn = Random.Range(0, spawnPoints.Count);
+            var spawn = spawnPoints[randomSpawn];
+
+            var player_behaviour = playerIdentity.GetComponent<PlayerBehaviour>();
+            player_behaviour.ServerRespawn(spawn.transform);
+        }
 
         private void SpawnVehiclesOnPlayerCount()
         {
@@ -347,7 +358,12 @@ namespace UGP
         {
             NetworkServer.Destroy(go);
         }
-        
+
+        public void Server_ChangeScene(string scene)
+        {
+            NetworkManager.singleton.ServerChangeScene(scene);
+        }
+
         private void Start()
         {
             if(!isServer)

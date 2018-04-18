@@ -113,7 +113,7 @@ namespace UGP
                     if (!PlayerBrain.isDead)
                     {
                         Debug.Log("GOT HIT BY PLAYER");
-                        CmdHitPlayer(attacker_network_identity, localPlayer_network_identity, impact_direction * KnockBack);
+                        CmdHitPlayer(attacker_network_identity, localPlayer_network_identity, Vector3.zero);
                     }
                 }
             }

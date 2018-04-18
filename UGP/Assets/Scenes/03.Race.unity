@@ -366,7 +366,7 @@ Prefab:
     - target: {fileID: 224687720965768148, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -121.666664
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224978750096477994, guid: 947e950339249af4196f55a87198909a,
         type: 2}
@@ -386,7 +386,7 @@ Prefab:
     - target: {fileID: 224978750096477994, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -243.33333
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 947e950339249af4196f55a87198909a, type: 2}
@@ -447,7 +447,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   players: []
   Finish: {fileID: 124805620}
-  net: {fileID: 2136851121}
+  server: {fileID: 0}
   LiveRaceText: {fileID: 163845237}
   EndOfRaceText: {fileID: 1124302886}
   RaceTimer: 360
@@ -1362,7 +1362,7 @@ Prefab:
     - target: {fileID: 224527031771975018, guid: 86583eaf0acb94746a1cf3bd8fe4b6df,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -15
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1747705463045482, guid: 86583eaf0acb94746a1cf3bd8fe4b6df, type: 2}
       propertyPath: m_IsActive
@@ -1981,9 +1981,3 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cd8e714276192c64d97489d7d36944ed, type: 2}
   m_IsPrefabParent: 0
---- !u!114 &2136851121 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114185577816566600, guid: cd8e714276192c64d97489d7d36944ed,
-    type: 2}
-  m_PrefabInternal: {fileID: 2136851118}
-  m_Script: {fileID: 11500000, guid: f8fb8c0a20c05574fa58cccd292b3486, type: 3}

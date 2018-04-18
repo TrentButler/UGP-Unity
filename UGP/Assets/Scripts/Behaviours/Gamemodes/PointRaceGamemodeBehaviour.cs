@@ -11,32 +11,59 @@ namespace UGP
     public class PointRaceGamemodeBehaviour : NetworkBehaviour
     {
         public List<PlayerBehaviour> players = new List<PlayerBehaviour>();
-        private List<PlayerBehaviour> finished_players = new List<PlayerBehaviour>();
+        public List<PlayerBehaviour> finished_players = new List<PlayerBehaviour>();
         public Transform Finish;
 
         public InGameNetworkBehaviour server;
         public Text LiveRaceText;
         public Text EndOfRaceText;
-        [SyncVar] private string _t;
-        [SyncVar] public float RaceTimer;
+        public Text PlayerEndOfRaceText;
 
         public GameObject ResultsPanel;
-        [SyncVar] public float EndOfRaceTimer;
-        [SyncVar] private float timer = 0.0f;
+        public GameObject PlayerResultsPanel;
 
-        [ClientRpc] public void RpcRestartRace(string scene)
+        [SyncVar] private string _t;
+        [SyncVar(hook = "OnRaceTimerChange")] public float RaceTimer;
+        [SyncVar(hook = "OnEndOfRaceTimerChange")] public float EndOfRaceTimer;
+        [SyncVar(hook = "OnTimerChange")] private float timer = 0.0f;
+        [SyncVar(hook = "OnRaceFinishChange")] public bool isRaceFinished;
+
+        private void OnRaceTimerChange(float timerChange)
         {
-            NetworkManager.singleton.ServerChangeScene(scene);
-            //NetworkServer.Reset();
-            //SceneManager.LoadScene("03.Race");
+            RaceTimer = timerChange;
+        }
+        private void OnEndOfRaceTimerChange(float timerChange)
+        {
+            EndOfRaceTimer = timerChange;
+        }
+        private void OnTimerChange(float timerChange)
+        {
+            timer = timerChange;
+        }
+        private void OnRaceFinishChange(bool finished)
+        {
+            isRaceFinished = finished;
+        }
+
+        public void RestartRace(string scene)
+        {
+            var players = FindObjectsOfType<PlayerBehaviour>().ToList();
+            players.ForEach(player =>
+            {
+                var player_networkID = player.GetComponent<NetworkIdentity>();
+                server.ServerRespawnPlayer(player_networkID);
+            });
+
+            server.Server_ChangeScene(scene);
         }
 
         private void EndOfRace()
         {
+            PlayerResultsPanel.SetActive(false);
             ResultsPanel.SetActive(true);
 
             EndOfRaceText.text = "RACE COMPLETE \n";
-            EndOfRaceText.text += "TIME REMAINING: " + RaceTimer.ToString() + "\n";
+            //EndOfRaceText.text += "TIME REMAINING: " + RaceTimer.ToString() + "\n";
             EndOfRaceText.text += "RACE RESTART IN: " + timer.ToString() + "\n";
             var _i = 1;
             for (int i = finished_players.Count; i > 0; i--)
@@ -44,11 +71,23 @@ namespace UGP
                 EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
                 _i++;
             }
+        }
 
-            timer -= Time.deltaTime;
-            if (timer <= 0.0f)
+        [ClientRpc] private void RpcPlayerEndOfRace(NetworkIdentity player)
+        {
+            if (player.isLocalPlayer)
             {
-                RpcRestartRace("99.debug");
+                PlayerResultsPanel.SetActive(true);
+
+                PlayerEndOfRaceText.text = "RACE COMPLETE \n";
+                PlayerEndOfRaceText.text += "FINISH TIME: " + RaceTimer.ToString() + "\n";
+
+                var _i = 1;
+                for (int i = finished_players.Count; i > 0; i--)
+                {
+                    EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
+                    _i++;
+                }
             }
         }
 
@@ -72,25 +111,21 @@ namespace UGP
                     players = FindObjectsOfType<PlayerBehaviour>().ToList();
                 }
 
-                if (finished_players.Count == players.Count)
-                {
-                    EndOfRace();
-                    return;
-                }
-                else
-                {
-                    ResultsPanel.SetActive(false);
-                }
+                //if (finished_players.Count == players.Count)
+                //{
+                //    isRaceFinished = true;
+                //    return;
+                //}
+                //else
+                //{
+                //    isRaceFinished = false;
+                //}
 
                 RaceTimer -= Time.deltaTime;
                 if (RaceTimer <= 0.0f)
                 {
-                    EndOfRace();
+                    isRaceFinished = true;
                     return;
-                }
-                else
-                {
-                    ResultsPanel.SetActive(false);
                 }
 
                 //SORT THE LIST OF PLAYERS BY THEIR DISTANCE TO THE 'FINISH'
@@ -112,13 +147,22 @@ namespace UGP
 
         private void LateUpdate()
         {
-            finished_players.ForEach(player =>
+            if (isServer)
             {
-                if (player.isLocalPlayer)
+                if (isRaceFinished)
                 {
-                    ResultsPanel.SetActive(true);
+                    timer -= Time.deltaTime;
+                    if (timer <= 0.0f)
+                    {
+                        RestartRace("99.debug");
+                    }
                 }
-            });
+            }
+
+            if (isRaceFinished)
+            {
+                EndOfRace();
+            }
         }
 
         //NEEDS WORK
@@ -128,7 +172,7 @@ namespace UGP
         //ENABLE THE END OF RACE CANVAS FOR THIS PLAYER
         private void OnTriggerStay(Collider other)
         {
-            if(!isServer)
+            if (!isServer)
             {
                 return;
             }
@@ -136,7 +180,7 @@ namespace UGP
             if (other.CompareTag("Player"))
             {
                 var p_behaviour = other.GetComponentInParent<PlayerBehaviour>();
-                if(p_behaviour.isActive)
+                if (p_behaviour.isActive)
                 {
                     Debug.Log("COLLISION WITH PLAYER");
                     var p_netIdentity = other.GetComponentInParent<NetworkIdentity>();
@@ -148,14 +192,15 @@ namespace UGP
                     var ic = p_behaviour.ic;
                     ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
                     p_behaviour.isActive = false;
-                    p_behaviour.RpcSetActive(false);  
+                    p_behaviour.RpcSetActive(false);
+                    RpcPlayerEndOfRace(p_netIdentity);
                 }
             }
 
             if (other.CompareTag("Vehicle"))
             {
                 var vehicle_behaviour = other.GetComponentInParent<VehicleBehaviour>();
-                if(vehicle_behaviour.seatedPlayer != null)
+                if (vehicle_behaviour.seatedPlayer != null)
                 {
                     vehicle_behaviour.seatedPlayer.RemovePlayerFromVehicle();
                 }

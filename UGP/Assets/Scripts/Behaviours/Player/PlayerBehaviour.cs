@@ -231,6 +231,17 @@ namespace UGP
 
             if(isLocalPlayer)
             {
+                var holding_item = interaction.isHolding;
+                if (holding_item)
+                {
+                    interaction.DropItem();
+                    interaction.item.isBeingHeld = false;
+                    interaction.item.Drop();
+                    interaction.CmdSetHolding(false, "");
+                    ic.enabled = false;
+                    interaction.enabled = false;
+                }
+
                 playerHealth = _p.MaxHealth;
                 isActive = true;
                 isDead = false;
@@ -282,6 +293,22 @@ namespace UGP
             isDriving = false;
             
             CmdRespawn(spawnPoint.position, spawnPoint.rotation);
+        }
+
+        public void ServerRespawn(Transform spawnPoint)
+        {
+            if (PlayerConfig == null)
+            {
+                PlayerConfig = Resources.Load("Assets//Resources//ScriptableObjects//Players//BasicPlayer") as Player;
+            }
+
+            _p = Instantiate(PlayerConfig);
+
+            //playerHealth = _p.MaxHealth;
+            isDead = false;
+            isDriving = false;
+
+            RpcRespawn(spawnPoint.position, spawnPoint.rotation);
         }
 
         private void PlayerHealthRegenrate()
@@ -365,6 +392,11 @@ namespace UGP
             VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().LookAt = t;
         }
         #endregion
+
+        void Awake()
+        {
+            DontDestroyOnLoad(gameObject);
+        }
 
         private void Start()
         {
