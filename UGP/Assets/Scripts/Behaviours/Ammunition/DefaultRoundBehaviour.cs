@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 
 namespace UGP
 {
-    public class DefaultRoundBehaviour : MonoBehaviour
+    public class DefaultRoundBehaviour : NetworkBehaviour
     {
         [Range(1, 999)] public float DamageDealt;
         public NetworkIdentity owner;
@@ -35,13 +35,15 @@ namespace UGP
 
         private void OnCollisionEnter(Collision collision)
         {
-            //NEEDS WORK
-            //WILL NOT INVOKE THE METHOD 'CmdTakeDamge' IF THE VEHICLE DOES NOT HAVE 'AUTHORITY'
-            //WILL WORK IF THERE IS ANOTHER PLAYER IN THE VEHICLE
+            if(!isServer)
+            {
+                return;
+            }
+
             if (collision.collider.tag == "Vehicle")
             {
                 var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
-                vehicle_behaviour.CmdTakeDamage(DamageDealt);
+                vehicle_behaviour.RpcTakeDamage(DamageDealt);
                 Destroy(gameObject);
             }
 

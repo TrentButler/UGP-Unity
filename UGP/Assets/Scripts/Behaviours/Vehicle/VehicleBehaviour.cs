@@ -129,11 +129,24 @@ namespace UGP
         [Command] public void CmdVehicleDestroyed()
         {
             VehicleDestroyedParticle.Play();
+            BurningVehicleParticle.Play();
             RpcVehicleDestroyed();
         }
         #endregion
 
         #region CLIENTRPC_FUNCTIONS
+        [ClientRpc] public void RpcTakeDamage(float healthTaken)
+        {
+            //DEPLETE THE VEHICLE'S HEALTH
+            vehicleHealth -= healthTaken;
+            //Debug.Log("VEHICLE TAKE " + healthTaken.ToString() + " DAMAGE");
+
+            if (vehicleHealth <= 0.0f)
+            {
+                vehicleActive = false;
+                isDestroyed = true;
+            }
+        }
         [ClientRpc] public void RpcSetVehicleActive(bool active)
         {
             vehicleActive = active;
@@ -149,6 +162,7 @@ namespace UGP
         [ClientRpc] public void RpcVehicleDestroyed()
         {
             VehicleDestroyedParticle.Play();
+            BurningVehicleParticle.Play();
         }
         #endregion
 
@@ -170,6 +184,7 @@ namespace UGP
                 }
 
                 vehicleActive = false;
+                
                 VehicleDestroyedParticle.Play();
                 BurningVehicleParticle.Play();
                 CmdVehicleDestroyed();
@@ -489,7 +504,8 @@ namespace UGP
             if(isDestroyed)
             {
                 ColorChangeOff();
-                VehicleDestroyedParticle.Play();
+                //VehicleDestroyedParticle.Play();
+                BurningVehicleParticle.Play();
                 rb.isKinematic = true;
                 return;
             }
