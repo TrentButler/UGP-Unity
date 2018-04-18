@@ -11,6 +11,7 @@ namespace UGP
         [Range(1, 999)] public float DamageDealt;
         public NetworkIdentity owner;
         public string s_owner;
+        [Range(1, 999)] public float delete_timer = 6.0f;
 
         void Start()
         {
@@ -19,6 +20,16 @@ namespace UGP
             {
                 rb = gameObject.AddComponent<Rigidbody>();
                 rb.constraints = RigidbodyConstraints.FreezeRotation;
+            }
+        }
+
+        private void LateUpdate()
+        {
+            delete_timer -= Time.deltaTime;
+            if(delete_timer <= 0.0f)
+            {
+                var server = FindObjectOfType<InGameNetworkBehaviour>();
+                server.Server_Destroy(gameObject);
             }
         }
 
