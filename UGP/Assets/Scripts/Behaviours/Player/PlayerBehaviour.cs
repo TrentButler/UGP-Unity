@@ -76,6 +76,7 @@ namespace UGP
                 {
                     interaction.DropItem();
                     interaction.item.isBeingHeld = false;
+                    interaction.item.CmdSetHolding(false);
                     interaction.item.Drop();
                     interaction.CmdSetHolding(false, "");
                     ic.enabled = false;
