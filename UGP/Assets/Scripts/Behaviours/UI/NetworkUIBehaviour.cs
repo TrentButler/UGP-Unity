@@ -31,12 +31,20 @@ namespace UGP
             DontDestroyOnLoad(canvas);
         }
 
-        private void Update()
+        private void Start()
         {
+            canvas.SetActive(false);
+        }
+
+        private void Update()
+        {   
             if (Input.GetKeyDown(KeyCode.BackQuote))
             {
                 ToggleUI();
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
+
             canvas.SetActive(active);
         }
     }
