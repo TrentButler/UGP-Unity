@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 84124a338cca43f4ab57c98f44058c12
-timeCreated: 1524080390
+guid: c0e003984ce98d343b24414f6efcde92
+timeCreated: 1524151370
 licenseType: Pro
 ModelImporter:
   serializedVersion: 22
@@ -13,24 +13,31 @@ ModelImporter:
     100010: Bullet002
     100012: Bullet003
     100014: Bullet004
-    100016: GasTube
-    100018: Grip
-    100020: GunBarrel
-    100022: GunBody
-    100024: GunSight
-    100026: GunTop
-    100028: HeatShield
-    100030: //RootNode
-    100032: PullReloader
-    100034: SightMount001
-    100036: SightMount002
-    100038: SightMountScrew
-    100040: TopMount001
-    100042: TopMount002
-    100044: TopMount003
-    100046: TopMount004
-    100048: TopMountScrew
-    100050: transform1
+    100016: BulletJoint001
+    100018: BulletJoint002
+    100020: BulletJoint003
+    100022: BulletJoint004
+    100024: GasTube
+    100026: Grip
+    100028: GunBarrel
+    100030: GunBody
+    100032: GunBodyJoint
+    100034: GunSight
+    100036: GunTop
+    100038: HeatShield
+    100040: LeverJoint
+    100042: M60
+    100044: //RootNode
+    100046: PullReloader
+    100048: RootJoint
+    100050: SightMount001
+    100052: SightMount002
+    100054: SightMountScrew
+    100056: TopMount001
+    100058: TopMount002
+    100060: TopMount003
+    100062: TopMount004
+    100064: TopMountScrew
     400000: AmmoBox
     400002: AmmoBoxMount001
     400004: AmmoBoxMount002
@@ -39,74 +46,32 @@ ModelImporter:
     400010: Bullet002
     400012: Bullet003
     400014: Bullet004
-    400016: GasTube
-    400018: Grip
-    400020: GunBarrel
-    400022: GunBody
-    400024: GunSight
-    400026: GunTop
-    400028: HeatShield
-    400030: //RootNode
-    400032: PullReloader
-    400034: SightMount001
-    400036: SightMount002
-    400038: SightMountScrew
-    400040: TopMount001
-    400042: TopMount002
-    400044: TopMount003
-    400046: TopMount004
-    400048: TopMountScrew
-    400050: transform1
-    2100000: lambert1
-    2100002: lambert2
-    2300000: AmmoBox
-    2300002: AmmoBoxMount001
-    2300004: AmmoBoxMount002
-    2300006: AmmoBoxMount003
-    2300008: Bullet001
-    2300010: Bullet002
-    2300012: Bullet003
-    2300014: Bullet004
-    2300016: GasTube
-    2300018: Grip
-    2300020: GunBarrel
-    2300022: GunBody
-    2300024: GunSight
-    2300026: GunTop
-    2300028: HeatShield
-    2300030: PullReloader
-    2300032: SightMount001
-    2300034: SightMount002
-    2300036: SightMountScrew
-    2300038: TopMount001
-    2300040: TopMount002
-    2300042: TopMount003
-    2300044: TopMount004
-    2300046: TopMountScrew
-    3300000: AmmoBox
-    3300002: AmmoBoxMount001
-    3300004: AmmoBoxMount002
-    3300006: AmmoBoxMount003
-    3300008: Bullet001
-    3300010: Bullet002
-    3300012: Bullet003
-    3300014: Bullet004
-    3300016: GasTube
-    3300018: Grip
-    3300020: GunBarrel
-    3300022: GunBody
-    3300024: GunSight
-    3300026: GunTop
-    3300028: HeatShield
-    3300030: PullReloader
-    3300032: SightMount001
-    3300034: SightMount002
-    3300036: SightMountScrew
-    3300038: TopMount001
-    3300040: TopMount002
-    3300042: TopMount003
-    3300044: TopMount004
-    3300046: TopMountScrew
+    400016: BulletJoint001
+    400018: BulletJoint002
+    400020: BulletJoint003
+    400022: BulletJoint004
+    400024: GasTube
+    400026: Grip
+    400028: GunBarrel
+    400030: GunBody
+    400032: GunBodyJoint
+    400034: GunSight
+    400036: GunTop
+    400038: HeatShield
+    400040: LeverJoint
+    400042: M60
+    400044: //RootNode
+    400046: PullReloader
+    400048: RootJoint
+    400050: SightMount001
+    400052: SightMount002
+    400054: SightMountScrew
+    400056: TopMount001
+    400058: TopMount002
+    400060: TopMount003
+    400062: TopMount004
+    400064: TopMountScrew
+    2100000: lambert2
     4300000: PullReloader
     4300002: Bullet001
     4300004: AmmoBox
@@ -131,7 +96,32 @@ ModelImporter:
     4300042: TopMount002
     4300044: TopMount001
     4300046: GunSight
+    7400000: M60Animation
     9500000: //RootNode
+    13700000: AmmoBox
+    13700002: AmmoBoxMount001
+    13700004: AmmoBoxMount002
+    13700006: AmmoBoxMount003
+    13700008: Bullet001
+    13700010: Bullet002
+    13700012: Bullet003
+    13700014: Bullet004
+    13700016: GasTube
+    13700018: Grip
+    13700020: GunBarrel
+    13700022: GunBody
+    13700024: GunSight
+    13700026: GunTop
+    13700028: HeatShield
+    13700030: PullReloader
+    13700032: SightMount001
+    13700034: SightMount002
+    13700036: SightMountScrew
+    13700038: TopMount001
+    13700040: TopMount002
+    13700042: TopMount003
+    13700044: TopMount004
+    13700046: TopMountScrew
   externalObjects: {}
   materials:
     importMaterials: 0
@@ -158,7 +148,35 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: M60Animation
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 10
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
