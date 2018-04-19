@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-
 namespace UGP
 {
     //NEEDS WORK
@@ -35,6 +34,7 @@ namespace UGP
         public NetworkAnimator NetworkAni;
 
         public ItemBehaviour item;
+        [Range(0, 999.0f)] public float DroppingItemOffset = 0.5f;
 
         #region COMMAND_FUNCTIONS
         [Command]
@@ -148,6 +148,7 @@ namespace UGP
             if(isHolding)
             {
                 NetworkAni.SetTrigger("DropItem");
+                item.Drop();
             }
         }
 

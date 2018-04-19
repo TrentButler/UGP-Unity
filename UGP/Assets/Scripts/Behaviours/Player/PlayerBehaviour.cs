@@ -74,10 +74,10 @@ namespace UGP
                 var holding_item = interaction.isHolding;
                 if(holding_item)
                 {
-                    interaction.DropItem();
                     interaction.item.isBeingHeld = false;
                     interaction.item.CmdSetHolding(false);
-                    interaction.item.Drop();
+                    interaction.DropItem();
+                    //interaction.item.Drop();
                     interaction.CmdSetHolding(false, "");
                     ic.enabled = false;
                     interaction.enabled = false;
@@ -237,7 +237,7 @@ namespace UGP
                 {
                     interaction.DropItem();
                     interaction.item.isBeingHeld = false;
-                    interaction.item.Drop();
+                    //interaction.item.Drop();
                     interaction.CmdSetHolding(false, "");
                     ic.enabled = false;
                     interaction.enabled = false;
@@ -396,7 +396,7 @@ namespace UGP
 
         void Awake()
         {
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
 
         private void Start()
@@ -473,16 +473,11 @@ namespace UGP
 
             if (isDead)
             {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
                 return;
             }
 
             if (isDriving)
             {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-
                 VirtualCamera.SetActive(false);
                 ic.enabled = false;
                 interaction.enabled = false;
@@ -496,9 +491,6 @@ namespace UGP
             }
             else
             {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-
                 VirtualCamera.SetActive(true);
                 ic.enabled = true;
                 interaction.enabled = true;
@@ -536,7 +528,7 @@ namespace UGP
                         });
 
                         interaction.DropItem();
-                        interaction.item.Drop();
+                        //interaction.item.Drop();
                     }
                 }
             }
@@ -544,7 +536,12 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if(isActive)
+            if (isServer)
+            {
+                playerName = "SERVER";
+            }
+
+            if (isActive)
             {
                 if (isDead)
                 {
