@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-
 namespace UGP
 {
     //NEEDS WORK
@@ -35,6 +34,7 @@ namespace UGP
         public NetworkAnimator NetworkAni;
 
         public ItemBehaviour item;
+        [Range(0, 999.0f)] public float DroppingItemOffset = 0.5f;
 
         #region COMMAND_FUNCTIONS
         [Command]
@@ -148,6 +148,7 @@ namespace UGP
             if(isHolding)
             {
                 NetworkAni.SetTrigger("DropItem");
+                item.Drop();
             }
         }
 
@@ -247,26 +248,42 @@ namespace UGP
             }
         }
 
-        private void OnCollisionEnter(Collision collision)
+        private void OnTriggerEnter(Collider other)
         {
-            if(!isLocalPlayer)
+            if(!isServer)
             {
                 return;
             }
 
-            var contact_points = collision.contacts.ToList();
-            contact_points.ForEach(contact =>
+            //NEEDS WORK
+            //ONLY CHECK FOR COLLISIONS ON THE SERVER
+            if (other.CompareTag("Ammo"))
             {
-                if(contact.thisCollider.CompareTag("Hand"))
-                {
-                    var item_behaviour = contact.otherCollider.GetComponent<ItemBehaviour>();
+                var impact_directon = other.transform.forward.normalized;
+                var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
 
-                    if(item_behaviour != null && !item_behaviour.isBeingHeld)
-                    {
-                        item_behaviour.PickUp(this);
-                    }
-                }
-            });
+                //if (ammo_behaviour.owner != null)
+                //{
+                //    var player_networkIdentity = GetComponent<NetworkIdentity>();
+                //    if (ammo_behaviour.owner == player_networkIdentity)
+                //    {
+                //        return;
+                //    }
+                //    p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+
+                //    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                //    server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
+                //}
+
+                //var player_networkIdentity = GetComponent<NetworkIdentity>();
+                ////p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+                //p.CmdTakeDamage_Other(ammo_behaviour.s_owner, ammo_behaviour.DamageDealt * 999999);
+
+                //var controller = GetComponent<CharacterController>();
+                //controller.Move(impact_directon * 4);
+
+                Destroy(other.gameObject);
+            }
         }
 
         private void Start()
@@ -305,6 +322,14 @@ namespace UGP
             {
                 //CurrentItemModel.SetActive(true);
                 //var old_item = CurrentItemModel;
+                var colliders = GetComponents<Collider>().ToList();
+                colliders.ForEach(collider =>
+                {
+                    if (collider.CompareTag("Hand"))
+                    {
+                        collider.enabled = false;
+                    }
+                });
 
                 switch (current_item)
                 {
@@ -356,6 +381,15 @@ namespace UGP
             }
             else
             {
+                var colliders = GetComponents<Collider>().ToList();
+                colliders.ForEach(collider =>
+                {
+                    if (collider.CompareTag("Hand"))
+                    {
+                        collider.enabled = true;
+                    }
+                });
+
                 EmptyItem.SetActive(true);
 
                 ammoModel.SetActive(false);

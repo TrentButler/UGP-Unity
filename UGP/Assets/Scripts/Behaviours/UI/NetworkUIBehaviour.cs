@@ -7,31 +7,45 @@ using UnityEngine.UI;
 
 namespace UGP
 {
-    public class NetworkUIBehaviour : NetworkBehaviour
+    public class NetworkUIBehaviour : MonoBehaviour
     {
         public GameObject canvas;
-        public Text t;
-        
-        void Update()
+        public bool active = false;
+
+        public void ToggleUI()
         {
-            if(isServer)
+
+            if (active == true)
             {
-                canvas.SetActive(true);
-            }
-            else
-            {
-                canvas.SetActive(false);
+                active = false;
             }
 
-            //var connections = NetworkServer.connections.ToList();
-            //connections.ForEach(connection =>
-            //{
-            //    string dump = "";
-            //    var ip = connection.address.ToString();
-            //    dump += ip;
-            //    dump += "\n";
-            //    t.text = dump;
-            //});
+            else
+            {
+                active = true;
+            }
+        }
+
+        private void Awake()
+        {
+            DontDestroyOnLoad(canvas);
+        }
+
+        private void Start()
+        {
+            canvas.SetActive(false);
+        }
+
+        private void Update()
+        {   
+            if (Input.GetKeyDown(KeyCode.BackQuote))
+            {
+                ToggleUI();
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+
+            canvas.SetActive(active);
         }
     }
 }

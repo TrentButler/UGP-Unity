@@ -76,6 +76,7 @@ namespace UGP
             if (Input.GetKey(KeyCode.Escape))
             {
                 SettingsCanvas.SetActive(true);
+                Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = true;
             }
             else
@@ -115,6 +116,7 @@ namespace UGP
                 PlayerUI.SetActive(false);
                 PlayerDeadCanvas.SetActive(true);
                 PlayerNameTag.SetActive(false);
+                Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
             else

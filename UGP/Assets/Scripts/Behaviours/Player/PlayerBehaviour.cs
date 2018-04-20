@@ -15,6 +15,7 @@ namespace UGP
         public Player PlayerConfig;
         [HideInInspector] public Player _p;
 
+        public Transform Center;
         public VehicleBehaviour vehicle;
         public float TimeToExitVehicle;
         public float TimeToDestroyRagdoll = 10.0f;
@@ -22,6 +23,7 @@ namespace UGP
         public NetworkUserControl ic;
         public PlayerInteractionBehaviour interaction;
         public PlayerUIBehaviour ui;
+        public Vector3 Gravity = new Vector3(0, -4.0f, 0);
 
         public Animator ani;
         public List<Collider> colliders;
@@ -30,9 +32,10 @@ namespace UGP
 
         #region SYNCED_VARIABLES
         [SyncVar(hook = "OnPlayerHealthChange")] public float playerHealth;
+        [SyncVar(hook = "OnisActiveChange")] public bool isActive;
         [SyncVar(hook = "OnisDeadChange")] public bool isDead;
-        [SyncVar] public bool isDriving;
-        [SyncVar] public Color vehicleColor;
+        [SyncVar(hook = "OnisDrivingChange")] public bool isDriving;
+        [SyncVar(hook = "OnVehicleColorChange")] public Color vehicleColor;
         [SyncVar(hook = "OnMaxHealthAssign")] public float MaxHealth;
         [SyncVar(hook = "OnPlayerNameChange")] public string playerName;
         #endregion
@@ -51,23 +54,45 @@ namespace UGP
         {
             MaxHealth = assignMaxHealth;
         }
+        private void OnisActiveChange(bool Active)
+        {
+            isActive = Active;
+        }
         private void OnisDeadChange(bool Dead)
         {
             isDead = Dead;
             if(isDead)
             {
+                var controller = GetComponent<CharacterController>();
+                controller.detectCollisions = false;
+
+                colliders.ForEach(collider =>
+                {
+                    collider.enabled = false;
+                });
+
                 var holding_item = interaction.isHolding;
                 if(holding_item)
                 {
+                    interaction.item.isBeingHeld = false;
+                    interaction.item.CmdSetHolding(false);
                     interaction.DropItem();
-                    interaction.item.Drop();
+                    //interaction.item.Drop();
                     interaction.CmdSetHolding(false, "");
                     ic.enabled = false;
                     interaction.enabled = false;
                 }
-                
+
                 CmdSpawnRagdoll();
             }
+        }
+        private void OnisDrivingChange(bool Driving)
+        {
+            isDriving = Driving;
+        }
+        private void OnVehicleColorChange(Color color)
+        {
+            vehicleColor = color;
         }
         private void OnPlayerNameChange(string nameChange)
         {
@@ -81,16 +106,41 @@ namespace UGP
             playerHealth += healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
         }
-        [Command] public void CmdTakeDamage(float healthTaken)
+        [Command] public void CmdTakeDamage(NetworkIdentity attacker, float healthTaken)
         {
-            Debug.Log("Player Take Damage");
             playerHealth -= healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
+
+            //Debug.Log("Player Take Damage");
             if (playerHealth <= 0.0f)
             {
+                var server = FindObjectOfType<InGameNetworkBehaviour>();
+                var localPlayer = GetComponent<NetworkIdentity>();
+                server.PlayerKilledByPlayer(attacker, localPlayer);
+
                 isDead = true;
-                //isDriving = false;
+                isDriving = false;
                 ic.enabled = false;
+                interaction.isHolding = false;
+                interaction.enabled = false;
+            }
+        }
+        [Command] public void CmdTakeDamage_Other(string attacker, float healthTaken)
+        {
+            playerHealth -= healthTaken;
+            playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
+
+            //Debug.Log("Player Take Damage");
+            if (playerHealth <= 0.0f)
+            {
+                var server = FindObjectOfType<InGameNetworkBehaviour>();
+                var localPlayer = GetComponent<NetworkIdentity>();
+                server.PlayerKilledByOther(attacker, localPlayer);
+
+                isDead = true;
+                isDriving = false;
+                ic.enabled = false;
+                interaction.isHolding = false;
                 interaction.enabled = false;
             }
         }
@@ -101,6 +151,10 @@ namespace UGP
         [Command] private void CmdSetMaxHealth(float maxHealth)
         {
             MaxHealth = maxHealth;
+        }
+        [Command] public void CmdSetActive(bool active)
+        {
+            isActive = active;
         }
         [Command] private void CmdSetisDead(bool dead)
         {
@@ -178,17 +232,49 @@ namespace UGP
 
             if(isLocalPlayer)
             {
+                var holding_item = interaction.isHolding;
+                if (holding_item)
+                {
+                    interaction.DropItem();
+                    interaction.item.isBeingHeld = false;
+                    //interaction.item.Drop();
+                    interaction.CmdSetHolding(false, "");
+                    ic.enabled = false;
+                    interaction.enabled = false;
+                }
+
                 playerHealth = _p.MaxHealth;
+                isActive = true;
                 isDead = false;
                 isDriving = false;
 
+                colliders.ForEach(collider =>
+                {
+                    collider.enabled = true;
+                });
+
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                var controller = GetComponent<CharacterController>();
+                controller.detectCollisions = true;
+
                 CmdSetHealth(_p.MaxHealth);
                 CmdSetMaxHealth(_p.MaxHealth);
+                CmdSetActive(true);
                 CmdSetisDead(false);
                 CmdSetDriving(false);
                 transform.position = pos;
                 transform.rotation = rot;
                 LookAt(transform);
+            }
+        }
+        [ClientRpc] public void RpcSetActive(bool active)
+        {
+            if(isLocalPlayer)
+            {
+                CmdSetActive(active);
+                isActive = active;
             }
         }
         #endregion
@@ -210,6 +296,22 @@ namespace UGP
             CmdRespawn(spawnPoint.position, spawnPoint.rotation);
         }
 
+        public void ServerRespawn(Transform spawnPoint)
+        {
+            if (PlayerConfig == null)
+            {
+                PlayerConfig = Resources.Load("Assets//Resources//ScriptableObjects//Players//BasicPlayer") as Player;
+            }
+
+            _p = Instantiate(PlayerConfig);
+
+            //playerHealth = _p.MaxHealth;
+            isDead = false;
+            isDriving = false;
+
+            RpcRespawn(spawnPoint.position, spawnPoint.rotation);
+        }
+
         private void PlayerHealthRegenrate()
         {
             if (!isDead)
@@ -226,6 +328,7 @@ namespace UGP
         public void RemovePlayerFromVehicle()
         {
             CmdSetDriving(false);
+            isDriving = false;
             var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
             interaction.CmdSetVehicleActive(false, vehicleIdentity);
             interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
@@ -236,13 +339,13 @@ namespace UGP
 
             exitTimer = 0.0f; //RESET THE TIMER
 
-            var rb = GetComponent<Rigidbody>();
-            rb.velocity = Vector3.zero;
-            rb.MovePosition(vehicle.seat.position);
-            rb.MoveRotation(vehicle.seat.rotation);
+            //var rb = GetComponent<Rigidbody>();
+            //rb.velocity = Vector3.zero;
+            //rb.MovePosition(vehicle.seat.position);
+            //rb.MoveRotation(vehicle.seat.rotation);
 
-            //transform.position = vehicle.seat.position;
-            //transform.rotation = vehicle.seat.rotation;
+            transform.position = vehicle.seat.position;
+            transform.rotation = vehicle.seat.rotation;
 
             vehicle = null;
         }
@@ -260,6 +363,7 @@ namespace UGP
 
             if (exitTimer >= TimeToExitVehicle)
             {
+                isDriving = false;
                 CmdSetDriving(false);
                 var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
                 interaction.CmdSetVehicleActive(false, vehicleIdentity);
@@ -271,13 +375,13 @@ namespace UGP
 
                 exitTimer = 0.0f; //RESET THE TIMER
 
-                var rb = GetComponent<Rigidbody>();
-                rb.velocity = Vector3.zero;
-                rb.MovePosition(vehicle.seat.position);
-                rb.MoveRotation(vehicle.seat.rotation);
+                //var rb = GetComponent<Rigidbody>();
+                //rb.velocity = Vector3.zero;
+                //rb.MovePosition(vehicle.seat.position);
+                //rb.MoveRotation(vehicle.seat.rotation);
 
-                //transform.position = vehicle.seat.position;
-                //transform.rotation = vehicle.seat.rotation;
+                transform.position = vehicle.seat.position;
+                transform.rotation = vehicle.seat.rotation;
 
                 vehicle = null;
             }
@@ -290,11 +394,32 @@ namespace UGP
         }
         #endregion
 
+        void Awake()
+        {
+            //DontDestroyOnLoad(gameObject);
+        }
+
         private void Start()
         {
             if (!isLocalPlayer)
-            {
+            {   
                 VirtualCamera.SetActive(false);
+                //CHARACTERCONTROLLER COLLISION CALLBACKS
+                var rb = gameObject.AddComponent<Rigidbody>();
+
+                if(isClient)
+                {
+                    var playercontroller = GetComponent<ShannonSharpePlayerController>();
+                    //Destroy(playercontroller);
+                    //playercontroller.controller = null;
+                    //playercontroller.enabled = false;
+                    //var character_controller = GetComponent<CharacterController>();
+                    //Destroy(character_controller);
+                }
+
+                rb.constraints = RigidbodyConstraints.FreezeAll;
+                rb.useGravity = false;
+                //rb.isKinematic = true;
                 return;
             }
 
@@ -326,6 +451,7 @@ namespace UGP
             
             CmdSetHealth(_p.MaxHealth);
             CmdSetMaxHealth(_p.MaxHealth);
+            CmdSetActive(true);
             CmdSetisDead(false);
             CmdSetDriving(false);
 
@@ -345,7 +471,7 @@ namespace UGP
                 return;
             }
 
-            if(isDead)
+            if (isDead)
             {
                 return;
             }
@@ -357,6 +483,9 @@ namespace UGP
                 interaction.enabled = false;
 
                 ani.SetFloat("Walk", 0.0f);
+
+                transform.position = vehicle.seat.position;
+                transform.rotation = vehicle.seat.rotation;
 
                 ExitVehicleWithTimer(); //EXIT THE VEHICLE
             }
@@ -399,7 +528,7 @@ namespace UGP
                         });
 
                         interaction.DropItem();
-                        interaction.item.Drop();
+                        //interaction.item.Drop();
                     }
                 }
             }
@@ -407,20 +536,35 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if (isDead)
+            if (isServer)
             {
-                model.SetActive(false);
+                playerName = "SERVER";
             }
-            else
+
+            if (isActive)
             {
-                if (isDriving)
+                if (isDead)
                 {
                     model.SetActive(false);
                 }
                 else
                 {
-                    model.SetActive(true);
+                    if (isDriving)
+                    {
+                        model.SetActive(false);
+                    }
+                    else
+                    {
+                        var controller = GetComponent<CharacterController>();
+                        controller.Move(Gravity);
+
+                        model.SetActive(true);
+                    }
                 }
+            }
+            else
+            {
+                model.SetActive(false);
             }
         }
     }
