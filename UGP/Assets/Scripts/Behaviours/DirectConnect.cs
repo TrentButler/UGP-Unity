@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 namespace UGP
@@ -15,13 +16,14 @@ namespace UGP
         public List<PlayerBehaviour> ListOfPlayers = new List<PlayerBehaviour>();
 
 
+
         void Start()
         {
-            
+
             if (Server == null)
                 Server = FindObjectOfType<NetworkManager>();
             DisableServerPlayer();
-                
+
         }
         public void StartServer()
         {
@@ -31,6 +33,13 @@ namespace UGP
         {
             Server.matchMaker.CreateMatch("Core", Server.matchSize, true, "", "", "", 0, 0, Server.OnMatchCreate);
 
+        }
+        public void KillAllPlayers()
+        {
+            foreach (var players in ListOfPlayers)
+            {
+                players.CmdTakeDamage_Other("Admin", 9999999);
+            }
         }
         public struct MatchInfo
         {
@@ -43,9 +52,9 @@ namespace UGP
 
         public void DisableServerPlayer()
         {
-            foreach(var players in ListOfPlayers)
+            foreach (var players in ListOfPlayers)
             {
-                if(players.isServer)
+                if (players.isServer)
                 {
                     players.gameObject.SetActive(false);
                 }
@@ -73,7 +82,7 @@ namespace UGP
                 requestDomain,
                 Server.OnMatchJoined);
         }
-    
+
         public void RestartServer()
         {
             var currentScene = SceneManager.GetActiveScene();
@@ -82,26 +91,30 @@ namespace UGP
             NetworkManager.singleton.ServerChangeScene(scene_string);
         }
 
-    public void OnMatchList(bool success, string extendedInfo, List<UnityEngine.Networking.Match.MatchInfoSnapshot> matches)
-    {
-        AllMatches = matches;
-    }
-
-
-    void Awake()
-    {
-        Server = GetComponent<NetworkManager>();
-        Server.StartMatchMaker(); //enable the match maker
-    }
-
-    void Update()
-    {
-        if (AllMatches.Count <= 0)
+        public void OnMatchList(bool success, string extendedInfo, List<UnityEngine.Networking.Match.MatchInfoSnapshot> matches)
         {
-            Server.matchMaker.ListMatches(0, 20, "", false, 0, 0, OnMatchList);
+            AllMatches = matches;
         }
 
-        MatchCount = AllMatches.Count;
+
+        void Awake()
+        {
+            Server = GetComponent<NetworkManager>();
+            Server.StartMatchMaker(); //enable the match maker
+        }
+
+        void Update()
+        {
+            if (AllMatches.Count <= 0)
+            {
+                Server.matchMaker.ListMatches(0, 20, "", false, 0, 0, OnMatchList);
+            }
+
+            MatchCount = AllMatches.Count;
+        }
+        void LateUpdate()
+        {
+            ListOfPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+        }
     }
-}
 }
