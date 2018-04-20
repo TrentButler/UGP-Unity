@@ -101,6 +101,8 @@ namespace UGP
 
             var drop_position = player.HoldingItemPosition.position;
             trigger_size.y = 0;
+            trigger_size.x = 0;
+            trigger_size.z = -trigger_size.z;
 
             drop_position += trigger_size * DropItemOffset;
 
@@ -127,13 +129,13 @@ namespace UGP
                 return;
             }
 
-            var item_behaviour = other.GetComponentInParent<ItemBehaviour>();
-            if(item_behaviour != null)
-            {
-                var other_col_size = other.bounds.size;
-                other_col_size.y = 0;
-                rb.transform.position += other_col_size;
-            }
+            //var item_behaviour = other.GetComponentInParent<ItemBehaviour>();
+            //if(item_behaviour != null)
+            //{
+            //    var other_col_size = other.bounds.size;
+            //    other_col_size.y = 0;
+            //    rb.transform.position += other_col_size;
+            //}
 
 
             if (other.tag == "Player")
