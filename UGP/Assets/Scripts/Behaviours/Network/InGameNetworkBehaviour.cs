@@ -15,6 +15,7 @@ namespace UGP
     {
         public List<GameObject> VehiclePrefabs;
         public List<GameObject> ItemPrefabs;
+        public List<NetworkStartPosition> PlayerStartPositions = new List<NetworkStartPosition>();
 
         public Transform OriginVehicleSpawn;
 
@@ -83,6 +84,8 @@ namespace UGP
         }
         #endregion
 
+        [SyncVar(hook = "OnStartPositionIndexChange")] public int StartPositionIndex = 0;
+
         [SyncVar(hook = "OnScoreboardTextChange")] public string scoreboardText;
         public Text scoreboard;
 
@@ -98,6 +101,10 @@ namespace UGP
             }
 
             //CmdScoreboardTextChange(scoreboardText);
+        }
+        private void OnStartPositionIndexChange(int indexChange)
+        {
+            StartPositionIndex = indexChange;
         }
 
         public void PlayerHitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer)
@@ -238,6 +245,18 @@ namespace UGP
             var player_behaviour = playerIdentity.GetComponent<PlayerBehaviour>();
             player_behaviour.ServerRespawn(spawn.transform);
         }
+        public Transform GetPlayerSpawn()
+        {
+            if(StartPositionIndex > PlayerStartPositions.Count - 1)
+            {
+                StartPositionIndex = 0;
+            }
+
+            var spawn = PlayerStartPositions[StartPositionIndex].transform;
+            StartPositionIndex += 1;
+            //CmdStartPositionIndexChange(StartPositionIndex)
+            return spawn;
+        }
 
         private void SpawnVehiclesOnPlayerCount()
         {
@@ -375,6 +394,8 @@ namespace UGP
             
             server_camera = Camera.main.gameObject;
             SpawnBuildings();
+
+            PlayerStartPositions = FindObjectsOfType<NetworkStartPosition>().ToList();
         }
 
         private void FixedUpdate()
