@@ -3,16 +3,16 @@ using UnitySampleAssets.CrossPlatformInput;
 
 namespace UnitySampleAssets.Vehicles.Car
 {
-    [RequireComponent(typeof (CarController))]
+    [RequireComponent(typeof (EnemyController))]
     public class CarUserControl : MonoBehaviour
     {
-        private CarController car; // the car controller we want to use
+        private EnemyController car; // the car controller we want to use
 
 
         private void Awake()
         {
             // get the car controller
-            car = GetComponent<CarController>();
+            car = GetComponent<EnemyController>();
         }
 
 
