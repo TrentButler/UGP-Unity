@@ -258,6 +258,13 @@ namespace UGP
             return spawn;
         }
 
+        [Command] public void CmdRestartPreMatchTimer()
+        {
+            Debug.Log("RESTART PRE-MATCH TIMER");
+            //ADD A RPC CALL TO MAKE SURE THIS IS HAPPENING
+        }
+
+
         private void SpawnVehiclesOnPlayerCount()
         {
             //SPAWN A VEHICLE FOR EACH PLAYER THAT IS CONNECTED

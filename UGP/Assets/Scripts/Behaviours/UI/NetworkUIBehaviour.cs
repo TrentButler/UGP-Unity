@@ -14,7 +14,6 @@ namespace UGP
 
         public void ToggleUI()
         {
-
             if (active == true)
             {
                 active = false;
