@@ -195,14 +195,14 @@ namespace UGP
             scoreboardText += playerName + Results;
         }
 
-        [Command] public void CmdScoreboardTextChange(string textChange)
-        {
-            RpcScoreboardTextChange(textChange);
-        }
-        [ClientRpc] public void RpcScoreboardTextChange(string textChange)
-        {
-            scoreboardText += textChange;
-        }
+        //[Command] public void CmdScoreboardTextChange(string textChange)
+        //{
+        //    RpcScoreboardTextChange(textChange);
+        //}
+        //[ClientRpc] public void RpcScoreboardTextChange(string textChange)
+        //{
+        //    scoreboardText += textChange;
+        //}
 
         [ClientRpc] public void RpcAssignObjectAuthority(NetworkIdentity objectIdentity)
         {

@@ -99,22 +99,48 @@ namespace UGP
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
 
-            var drop_position = player.HoldingItemPosition.position;
-            trigger_size.y = 0;
-            trigger_size.x = 0;
-            trigger_size.z = -trigger_size.z;
+            var drop_position = Vector3.zero;
 
-            drop_position += trigger_size * DropItemOffset;
+            var isUsingItem = player.Ani.GetBool("UsingItem");
+            if(isUsingItem)
+            {
+                //DROP ITEM INFRONT OF PLAYER
+                var front_drop_position = trigger_size;
+                front_drop_position.x = 0;
+                front_drop_position.y = 0;
+                front_drop_position.z = front_drop_position.z * DropItemOffset;
+
+                drop_position = player.transform.TransformPoint(front_drop_position);
+            }
+            else
+            {
+                //DROP ITEM ON SIDE OF PLAYER
+                var side_drop_position = trigger_size;
+                side_drop_position.x = side_drop_position.x * DropItemOffset;
+                side_drop_position.y = 0;
+                side_drop_position.z = 0;
+
+                drop_position = player.transform.TransformPoint(side_drop_position);
+            }
+
+            drop_position.y = transform.position.y;
+
+            //var drop_position = player.HoldingItemPosition.position;
+            //trigger_size.y = 0;
+            //trigger_size.x = 0;
+            //trigger_size.z = -trigger_size.z;
+
+            //drop_position += trigger_size * DropItemOffset;
 
             RaycastHit hit;
-            if(Physics.Raycast(drop_position, -Vector3.up, out hit))
+            if(Physics.Raycast(transform.position, -Vector3.up, out hit))
             {
                 //PUT THE ITEM ON THE GROUND
                 drop_position.y -= hit.distance;
             }
             
             rb.transform.position = (drop_position);
-            //rb.MovePosition(dropPosition);
+            //rb.MovePosition(drop_position);
             rb.velocity = -Vector3.up * DropItemPower;
 
             //rb.MovePosition(drop_position);
@@ -130,11 +156,11 @@ namespace UGP
             }
 
             //var item_behaviour = other.GetComponentInParent<ItemBehaviour>();
-            //if(item_behaviour != null)
+            //if (item_behaviour != null)
             //{
             //    var other_col_size = other.bounds.size;
             //    other_col_size.y = 0;
-            //    rb.transform.position += other_col_size;
+            //    transform.position = transform.position + (other_col_size * 1.5f);
             //}
 
 

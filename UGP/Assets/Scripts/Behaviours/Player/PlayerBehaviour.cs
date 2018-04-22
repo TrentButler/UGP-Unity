@@ -74,16 +74,23 @@ namespace UGP
                 var holding_item = interaction.isHolding;
                 if(holding_item)
                 {
-                    interaction.item.isBeingHeld = false;
-                    interaction.item.CmdSetHolding(false);
-                    interaction.DropItem();
+                    if(interaction.item != null)
+                    {
+                        interaction.item.isBeingHeld = false;
+                        interaction.item.CmdSetHolding(false);
+                        interaction.DropItem();
+                    }
+
                     //interaction.item.Drop();
                     interaction.CmdSetHolding(false, "");
                     ic.enabled = false;
                     interaction.enabled = false;
                 }
 
-                CmdSpawnRagdoll();
+                if(isLocalPlayer)
+                {
+                    CmdSpawnRagdoll();
+                }
             }
         }
         private void OnisDrivingChange(bool Driving)
@@ -208,6 +215,13 @@ namespace UGP
 
         #region CLIENTRPC_FUNCTIONS
         //NEEDS WORK
+        [ClientRpc] public void RpcTakeDamage(NetworkIdentity localPlayer, NetworkIdentity attacker, float damageDealt)
+        {
+            if(localPlayer.isLocalPlayer)
+            {
+                CmdTakeDamage(attacker, damageDealt);
+            }
+        }
         [ClientRpc] private void RpcKillPlayer()
         {
             if (!isLocalPlayer)

@@ -262,35 +262,21 @@ namespace UGP
                 var impact_directon = other.transform.forward.normalized;
                 var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
 
-                //if (ammo_behaviour.owner != null)
-                //{
-                //    var player_networkIdentity = GetComponent<NetworkIdentity>();
-                //    if (ammo_behaviour.owner == player_networkIdentity)
-                //    {
-                //        return;
-                //    }
-                //    p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+                if (ammo_behaviour.owner != null)
+                {
+                    var player_networkIdentity = GetComponent<NetworkIdentity>();
+                    if (ammo_behaviour.owner == player_networkIdentity)
+                    {
+                        return;
+                    }
 
-                //    var server = FindObjectOfType<InGameNetworkBehaviour>();
-                //    server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
-                //}
+                    p.RpcTakeDamage(player_networkIdentity, ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
 
-                //var player_networkIdentity = GetComponent<NetworkIdentity>();
-                ////p.CmdTakeDamage(ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
-                //p.CmdTakeDamage_Other(ammo_behaviour.s_owner, ammo_behaviour.DamageDealt * 999999);
-
-                //var controller = GetComponent<CharacterController>();
-                //controller.Move(impact_directon * 4);
+                    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                    server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
+                }
 
                 Destroy(other.gameObject);
-            }
-        }
-
-        private void Start()
-        {
-            if (!isLocalPlayer)
-            {
-                return;
             }
         }
         
@@ -318,6 +304,19 @@ namespace UGP
 
         private void LateUpdate()
         {
+            if(isLocalPlayer)
+            {
+                if(item == null)
+                {
+                    isHolding = false;
+                    current_item = "";
+                    CmdSetHolding(false, "");
+                }
+                else
+                {
+                    isHolding = true;
+                }
+            }
             if (isHolding)
             {
                 //CurrentItemModel.SetActive(true);

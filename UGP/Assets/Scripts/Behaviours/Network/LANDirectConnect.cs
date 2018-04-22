@@ -19,7 +19,7 @@ namespace UGP
         }
         public void StartServer()
         {
-            Server.StartHost();
+            Server.StartServer();
         }
         public void StartClient()
         {
