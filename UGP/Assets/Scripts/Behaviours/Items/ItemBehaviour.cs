@@ -209,9 +209,10 @@ namespace UGP
                     {
                         player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity); //USE THE ITEM ON THE VEHICLE
                         player.p.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
-                        player.DropItem(); //REMOVE THE ITEM FROM THE PLAYER
+                        player._DropItem(); //REMOVE THE ITEM FROM THE PLAYER
 
-                        NetworkServer.Destroy(gameObject); //DESTROY THIS ITEM ON SERVER AND ALL CLIENTS
+                        var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                        net_companion.Server_Destroy(gameObject);
                     }
                 }
             }

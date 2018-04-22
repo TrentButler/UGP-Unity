@@ -151,6 +151,13 @@ namespace UGP
                 item.Drop();
             }
         }
+        public void _DropItem()
+        {
+            if(isHolding)
+            {
+                NetworkAni.SetTrigger("DropItem");
+            }
+        }
 
         //NEEDS WORK
         public void UseItemOnVehicle(string itemType, NetworkIdentity itemIdentity, NetworkIdentity vehicleIdentity)
