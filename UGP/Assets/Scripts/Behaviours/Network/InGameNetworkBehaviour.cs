@@ -84,11 +84,19 @@ namespace UGP
         }
         #endregion
 
+        [SyncVar(hook = "OnPreRoundTimerChange")] [Range(1.0f, 999999.0f)] public float PreMatchTimer;
+        private float original_prematchtimer;
+
         [SyncVar(hook = "OnStartPositionIndexChange")] public int StartPositionIndex = 0;
 
         [SyncVar(hook = "OnScoreboardTextChange")] public string scoreboardText;
         public Text scoreboard;
+        public Text preroundtimer;
 
+        private void OnPreRoundTimerChange(float timerChange)
+        {
+            PreMatchTimer = timerChange;
+        }
         private void OnScoreboardTextChange(string textChange)
         {
             if (scoreboardText.Length > TextCountLimit)
@@ -261,9 +269,13 @@ namespace UGP
         [Command] public void CmdRestartPreMatchTimer()
         {
             Debug.Log("RESTART PRE-MATCH TIMER");
+            PreMatchTimer = original_prematchtimer;
             //ADD A RPC CALL TO MAKE SURE THIS IS HAPPENING
         }
-
+        public void RestartPreMatchTimer()
+        {
+            PreMatchTimer = original_prematchtimer;
+        }
 
         private void SpawnVehiclesOnPlayerCount()
         {
@@ -397,6 +409,7 @@ namespace UGP
                 return;
             }
 
+            original_prematchtimer = PreMatchTimer;
             spawnOnPlayerCount = false;
             
             server_camera = Camera.main.gameObject;
@@ -407,17 +420,34 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if(!isServer)
+            if(isServer)
             {
-                return;
+                PreMatchTimer -= Time.deltaTime;
+
+                var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+                allPlayers.ForEach(player =>
+                {
+                    if (PreMatchTimer > 0.0f)
+                    {
+                        player.RpcSetUserControl(false);
+                    }
+                    else
+                    {
+                        player.RpcSetUserControl(true);
+                    }
+                });
             }
 
-            FreeLookCamera();
+            preroundtimer.text = "";
+            preroundtimer.text = "BEGIN IN: " + PreMatchTimer.ToString();
 
-            if (spawnOnPlayerCount)
-            {
-                SpawnVehiclesOnPlayerCount();
-            }
+            #region OLD
+            //FreeLookCamera();
+            //if (spawnOnPlayerCount)
+            //{
+            //    SpawnVehiclesOnPlayerCount();
+            //} 
+            #endregion
         }
 
         private void LateUpdate()

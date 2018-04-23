@@ -32,6 +32,7 @@ namespace UGP
 
         #region SYNCED_VARIABLES
         [SyncVar(hook = "OnPlayerHealthChange")] public float playerHealth;
+        [SyncVar(hook = "OnHasControlChange")] public bool hasControl;
         [SyncVar(hook = "OnisActiveChange")] public bool isActive;
         [SyncVar(hook = "OnisDeadChange")] public bool isDead;
         [SyncVar(hook = "OnisDrivingChange")] public bool isDriving;
@@ -53,6 +54,10 @@ namespace UGP
         private void OnMaxHealthAssign(float assignMaxHealth)
         {
             MaxHealth = assignMaxHealth;
+        }
+        private void OnHasControlChange(bool controlChange)
+        {
+            hasControl = controlChange;
         }
         private void OnisActiveChange(bool Active)
         {
@@ -159,6 +164,10 @@ namespace UGP
         {
             MaxHealth = maxHealth;
         }
+        [Command] private void CmdSetHasControl(bool control)
+        {
+            hasControl = control;
+        }
         [Command] public void CmdSetActive(bool active)
         {
             isActive = active;
@@ -191,25 +200,25 @@ namespace UGP
         {
             RpcRespawn(position, rotation);
         }
-        [Command] public void CmdAssignPlayerAuthority(NetworkIdentity playerIdentity)
+        [Command] public void CmdAssignObjectAuthority(NetworkIdentity objectIdentity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
 
-            var playerNetworkIdentity = playerIdentity;
+            var objectNetworkIdentity = objectIdentity;
 
             //INVOKE THESE FUNCTIONS ON THE SERVER
-            playerNetworkIdentity.AssignClientAuthority(localPlayerConn);
+            objectNetworkIdentity.AssignClientAuthority(localPlayerConn);
         }
-        [Command] public void CmdRemovePlayerAuthority(NetworkIdentity playerIdentity)
+        [Command] public void CmdRemoveObjectAuthority(NetworkIdentity objectIdentity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
 
-            var playerNetworkIdentity = playerIdentity;
+            var objectNetworkIdentity = objectIdentity;
 
             //INVOKE THESE FUNCTIONS ON THE SERVER
-            playerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
+            objectNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
         #endregion
 
@@ -289,6 +298,14 @@ namespace UGP
             {
                 CmdSetActive(active);
                 isActive = active;
+            }
+        }
+        [ClientRpc] public void RpcSetUserControl(bool control)
+        {
+            if(isLocalPlayer)
+            {
+                CmdSetHasControl(control);
+                hasControl = control;
             }
         }
         #endregion
@@ -484,67 +501,81 @@ namespace UGP
                 VirtualCamera.SetActive(false);
                 return;
             }
-
+            
             if (isDead)
             {
                 return;
             }
 
-            if (isDriving)
+            if(hasControl)
             {
-                VirtualCamera.SetActive(false);
-                ic.enabled = false;
-                interaction.enabled = false;
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_XAxis.m_InputAxisName = ic.CameraInputHorizontal;
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_YAxis.m_InputAxisName = ic.CameraInputVertical;
 
-                ani.SetFloat("Walk", 0.0f);
-
-                transform.position = vehicle.seat.position;
-                transform.rotation = vehicle.seat.rotation;
-
-                ExitVehicleWithTimer(); //EXIT THE VEHICLE
-            }
-            else
-            {
-                VirtualCamera.SetActive(true);
-                ic.enabled = true;
-                interaction.enabled = true;
-                
-                //PICKUP ITEM
-                //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
-                if(Input.GetKeyDown(KeyCode.F))
+                if (isDriving)
                 {
-                    colliders.ForEach(collider =>
-                    {
-                        if (collider.CompareTag("Hand"))
-                        {
-                            collider.enabled = true;
-                        }
-                    });
+                    VirtualCamera.SetActive(false);
+                    ic.enabled = false;
+                    interaction.enabled = false;
 
-                    if (!interaction.isHolding)
-                    {
-                        interaction.PickUpItem();
-                    }
+                    ani.SetFloat("Walk", 0.0f);
+
+                    transform.position = vehicle.seat.position;
+                    transform.rotation = vehicle.seat.rotation;
+
+                    ExitVehicleWithTimer(); //EXIT THE VEHICLE
                 }
-
-                //DROP ITEM
-                //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
-                if (Input.GetKeyDown(KeyCode.RightAlt))
+                else
                 {
-                    if(interaction.isHolding)
+                    VirtualCamera.SetActive(true);
+                    ic.enabled = true;
+                    interaction.enabled = true;
+
+                    //PICKUP ITEM
+                    //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
+                    if (Input.GetKeyDown(KeyCode.F))
                     {
                         colliders.ForEach(collider =>
                         {
                             if (collider.CompareTag("Hand"))
                             {
-                                collider.enabled = false;
+                                collider.enabled = true;
                             }
                         });
 
-                        interaction.DropItem();
-                        //interaction.item.Drop();
+                        if (!interaction.isHolding)
+                        {
+                            interaction.PickUpItem();
+                        }
+                    }
+
+                    //DROP ITEM
+                    //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED
+                    if (Input.GetKeyDown(KeyCode.RightAlt))
+                    {
+                        if (interaction.isHolding)
+                        {
+                            colliders.ForEach(collider =>
+                            {
+                                if (collider.CompareTag("Hand"))
+                                {
+                                    collider.enabled = false;
+                                }
+                            });
+
+                            interaction.DropItem();
+                            //interaction.item.Drop();
+                        }
                     }
                 }
+            }
+            else
+            {
+                VirtualCamera.SetActive(true);
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_XAxis.m_InputAxisName = "";
+                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_YAxis.m_InputAxisName = "";
+
+                ic.enabled = false;
             }
         }
 
