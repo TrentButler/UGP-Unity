@@ -203,15 +203,6 @@ namespace UGP
             scoreboardText += playerName + Results;
         }
 
-        //[Command] public void CmdScoreboardTextChange(string textChange)
-        //{
-        //    RpcScoreboardTextChange(textChange);
-        //}
-        //[ClientRpc] public void RpcScoreboardTextChange(string textChange)
-        //{
-        //    scoreboardText += textChange;
-        //}
-
         [ClientRpc] public void RpcAssignObjectAuthority(NetworkIdentity objectIdentity)
         {
             var server_network_identity = GetComponent<NetworkIdentity>();
@@ -422,24 +413,24 @@ namespace UGP
         {
             if(isServer)
             {
-                PreMatchTimer -= Time.deltaTime;
+                //PreMatchTimer -= Time.deltaTime;
 
-                var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
-                allPlayers.ForEach(player =>
-                {
-                    if (PreMatchTimer > 0.0f)
-                    {
-                        player.RpcSetUserControl(false);
-                    }
-                    else
-                    {
-                        player.RpcSetUserControl(true);
-                    }
-                });
+                //var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+                //allPlayers.ForEach(player =>
+                //{
+                //    if (PreMatchTimer > 0.0f)
+                //    {
+                //        player.RpcSetUserControl(false);
+                //    }
+                //    else
+                //    {
+                //        player.RpcSetUserControl(true);
+                //    }
+                //});
             }
 
-            preroundtimer.text = "";
-            preroundtimer.text = "BEGIN IN: " + PreMatchTimer.ToString();
+            //preroundtimer.text = "";
+            //preroundtimer.text = "BEGIN IN: " + PreMatchTimer.ToString();
 
             #region OLD
             //FreeLookCamera();
