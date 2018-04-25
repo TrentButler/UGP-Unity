@@ -9,7 +9,7 @@ namespace UGP
 {
     public class DirectConnect : NetworkBehaviour
     {
-
+        public GameObject PlayButton;
         public NetworkManager Server;
         public List<UnityEngine.Networking.Match.MatchInfoSnapshot> AllMatches = new List<UnityEngine.Networking.Match.MatchInfoSnapshot>();
         public int MatchCount;
@@ -87,7 +87,7 @@ namespace UGP
         {
             var currentScene = SceneManager.GetActiveScene();
             var scene_string = currentScene.name;
-
+          
             NetworkManager.singleton.ServerChangeScene(scene_string);
         }
 
@@ -105,9 +105,15 @@ namespace UGP
 
         void Update()
         {
-            if (AllMatches.Count <= 0)
+            Server.matchMaker.ListMatches(0, 20, "", false, 0, 0, OnMatchList);
+
+            if (AllMatches.Count > 0)
+            { 
+                PlayButton.SetActive(true);
+            }
+            if (AllMatches.Count == 0)
             {
-                Server.matchMaker.ListMatches(0, 20, "", false, 0, 0, OnMatchList);
+                PlayButton.SetActive(false);
             }
 
             MatchCount = AllMatches.Count;
