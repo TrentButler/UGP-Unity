@@ -112,6 +112,7 @@ GameObject:
   - component: {fileID: 114591395221746510}
   - component: {fileID: 65493020256860564}
   - component: {fileID: 65373954131584234}
+  - component: {fileID: 114058409661027320}
   m_Layer: 0
   m_Name: RepairKitPrefab
   m_TagString: Untagged
@@ -320,6 +321,19 @@ MonoBehaviour:
     i15: 114
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 1
+--- !u!114 &114058409661027320
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1544895805012732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9db865986f75ee44eba89ace4646af65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waitTime: 1.5
+  velocityThreshold: 1
 --- !u!114 &114100944135355072
 MonoBehaviour:
   m_ObjectHideFlags: 1
