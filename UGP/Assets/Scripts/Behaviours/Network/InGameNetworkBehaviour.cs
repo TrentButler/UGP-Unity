@@ -396,6 +396,16 @@ namespace UGP
             NetworkManager.singleton.ServerChangeScene(scene);
         }
 
+        [ClientRpc] public void RpcServer_Disconnect(NetworkIdentity localPlayer, string scene)
+        {
+            if(localPlayer.isLocalPlayer)
+            {
+                NetworkManager.singleton.StopClient();
+                var playerUIBehaviour = localPlayer.GetComponent<PlayerUIBehaviour>();
+                playerUIBehaviour.GotoScene(scene);
+            }
+        }
+
         private void Start()
         {
             if(!isServer)

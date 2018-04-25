@@ -23,6 +23,7 @@ namespace UGP
         public GameObject EndOfRaceUI;
 
         [SyncVar] private string _t;
+        [SyncVar] private string _endofrace;
         [SyncVar(hook = "OnPreRaceTimerChange")] public float PreRaceTimer;
         [SyncVar(hook = "OnPostRaceTimerChange")] public float PostRaceTimer;
         [SyncVar(hook = "OnRaceTimerChange")] public float RaceTimer;
@@ -30,10 +31,12 @@ namespace UGP
         private void OnPreRaceTimerChange(float timerChange)
         {
             PreRaceTimer = timerChange;
+            PreRaceTimer = Mathf.Clamp(PreRaceTimer, 0.0f, PreMatchTimer);
         }
         private void OnPostRaceTimerChange(float timerChange)
         {
             PostRaceTimer = timerChange;
+            PostRaceTimer = Mathf.Clamp(PostRaceTimer, 0.0f, 999999);
         }
         private void OnRaceTimerChange(float timerChange)
         {
@@ -45,6 +48,15 @@ namespace UGP
             EndOfRaceUI.SetActive(toggle);
         }
         [ClientRpc] private void RpcTogglePreRaceTimerUI(bool toggle)
+        {
+            PreRaceTimerUI.SetActive(toggle);
+        }
+
+        private void ToggleEndOfRaceUI(bool toggle)
+        {
+            EndOfRaceUI.SetActive(toggle);
+        }
+        private void TogglePreRaceTimerUI(bool toggle)
         {
             PreRaceTimerUI.SetActive(toggle);
         }
@@ -61,21 +73,42 @@ namespace UGP
             server.Server_ChangeScene(scene);
         }
 
-        //private void EndOfRace()
-        //{
-        //    PlayerResultsPanel.SetActive(false);
-        //    ResultsPanel.SetActive(true);
+        private void EndOfRace()
+        {
+            PostRaceTimer -= Time.deltaTime;
+            if (PostRaceTimer <= 0.0f)
+            {
+                Players.ForEach(player =>
+                {
+                    var network_identity = player.GetComponent<NetworkIdentity>();
+                    server.RpcServer_Disconnect(network_identity, "");
+                });
 
-        //    EndOfRaceText.text = "RACE COMPLETE \n";
-        //    //EndOfRaceText.text += "TIME REMAINING: " + RaceTimer.ToString() + "\n";
-        //    EndOfRaceText.text += "RACE RESTART IN: " + timer.ToString() + "\n";
-        //    var _i = 1;
-        //    for (int i = finished_players.Count; i > 0; i--)
-        //    {
-        //        EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
-        //        _i++;
-        //    }
-        //}
+                var current_scene = SceneManager.GetActiveScene().name;
+                server.Server_ChangeScene(current_scene);
+            }
+
+            _endofrace = "RACE COMPLETE \n";
+            //EndOfRaceText.text += "TIME REMAINING: " + RaceTimer.ToString() + "\n";
+            _endofrace += "NEW RACE IN: " + PostRaceTimer.ToString() + "\n";
+
+            //LIST ALL PLAYERS SORTED BY DISTANCE TO GOAL
+            int place = 1;
+            Players.ForEach(player =>
+            {
+                _endofrace += string.Format("{0}.{1}", place, player.playerName);
+                place += 1;
+            });
+
+            #region OLD
+            //var _i = 1;
+            //for (int i = finished_players.Count; i > 0; i--)
+            //{
+            //    EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
+            //    _i++;
+            //} 
+            #endregion
+        }
 
         //[ClientRpc] private void RpcPlayerEndOfRace(NetworkIdentity player)
         //{
@@ -125,17 +158,22 @@ namespace UGP
         //        //    isRaceFinished = false;
         //        //}
 
-                
+
         //    }
         //}
 
         private void LateUpdate()
         {
+            //SYNC UI TEXT
+
             LiveRaceText.text = "";
             LiveRaceText.text = _t;
 
             PreRaceTimerText.text = "";
             PreRaceTimerText.text = "BEGIN IN: " + PreRaceTimer.ToString();
+
+            EndOfRaceText.text = "";
+            EndOfRaceText.text = _endofrace;
 
             #region OLD
             //if (isServer)
@@ -186,6 +224,8 @@ namespace UGP
                     p_behaviour.isActive = false;
                     p_behaviour.RpcSetActive(false);
 
+                    var sorted_players = Players.OrderBy(x => Vector3.Distance(x.transform.position, Finish.transform.position)).ToList();
+                    Players = sorted_players;
                     WinCondition = true;
                     //RpcPlayerEndOfRace(p_netIdentity);
                 }
@@ -225,7 +265,7 @@ namespace UGP
 
         public override bool CheckWinCondition()
         {
-            throw new System.NotImplementedException();
+            return false;
         }
 
         public override bool CheckLoseCondition()
@@ -242,17 +282,28 @@ namespace UGP
 
         public override void OnWinCondition()
         {
-            throw new System.NotImplementedException();
+            EndOfRace();
+            TogglePlayerControl(false);
+            ToggleEndOfRaceUI(true);
+            RpcToggleEndOfRaceUI(true);
         }
 
         public override void OnLoseCondition()
         {
-            throw new System.NotImplementedException();
+            EndOfRace();
+            TogglePlayerControl(false);
+            ToggleEndOfRaceUI(true);
+            RpcToggleEndOfRaceUI(true);
         }
 
         public override void GameLoop()
         {
             PreRaceTimer -= Time.deltaTime;
+
+            if(Players.Count <= 0)
+            {
+                RestartPreMatchTimer();
+            }
 
             if(PreRaceTimer > 0.0f)
             {
@@ -267,6 +318,8 @@ namespace UGP
 
                 PreRaceTimerUI.SetActive(false); //DISABLE THE PRERACETIMER UI
                 RpcTogglePreRaceTimerUI(false);
+                
+                MatchBegun = true;
 
                 RaceTimer -= Time.deltaTime; //DECREMENT THE RACE TIMER
             }
@@ -294,7 +347,10 @@ namespace UGP
 
         public override void RestartPreMatchTimer()
         {
-            PreRaceTimer = PreMatchTimer;
+            if(!MatchBegun)
+            {
+                PreRaceTimer = PreMatchTimer;
+            }
         }
     }
 }
