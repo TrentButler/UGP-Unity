@@ -524,6 +524,7 @@ MonoBehaviour:
   vehiclePositionOffset: 0
   ItemPositionOffset: 5
   TextCountLimit: 200
+  networkUI: {fileID: 2123662855}
   cameraSpeed: 2.5
   cameraTranslationSpeed: 10
   PreMatchTimer: 30
@@ -2180,6 +2181,10 @@ Prefab:
     - target: {fileID: 1238685153141136, guid: 903b8342fdca4dc4eadb9688dbaf713f, type: 2}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4735468108705556, guid: 903b8342fdca4dc4eadb9688dbaf713f, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -13.72
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 903b8342fdca4dc4eadb9688dbaf713f, type: 2}
@@ -10565,6 +10570,21 @@ Prefab:
       propertyPath: canvas
       value: 
       objectReference: {fileID: 12330887}
+    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: clientUI
+      value: 
+      objectReference: {fileID: 2032363467}
+    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: serverUI
+      value: 
+      objectReference: {fileID: 12330887}
+    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: clientUIActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114000747057042134, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
     - {fileID: 114640835714761928, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
@@ -10683,3 +10703,9 @@ MonoBehaviour:
     type: 2}
   Server: {fileID: 2123662853}
   ListOfPlayers: []
+--- !u!114 &2123662855 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+    type: 2}
+  m_PrefabInternal: {fileID: 2123662851}
+  m_Script: {fileID: 11500000, guid: 91d1ee566aba19d4fa173d0051debd86, type: 3}

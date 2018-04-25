@@ -24,6 +24,9 @@ namespace UGP
         private bool spawnOnPlayerCount;
         [Range(1, 500)] public int TextCountLimit = 200;
 
+        public NetworkUIBehaviour networkUI;
+
+
         #region ServerCamera
         private GameObject server_camera;
         public float cameraSpeed = 2.5f;
@@ -443,6 +446,17 @@ namespace UGP
 
         private void LateUpdate()
         {
+            if(!isServer)
+            {
+                networkUI.serverUIActive = false;
+                networkUI.clientUIActive = false;
+            }
+
+            if(isServer)
+            {
+                networkUI.clientUIActive = false;
+            }
+
             scoreboard.text = scoreboardText;
         }
     }

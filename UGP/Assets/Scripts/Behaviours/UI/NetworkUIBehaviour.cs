@@ -9,42 +9,47 @@ namespace UGP
 {
     public class NetworkUIBehaviour : MonoBehaviour
     {
-        public GameObject canvas;
-        public bool active = false;
+        public GameObject clientUI;
+        public GameObject serverUI;
+        
+        public bool clientUIActive;
+        public bool serverUIActive;
 
-        public void ToggleUI()
+        public void ToggleServerUI()
         {
-            if (active == true)
+            if (serverUIActive == true)
             {
-                active = false;
+                serverUIActive = false;
             }
 
             else
             {
-                active = true;
+                serverUIActive = true;
             }
         }
 
         private void Awake()
         {
-            DontDestroyOnLoad(canvas);
+            DontDestroyOnLoad(clientUI);
+            DontDestroyOnLoad(serverUI);
         }
 
         private void Start()
         {
-            canvas.SetActive(false);
+            serverUI.SetActive(false);
         }
 
         private void Update()
         {   
             if (Input.GetKeyDown(KeyCode.BackQuote))
             {
-                ToggleUI();
+                ToggleServerUI();
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
             }
 
-            canvas.SetActive(active);
+            clientUI.SetActive(clientUIActive);
+            serverUI.SetActive(serverUIActive);
         }
     }
 }

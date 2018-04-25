@@ -231,6 +231,13 @@ namespace UGP
                 CmdTakeDamage(attacker, damageDealt);
             }
         }
+        [ClientRpc] public void RpcTakeDamage_Other(NetworkIdentity localPlayer, string attacker, float damageDealt)
+        {
+            if (localPlayer.isLocalPlayer)
+            {
+                CmdTakeDamage_Other(attacker, damageDealt);
+            }
+        }
         [ClientRpc] private void RpcKillPlayer()
         {
             if (!isLocalPlayer)
@@ -581,11 +588,6 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if (isServer)
-            {
-                playerName = "SERVER";
-            }
-
             if (isActive)
             {
                 if (isDead)

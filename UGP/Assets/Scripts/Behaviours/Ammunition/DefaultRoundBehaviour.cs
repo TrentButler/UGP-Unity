@@ -67,10 +67,11 @@ namespace UGP
                 //    server.PlayerShot(owner, player_networkIdentity, "DEBUG WEAPON");
                 //}
 
+                var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
                 var controller = player_behaviour.GetComponent<CharacterController>();
                 controller.Move(transform.forward.normalized * 1.5f);
 
-                player_behaviour.CmdTakeDamage_Other(s_owner, DamageDealt * 999999);
+                player_behaviour.RpcTakeDamage_Other(player_networkIdentity, s_owner, DamageDealt * 999999);
 
                 Destroy(gameObject);
             }
