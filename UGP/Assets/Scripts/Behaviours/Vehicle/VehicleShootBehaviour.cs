@@ -18,7 +18,7 @@ namespace UGP
     {
         public Weapon w;
 
-        public GameObject bulletModel;
+        public GameObject bulletPrefab;
         public Transform GunBarrel;
         public AudioSource audio;
 
@@ -33,54 +33,50 @@ namespace UGP
         private Canvas c;
         #endregion
 
-        [Range(0.1f, 2.0f)] public float FireRate; //ROUNDS FIRED PER MINUTE
+        [Range(0.1f, 2.0f)] public float AutomaticFireRate; //ROUNDS FIRED PER MINUTE
+        [Range(0.1f, 2.0f)] public float SemiAutoFireRate = 0.5f; //ROUNDS FIRED PER MINUTE
+        private float automatic_timer = 0;
+        private float semiauto_timer = 0;
+        private bool hasFired = false;
+
+        [Range(0.0f, 999999.0f)] public float ShotStrength = 500.0f;
         public float WeaponRange;
         public float AimCooldown;
         public int roundsFired = 0;
         private Vector3 barrelLookAt;
+        public VehicleBehaviour v;
 
-        private VehicleBehaviour v;
-
-        private void CmdShoot()
+        [Command] private void CmdFireRound(NetworkIdentity owner, Vector3 position, Quaternion rotation, float strength)
         {
+            var b = Instantiate(bulletPrefab, position, rotation);
+            var bulletBehaviour = b.GetComponent<DefaultRoundBehaviour>();
+            bulletBehaviour.owner = owner;
+
+            var b_rb = b.GetComponent<Rigidbody>();
+
+            var force = b_rb.transform.forward.normalized * strength;
+            //b_rb.rotation = GunBarrel.rotation;
+            b_rb.velocity = force;
+
+            NetworkServer.Spawn(b);
+            Destroy(b, 4);
+        }
+
+        private void Shoot()
+        {
+            var networkIdentity = v.seatedPlayer.GetComponent<NetworkIdentity>();
+
             switch (w)
             {
                 case Weapon.ASSAULT:
                     {
-                        var assault = v._v.ammunition.Assault;
+                        var assault = v.Assault;
                         if (assault > 0)
                         {
-                            v._v.ammunition.Assault -= 1;
+                            //v._v.ammunition.Assault -= 1;
+                            v.CmdUseAmmunition(1, 0, 0, 0);
                             //audio.Play();
-
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            //NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>();
-
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -91,40 +87,12 @@ namespace UGP
 
                 case Weapon.SHOTGUN:
                     {
-                        var shotgun = v._v.ammunition.Shotgun;
+                        var shotgun = v.Shotgun;
                         if (shotgun > 0)
                         {
-                            v._v.ammunition.Shotgun -= 1;
+                            v.CmdUseAmmunition(0, 1, 0, 0);
                             //audio.Play();
-
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            //NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SHOTGUNROUNDBEHAVIOUR
-
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -135,40 +103,12 @@ namespace UGP
 
                 case Weapon.SNIPER:
                     {
-                        var sniper = v._v.ammunition.Sniper;
+                        var sniper = v.Sniper;
                         if (sniper > 0)
                         {
-                            v._v.ammunition.Sniper -= 1;
+                            v.CmdUseAmmunition(0, 0, 1, 0);
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                             //audio.Play();
-
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //SNIPERROUNDBEHAVIOUR
-
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
                         }
                         else
                         {
@@ -179,40 +119,12 @@ namespace UGP
 
                 case Weapon.ROCKET:
                     {
-                        var rocket = v._v.ammunition.Rocket;
+                        var rocket = v.Rocket;
                         if (rocket > 0)
                         {
-                            v._v.ammunition.Rocket -= 1;
+                            v.CmdUseAmmunition(0, 0, 0, 1);
                             //audio.Play();
-
-                            var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-                            //NetworkServer.Spawn(b);
-
-                            var ammoBehaviour = b.GetComponent<AssaultRoundBehaviour>(); //ROCKETROUNDBEHAVIOUR
-
-                            b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-                            Destroy(b, 4);
-
-                            //RAYCAST FORWARD FROM 'GunBarrel'
-                            RaycastHit hit;
-                            if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-                            {
-                                //DETERMINE IF RAYCAST HIT A VEHICLE OR A PLAYER
-
-                                var vehicle = hit.transform.GetComponentInParent<VehicleBehaviour>();
-                                var player = hit.transform.GetComponentInParent<PlayerBehaviour>();
-
-                                if (player)
-                                {
-                                    Debug.Log("HIT A PLAYER");
-                                }
-
-                                if (vehicle)
-                                {
-                                    Debug.Log("HIT A VEHICLE");
-                                    vehicle._v.TakeDamage(ammoBehaviour.DamageDealt);
-                                }
-                            }
+                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
                         {
@@ -220,28 +132,12 @@ namespace UGP
                         }
                         break;
                     }
+
+                default:
+                    {
+                        break;
+                    }
             }
-
-            #region OLD_SHOOT
-            //roundsFired += 1;
-            //audio.Play();
-
-            //var b = Instantiate(bulletModel, GunBarrel.position, GunBarrel.rotation);
-            //b.GetComponent<Rigidbody>().velocity = GunBarrel.forward * WeaponRange;
-            //Destroy(b, 4);
-
-            //Debug.Log("SHOT FIRED");
-
-            //RAYCAST FORWARD FROM 'GunBarrel'
-            //RaycastHit hit;
-            //if (Physics.Raycast(GunBarrel.position, GunBarrel.forward, out hit, WeaponRange))
-            //{
-            //    var n = hit.collider.name;
-            //    Debug.Log(n);
-            //}
-
-            //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * BulletTravelDist, Color.red);
-            #endregion
         }
 
         //NEEDS WORK
@@ -291,14 +187,14 @@ namespace UGP
         private float aimTimer = 0;
         private void Aim()
         {
-            var h = Input.GetAxis("Mouse X");
+            //var h = Input.GetAxis("Mouse X");
             var v = Input.GetAxis("Mouse Y");
 
-            var aimVector = new Vector3(h, v, 0);
+            var aimVector = new Vector3(0, v, 0);
 
-            var vehicleThrottle = GetComponent<InGameVehicleMovementBehaviour>().currentVehicleThrottle;
-            var vehicleStrafe = GetComponent<InGameVehicleMovementBehaviour>().currentVehicleStrafe;
-            Vector3 moveVector = new Vector3(vehicleStrafe, 0, vehicleThrottle);
+            var vehicleThrottle = GetComponent<DefaultVehicleController>().currentVehicleThrottle;
+            var vehicleStrafe = GetComponent<DefaultVehicleController>().currentVehicleStrafe;
+            Vector3 moveVector = new Vector3(0, 0, vehicleThrottle);
             
             if(moveVector.magnitude <= 0)
             {
@@ -312,7 +208,6 @@ namespace UGP
                     if (aimTimer >= AimCooldown)
                     {
                         #region UI_CROSSHAIR
-
                         var rectTrans = c.GetComponent<RectTransform>();
 
                         var _w = rectTrans.rect.width;
@@ -363,39 +258,53 @@ namespace UGP
             barrelLookAt = cam.ScreenToWorldPoint(uiCrosshair + crosshairWorldOffset);
             GunBarrel.LookAt(barrelLookAt);
         }
-
-        private float time = 0;
+        
         private void Fire()
         {
-            //NEEDS WORK
             //SINGLE-FIRE
-            //if(Input.GetKeyDown(KeyCode.Mouse0))
-            //{
-            //    CmdShoot();
-            //}
-
-            //AUTOMATIC FIRE
-            //LIMIT THE RATE OF FIRE
-            if (Input.GetKey(KeyCode.Mouse0))
+            if (Input.GetMouseButtonDown(0))
             {
-                time += Time.deltaTime;
-                if (time > FireRate)
+                if(!hasFired)
                 {
-                    CmdShoot();
-                    time = 0.0f;
+                    Shoot();
+                    hasFired = true;
                 }
             }
             else
             {
-                time = 0.0f;
+                semiauto_timer += Time.deltaTime;
+                if(semiauto_timer >= SemiAutoFireRate)
+                {
+                    hasFired = false;
+                    semiauto_timer = 0.0f; //RESET THE TIMER
+                }
+            }
+
+            //AUTOMATIC FIRE
+            //LIMIT THE RATE OF FIRE
+            if (Input.GetMouseButton(0))
+            {
+                automatic_timer += Time.deltaTime;
+                if (automatic_timer > AutomaticFireRate)
+                {
+                    Debug.Log("SHOT FIRED");
+                    Shoot();
+                    automatic_timer = 0.0f;
+                }
+            }
+            else
+            {
+                automatic_timer = 0.0f;
             }
         }
 
-        private void Awake()
+        public override void OnStartClient()
         {
-            if (!isLocalPlayer)
+            v = GetComponent<VehicleBehaviour>();
+            var vActive = v.vehicleActive;
+            if (vActive)
             {
-                return;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
 
@@ -403,6 +312,18 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    v = GetComponent<VehicleBehaviour>();
+                    var vactive = v.vehicleActive;
+
+                    if (vactive)
+                    {
+                        c = v.vehicleUI.GetComponent<Canvas>();
+                    }
+                    return;
+                }
+
                 return;
             }
 
@@ -410,7 +331,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
 
@@ -418,26 +339,45 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority && !isServer)
+                {
+                    Aim();
+                    Fire();
+
+                    Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+                    return;
+                }
+
                 return;
             }
 
-            Aim();
-            Fire();
+            //Aim();
+            //Fire();
 
-            Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+            //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
         }
 
         private void LateUpdate()
         {
             if (!isLocalPlayer)
             {
+                if(hasAuthority)
+                {
+                    var vactive = v.vehicleActive;
+                    if (vactive)
+                    {
+                        c = v.vehicleUI.GetComponent<Canvas>();
+                    }
+                    return;
+                }
+
                 return;
             }
 
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUI;
+                c = v.vehicleUI.GetComponent<Canvas>();
             }
         }
     }

@@ -76,8 +76,8 @@ namespace UGP
                     vehicleCam.gameObject.SetActive(false);
 
                     //ASSIGN THE CAMERA'S FOLLOW AND LOOK AT TARGETS TO THE TRANSFORM FROM 'playerMovement'
-                    playerCam.Follow = localPlayer.playerMovement.transform;
-                    playerCam.LookAt = localPlayer.playerMovement.transform;
+                    playerCam.Follow = localPlayer.ic.transform;
+                    playerCam.LookAt = localPlayer.ic.transform;
                 }
             }
 

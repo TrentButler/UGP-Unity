@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace UGP
 {
@@ -20,7 +21,9 @@ namespace UGP
         private float SprintTimer = 1.0f;
         private float JumpTimer = 1.0f;
         public bool isGrounded;
-
+        public NetworkPlayer Player;
+        public GameObject MapCanvas;
+        public GameObject SettingMenu;
         public Animator Ani;
         private Rigidbody rb;
         public CharacterController controller;
@@ -33,7 +36,7 @@ namespace UGP
                 VirtualCamera.SetActive(false);
                 return;
             }
-
+            MapCanvas.SetActive(false);
             VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCameraBase>().Follow = transform;
             VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCameraBase>().LookAt = transform;
             OriginalSpeed = WalkSpeed;
@@ -70,7 +73,10 @@ namespace UGP
                 //rb.rotation = transform.rotation;
             }
             Sprint();
+            Crouch();
             Jump();
+            ToggleMap();
+            ToggleSettings();
         }
 
         private void LateUpdate()
@@ -82,6 +88,40 @@ namespace UGP
             KeepPlayerUpright();
         }
 
+        public void ToggleSettings()
+        {
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                SettingMenu.SetActive(true);
+            }
+            else
+            {
+                SettingMenu.SetActive(false);
+            }
+           
+        }
+        public void ReturnMenu()
+        {
+            NetworkManager.Shutdown();
+            
+            SceneManager.LoadScene("69.OfflineScene");
+        }
+        public void Exit()
+        {
+            Application.Quit();
+        }
+        public void ToggleMap()
+        {
+            if (Input.GetKey(KeyCode.M))
+            {
+                MapCanvas.SetActive(true);
+            }
+            else
+            {
+                MapCanvas.SetActive(false);
+            }
+            
+        }
         public void Sprint()
         {
             if (Input.GetKey(KeyCode.LeftShift))
@@ -94,6 +134,19 @@ namespace UGP
             {
                 WalkSpeed = OriginalSpeed;
                 Ani.SetBool("Sprinting", false);
+            }
+        }
+        public void Crouch()
+        {
+            if (Input.GetKey(KeyCode.C))
+            {
+                WalkSpeed = 1.5f;
+                Ani.SetBool("Crouch", true);
+            }
+            else
+            {
+                WalkSpeed = OriginalSpeed;
+                Ani.SetBool("Crouch", false);
             }
         }
         public void Jump()
