@@ -1165,6 +1165,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 32
       objectReference: {fileID: 0}
+    - target: {fileID: 1807714000160766, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
   m_IsPrefabParent: 0
@@ -1173,6 +1177,12 @@ GameObject:
   m_PrefabParentObject: {fileID: 1807714000160766, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
     type: 2}
   m_PrefabInternal: {fileID: 64429666}
+--- !u!114 &64429668 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+    type: 2}
+  m_PrefabInternal: {fileID: 64429666}
+  m_Script: {fileID: 11500000, guid: 91d1ee566aba19d4fa173d0051debd86, type: 3}
 --- !u!1001 &66315733
 Prefab:
   m_ObjectHideFlags: 0
@@ -19020,6 +19030,15 @@ Prefab:
       propertyPath: scoreboard
       value: 
       objectReference: {fileID: 2057398518}
+    - target: {fileID: 114185577816566600, guid: cd8e714276192c64d97489d7d36944ed,
+        type: 2}
+      propertyPath: networkUI
+      value: 
+      objectReference: {fileID: 64429668}
+    - target: {fileID: 1939178618770096, guid: cd8e714276192c64d97489d7d36944ed, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cd8e714276192c64d97489d7d36944ed, type: 2}
   m_IsPrefabParent: 0
@@ -23162,7 +23181,7 @@ Prefab:
     - target: {fileID: 224527031771975018, guid: 86583eaf0acb94746a1cf3bd8fe4b6df,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -15
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 86583eaf0acb94746a1cf3bd8fe4b6df, type: 2}

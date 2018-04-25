@@ -452,7 +452,12 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
         type: 2}
-      propertyPath: canvas
+      propertyPath: clientUI
+      value: 
+      objectReference: {fileID: 89147105}
+    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: serverUI
       value: 
       objectReference: {fileID: 46636109}
     - target: {fileID: 114284836566354044, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
@@ -460,10 +465,10 @@ Prefab:
       propertyPath: PlayButton
       value: 
       objectReference: {fileID: 1874773761}
-    - target: {fileID: 114640835714761928, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
         type: 2}
-      propertyPath: m_OnlineScene
-      value: 05.PrisonDeathmatch
+      propertyPath: clientUIActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}

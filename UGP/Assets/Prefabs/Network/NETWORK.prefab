@@ -36,7 +36,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1807714000160766}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3193.896, y: 1041.718, z: 1095.812}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3339736116cacde4a8af4fe231252515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayButton: {fileID: 0}
   Server: {fileID: 114640835714761928}
   MatchCount: 0
   ListOfPlayers: []
@@ -67,8 +68,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91d1ee566aba19d4fa173d0051debd86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
-  active: 0
+  clientUI: {fileID: 0}
+  serverUI: {fileID: 0}
+  clientUIActive: 0
+  serverUIActive: 0
 --- !u!114 &114640835714761928
 MonoBehaviour:
   m_ObjectHideFlags: 1
