@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 namespace UGP
 {
-    public class DirectConnect : NetworkBehaviour
+    public class DirectConnect : MonoBehaviour
     {
         public GameObject PlayButton;
         public NetworkManager Server;
@@ -56,7 +56,7 @@ namespace UGP
             {
                 if (players.isServer)
                 {
-                    players.gameObject.SetActive(false);
+                    //players.gameObject.SetActive(false);
                 }
             }
         }
@@ -81,6 +81,9 @@ namespace UGP
                 eloScoreForClient,
                 requestDomain,
                 Server.OnMatchJoined);
+
+            var allClients = NetworkClient.allClients;
+            ClientScene.AddPlayer(allClients[0].connection, 0);
         }
 
         public void RestartServer()

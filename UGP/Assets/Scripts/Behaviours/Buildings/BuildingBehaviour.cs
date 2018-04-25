@@ -38,12 +38,13 @@ namespace UGP
                     }
 
                     //SPAWN THE ITEMS
+                    int i = 0;
                     ItemPrefabs.ForEach(item =>
                     {
-                        var spawnPoint = Random.Range(0, ItemSpawns.Count);
-                        var spawn = ItemSpawns[spawnPoint];
+                        //var spawnPoint = Random.Range(0, ItemSpawns.Count);
+                        var spawn = ItemSpawns[i];
                         server.Spawn(item, spawn.position, spawn.rotation);
-
+                        i++;
                         //var i = Instantiate(item, spawn.position, spawn.rotation);
                         //NetworkServer.Spawn(i);
                     });
@@ -72,12 +73,13 @@ namespace UGP
             }
 
             //SPAWN THE ITEMS
+            int i = 0;
             ItemPrefabs.ForEach(item =>
             {
-                var spawnPoint = Random.Range(0, ItemSpawns.Count);
-                var spawn = ItemSpawns[spawnPoint];
+                //var spawnPoint = Random.Range(0, ItemSpawns.Count);
+                var spawn = ItemSpawns[i];
                 server.Spawn(item, spawn.position, spawn.rotation);
-
+                i++;
                 //var i = Instantiate(item, spawn.position, spawn.rotation);
                 //NetworkServer.Spawn(i);
             });
