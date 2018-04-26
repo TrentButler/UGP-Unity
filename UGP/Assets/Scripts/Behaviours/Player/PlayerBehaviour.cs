@@ -492,6 +492,8 @@ namespace UGP
             CmdSetActive(true);
             CmdSetisDead(false);
             CmdSetDriving(false);
+            CmdSetActive(true);
+            CmdSetHasControl(true);
 
             if (ani == null)
             {

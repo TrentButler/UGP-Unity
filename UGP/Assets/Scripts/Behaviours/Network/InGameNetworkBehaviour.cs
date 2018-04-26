@@ -460,11 +460,13 @@ namespace UGP
             {
                 networkUI.serverUIActive = false;
                 networkUI.clientUIActive = false;
+                networkUI.ipUIActive = false;
             }
 
             if(isServer)
             {
                 networkUI.clientUIActive = false;
+                networkUI.ipUIActive = true;
             }
 
             scoreboard.text = scoreboardText;
