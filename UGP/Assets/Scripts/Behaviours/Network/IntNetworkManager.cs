@@ -8,9 +8,9 @@ namespace UGP
 {
     public class IntNetworkManager : NetworkManager
     {
-        public string playerName = "";
+
         public Text PLAYERNAME;
-        public Color playerColor = Color.white;
+        public PlayerInfo Info;
 
         //REFRENCE TO THE PREMATCH TIMER
         public InGameNetworkBehaviour net_companion;
@@ -28,10 +28,8 @@ namespace UGP
                 var playerConnection = playerNetIdentity.connectionToClient.connectionId;
                 if (playerConnection == conn.connectionId)
                 {
-                    player.playerName = playerName;
-                    player.vehicleColor = playerColor;
-                    //ADD THIS PLAYER TO THE GAMEMODES LIST OF PLAYERS
-                    gamemode_manager.gamemode.Players.Add(player);
+                    player.playerName = Info.PlayerName;
+                    player.vehicleColor = Info.PlayerColor;
                 }
 
             });
@@ -40,11 +38,26 @@ namespace UGP
             //net_companion.RestartPreMatchTimer();
         }
 
-
+        public override void OnStartClient(NetworkClient client)
+        {
+            //ADD THIS PLAYER TO THE GAMEMODE'S PLAYER LIST
+            var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+            allPlayers.ForEach(player =>
+            {
+                var playerNetIdentity = player.GetComponent<NetworkIdentity>();
+                var playerConnection = playerNetIdentity.connectionToClient.connectionId;
+                var conn = client.connection;
+                if (playerConnection == conn.connectionId)
+                {
+                    player.playerName = Info.PlayerName;
+                    player.vehicleColor = Info.PlayerColor;
+                }
+            });
+        }
 
         public void LateUpdate()
         {
-            playerName = PLAYERNAME.text;
+            Info.PlayerName = PLAYERNAME.text;
         }
     }
 }
