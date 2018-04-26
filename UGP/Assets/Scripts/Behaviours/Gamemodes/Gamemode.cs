@@ -16,10 +16,18 @@ namespace UGP
         [Range(0, 999999)] public float PostMatchTimer;
         [Range(0, 999999)] public float MatchTimer;
         public List<PlayerBehaviour> Players = new List<PlayerBehaviour>();
-        public bool WinCondition;
-        public bool LoseCondition;
+        [SyncVar(hook = "OnWinConditionChange")] public bool WinCondition;
+        [SyncVar(hook = "OnLoseConditionChange")] public bool LoseCondition;
         [SyncVar(hook = "OnMatchBegunChange")] public bool MatchBegun;
 
+        private void OnWinConditionChange(bool winChange)
+        {
+            WinCondition = winChange;
+        }
+        private void OnLoseConditionChange(bool loseChange)
+        {
+            LoseCondition = loseChange;
+        }
         private void OnMatchBegunChange(bool begunChange)
         {
             MatchBegun = begunChange;

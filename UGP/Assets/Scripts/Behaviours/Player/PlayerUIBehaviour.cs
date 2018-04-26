@@ -40,6 +40,19 @@ namespace UGP
 
             SceneManager.LoadScene(GotoSceneString);
         }
+        public void GotoScene(string scene)
+        {
+            if (scene == "")
+            {
+                scene = "00.PickAScene";
+            }
+
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            Destroy(netManager);
+
+            SceneManager.LoadScene(scene);
+        }
+
 
         public void RespawnPlayer()
         {
