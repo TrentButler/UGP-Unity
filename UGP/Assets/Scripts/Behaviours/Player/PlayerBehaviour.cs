@@ -492,7 +492,7 @@ namespace UGP
             CmdSetActive(true);
             CmdSetisDead(false);
             CmdSetDriving(false);
-
+            CmdSetHasControl(true);
             if (ani == null)
             {
                 ani = GetComponent<Animator>();

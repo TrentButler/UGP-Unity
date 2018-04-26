@@ -34,8 +34,6 @@ namespace UGP
 
             });
 
-            gamemode_manager.gamemode.RestartPreMatchTimer();
-            //net_companion.RestartPreMatchTimer();
         }
 
         public override void OnStartClient(NetworkClient client)
