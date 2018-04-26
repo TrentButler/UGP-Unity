@@ -15,6 +15,7 @@ namespace UGP
     {
         public List<GameObject> VehiclePrefabs;
         public List<GameObject> ItemPrefabs;
+        public List<NetworkStartPosition> PlayerStartPositions = new List<NetworkStartPosition>();
 
         public Transform OriginVehicleSpawn;
 
@@ -22,6 +23,9 @@ namespace UGP
         public float ItemPositionOffset = 5.0f;
         private bool spawnOnPlayerCount;
         [Range(1, 500)] public int TextCountLimit = 200;
+
+        public NetworkUIBehaviour networkUI;
+
 
         #region ServerCamera
         private GameObject server_camera;
@@ -83,9 +87,19 @@ namespace UGP
         }
         #endregion
 
+        [SyncVar(hook = "OnPreRoundTimerChange")] [Range(1.0f, 999999.0f)] public float PreMatchTimer;
+        private float original_prematchtimer;
+
+        [SyncVar(hook = "OnStartPositionIndexChange")] public int StartPositionIndex = 0;
+
         [SyncVar(hook = "OnScoreboardTextChange")] public string scoreboardText;
         public Text scoreboard;
+        public Text preroundtimer;
 
+        private void OnPreRoundTimerChange(float timerChange)
+        {
+            PreMatchTimer = timerChange;
+        }
         private void OnScoreboardTextChange(string textChange)
         {
             if (scoreboardText.Length > TextCountLimit)
@@ -98,6 +112,10 @@ namespace UGP
             }
 
             //CmdScoreboardTextChange(scoreboardText);
+        }
+        private void OnStartPositionIndexChange(int indexChange)
+        {
+            StartPositionIndex = indexChange;
         }
 
         public void PlayerHitPlayer(NetworkIdentity localPlayer, NetworkIdentity otherPlayer)
@@ -188,15 +206,6 @@ namespace UGP
             scoreboardText += playerName + Results;
         }
 
-        [Command] public void CmdScoreboardTextChange(string textChange)
-        {
-            RpcScoreboardTextChange(textChange);
-        }
-        [ClientRpc] public void RpcScoreboardTextChange(string textChange)
-        {
-            scoreboardText += textChange;
-        }
-
         [ClientRpc] public void RpcAssignObjectAuthority(NetworkIdentity objectIdentity)
         {
             var server_network_identity = GetComponent<NetworkIdentity>();
@@ -237,6 +246,29 @@ namespace UGP
 
             var player_behaviour = playerIdentity.GetComponent<PlayerBehaviour>();
             player_behaviour.ServerRespawn(spawn.transform);
+        }
+        public Transform GetPlayerSpawn()
+        {
+            if(StartPositionIndex > PlayerStartPositions.Count - 1)
+            {
+                StartPositionIndex = 0;
+            }
+
+            var spawn = PlayerStartPositions[StartPositionIndex].transform;
+            StartPositionIndex += 1;
+            //CmdStartPositionIndexChange(StartPositionIndex)
+            return spawn;
+        }
+
+        [Command] public void CmdRestartPreMatchTimer()
+        {
+            Debug.Log("RESTART PRE-MATCH TIMER");
+            PreMatchTimer = original_prematchtimer;
+            //ADD A RPC CALL TO MAKE SURE THIS IS HAPPENING
+        }
+        public void RestartPreMatchTimer()
+        {
+            PreMatchTimer = original_prematchtimer;
         }
 
         private void SpawnVehiclesOnPlayerCount()
@@ -371,29 +403,60 @@ namespace UGP
                 return;
             }
 
+            original_prematchtimer = PreMatchTimer;
             spawnOnPlayerCount = false;
             
             server_camera = Camera.main.gameObject;
             SpawnBuildings();
+
+            PlayerStartPositions = FindObjectsOfType<NetworkStartPosition>().ToList();
         }
 
         private void FixedUpdate()
         {
-            if(!isServer)
+            if(isServer)
             {
-                return;
+                //PreMatchTimer -= Time.deltaTime;
+
+                //var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+                //allPlayers.ForEach(player =>
+                //{
+                //    if (PreMatchTimer > 0.0f)
+                //    {
+                //        player.RpcSetUserControl(false);
+                //    }
+                //    else
+                //    {
+                //        player.RpcSetUserControl(true);
+                //    }
+                //});
             }
 
-            FreeLookCamera();
+            //preroundtimer.text = "";
+            //preroundtimer.text = "BEGIN IN: " + PreMatchTimer.ToString();
 
-            if (spawnOnPlayerCount)
-            {
-                SpawnVehiclesOnPlayerCount();
-            }
+            #region OLD
+            //FreeLookCamera();
+            //if (spawnOnPlayerCount)
+            //{
+            //    SpawnVehiclesOnPlayerCount();
+            //} 
+            #endregion
         }
 
         private void LateUpdate()
         {
+            if(!isServer)
+            {
+                networkUI.serverUIActive = false;
+                networkUI.clientUIActive = false;
+            }
+
+            if(isServer)
+            {
+                networkUI.clientUIActive = false;
+            }
+
             scoreboard.text = scoreboardText;
         }
     }
