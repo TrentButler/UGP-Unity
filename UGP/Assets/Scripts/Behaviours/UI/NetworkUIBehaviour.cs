@@ -15,6 +15,12 @@ namespace UGP
         public bool clientUIActive;
         public bool serverUIActive;
 
+        public void DestroyUI()
+        {
+            Destroy(clientUI);
+            Destroy(serverUI);
+        }
+
         public void ToggleServerUI()
         {
             if (serverUIActive == true)

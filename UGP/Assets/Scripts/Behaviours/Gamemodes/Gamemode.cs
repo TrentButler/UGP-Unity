@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 namespace UGP
 {
@@ -15,10 +16,12 @@ namespace UGP
         [Range(0, 999999)] public float PreMatchTimer;
         [Range(0, 999999)] public float PostMatchTimer;
         [Range(0, 999999)] public float MatchTimer;
-        public List<PlayerBehaviour> Players = new List<PlayerBehaviour>();
         [SyncVar(hook = "OnWinConditionChange")] public bool WinCondition;
         [SyncVar(hook = "OnLoseConditionChange")] public bool LoseCondition;
         [SyncVar(hook = "OnMatchBegunChange")] public bool MatchBegun;
+        public InGameNetworkBehaviour netCompanion;        
+        public bool destroyUI, stopServer, restartServer, destroyNetManager, localSceneSwitch;
+        public List<PlayerBehaviour> Players = new List<PlayerBehaviour>();
 
         private void OnWinConditionChange(bool winChange)
         {
@@ -60,6 +63,86 @@ namespace UGP
             {
                 player.RpcSetUserControl(control);
             });
+        }
+        protected void EndMatchLAN(string scene)
+        {
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            var network_manager = netManager.GetComponent<NetworkManager>();
+            var directConnect = netManager.GetComponent<LANDirectConnect>();
+            
+            if (destroyUI)
+            {
+                //DESTROY UI
+                var networkUI = network_manager.GetComponent<NetworkUIBehaviour>();
+                networkUI.DestroyUI();
+            }
+
+            if (stopServer)
+            {
+                //STOP THE SERVER
+                directConnect.StopServer();
+            }
+
+            if (restartServer)
+            {
+                //RESTART THE SERVER
+                directConnect.RestartServer();
+                directConnect.StopServer();
+            }
+            
+            if (destroyNetManager)
+            {
+                Destroy(netManager);
+            }
+
+            if (localSceneSwitch)
+            {
+                netCompanion.Server_ChangeSceneLocal(scene);
+            }
+            else
+            {
+                netCompanion.Server_ChangeScene(scene);
+            }
+        }
+        protected void EndMatchINT(string scene)
+        {
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            var network_manager = netManager.GetComponent<NetworkManager>();
+            var directConnect = netManager.GetComponent<DirectConnect>();
+
+            if (destroyUI)
+            {
+                //DESTROY UI
+                var networkUI = network_manager.GetComponent<NetworkUIBehaviour>();
+                networkUI.DestroyUI();
+            }
+
+            if (stopServer)
+            {
+                //STOP THE SERVER
+                directConnect.StopServer();
+            }
+
+            if (restartServer)
+            {
+                //RESTART THE SERVER
+                directConnect.RestartServer();
+                directConnect.StopServer();
+            }
+
+            if (destroyNetManager)
+            {
+                Destroy(netManager);
+            }
+
+            if (localSceneSwitch)
+            {
+                netCompanion.Server_ChangeSceneLocal(scene);
+            }
+            else
+            {
+                netCompanion.Server_ChangeScene(scene);
+            }
         }
     }
 }
