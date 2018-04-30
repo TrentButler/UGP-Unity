@@ -9,9 +9,9 @@ namespace UGP
 {
     public class LANDirectConnect : MonoBehaviour
     {
+        private List<PlayerBehaviour> ListOfPlayers = new List<PlayerBehaviour>();
         public GameObject PlayerPrefab;
         public LANNetworkManager Server;
-        public List<PlayerBehaviour> ListOfPlayers = new List<PlayerBehaviour>();
 
         public void ExitApplication()
         {
@@ -20,6 +20,21 @@ namespace UGP
         public void StartServer()
         {
             Server.StartServer();
+        }
+        public void StopServer()
+        {
+            //Server.StopHost();
+            Server.StopServer();
+        }
+        public void RestartServer()
+        {
+            //FUNCTION TO RESTART THE SERVER
+            //CREATE A EMPTY GAMEOBJECT WITH THE SCRIPT 'SERVERRESTART'
+            //USE THE METHOD 'DontDestroyOnLoad' ON THE CREATED GAMEOBJECT
+            var serverRestart = Instantiate(new GameObject());
+            serverRestart.name = "ServerRestart";
+            serverRestart.AddComponent<ServerRestart>();
+            DontDestroyOnLoad(serverRestart);
         }
         public void StartClient()
         {
@@ -32,14 +47,6 @@ namespace UGP
             {
                 players.CmdTakeDamage_Other("Admin", 9999999);
             }
-        }
-
-        public void RestartServer()
-        {
-            var currentScene = SceneManager.GetActiveScene();
-            var scene_string = currentScene.name;
-
-            NetworkManager.singleton.ServerChangeScene(scene_string);
         }
 
         void Awake()
@@ -58,6 +65,14 @@ namespace UGP
         void LateUpdate()
         {
             ListOfPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+            //CHECK IF THE SERVER NEEDS TO BE STARTED
+            //IF THE 'server_restart' OBJECT ISNT NULL, 
+            //START THE SERVER
+            var server_restart = FindObjectOfType<ServerRestart>();
+            if(server_restart != null)
+            {
+                server_restart.Restart(this);
+            }
         }
     }
 }

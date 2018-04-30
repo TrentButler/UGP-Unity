@@ -13,8 +13,7 @@ namespace UGP
         private List<PlayerBehaviour> _players = new List<PlayerBehaviour>();
         private List<PlayerBehaviour> finished_players = new List<PlayerBehaviour>();
         public Transform Finish;
-
-        public InGameNetworkBehaviour server;
+        
         public Text LiveRaceText;
         public Text EndOfRaceText;
         public Text PreRaceTimerText;
@@ -67,10 +66,10 @@ namespace UGP
             players.ForEach(player =>
             {
                 var player_networkID = player.GetComponent<NetworkIdentity>();
-                server.ServerRespawnPlayer(player_networkID);
+                netCompanion.ServerRespawnPlayer(player_networkID);
             });
 
-            server.Server_ChangeScene(scene);
+            netCompanion.Server_ChangeScene(scene);
         }
 
         private void EndOfRace()
@@ -80,12 +79,19 @@ namespace UGP
             {
                 Players.ForEach(player =>
                 {
+                    var client_scene = SceneManager.GetActiveScene();
                     var network_identity = player.GetComponent<NetworkIdentity>();
-                    server.RpcServer_Disconnect(network_identity, "");
+                    netCompanion.RpcServer_Disconnect(network_identity, client_scene.name);
                 });
 
-                var current_scene = SceneManager.GetActiveScene().name;
-                server.Server_ChangeScene(current_scene);
+                //CHECK IF THERE ARE NO PLAYERS CONNECTED BEFORE CHANGING THE SCENE
+                //server.Server_LANDisconnectAll();
+
+                if(Players.Count == 0)
+                {
+                    var server_scene = SceneManager.GetActiveScene();
+                    EndMatchLAN(server_scene.name);
+                }
             }
 
             _endofrace = "RACE COMPLETE \n";
@@ -164,6 +170,8 @@ namespace UGP
 
         private void LateUpdate()
         {
+
+
             //SYNC UI TEXT
 
             LiveRaceText.text = "";
@@ -216,7 +224,7 @@ namespace UGP
                     var p_netIdentity = other.GetComponentInParent<NetworkIdentity>();
 
                     Debug.Log(p_behaviour.gameObject.name + " FINISHED");
-                    server.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
+                    netCompanion.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
                     finished_players.Add(p_behaviour);
 
                     var ic = p_behaviour.ic;
@@ -239,7 +247,7 @@ namespace UGP
                     vehicle_behaviour.seatedPlayer.RemovePlayerFromVehicle();
                 }
 
-                server.Server_Destroy(vehicle_behaviour.gameObject);
+                netCompanion.Server_Destroy(vehicle_behaviour.gameObject);
 
                 #region OLD
                 //Debug.Log("COLLISION WITH VEHICLE");
