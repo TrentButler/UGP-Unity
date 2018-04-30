@@ -5699,7 +5699,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f38f72ae025b6d49a114bd372a2646c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  p: {fileID: 114386874542141472}
+  playerBrain: {fileID: 114386874542141472}
+  TimeToEnterVehicle: 0.5
+  TimeToExitVehicle: 0.5
   HoldingItemPosition: {fileID: 4776415799628130}
   isHolding: 0
   current_item: 
@@ -5711,6 +5713,7 @@ MonoBehaviour:
   NetworkAni: {fileID: 114162178429960720}
   item: {fileID: 0}
   DroppingItemOffset: 0.5
+  ExitVehicleOffset: 2.5
 --- !u!114 &114100149908154420
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6679,7 +6682,6 @@ MonoBehaviour:
   _p: {fileID: 0}
   Center: {fileID: 4507530567443048}
   vehicle: {fileID: 0}
-  TimeToExitVehicle: 0.4
   TimeToDestroyRagdoll: 10
   ic: {fileID: 114554935871039238}
   interaction: {fileID: 114092347888957772}
