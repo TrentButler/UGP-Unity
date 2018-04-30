@@ -34,8 +34,12 @@ namespace UGP
             }
             
             var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            //DESTROY THE NETWORK MANAGER, AND ITS UI
             var network_manager = netManager.GetComponent<NetworkManager>();
-            network_manager.StopClient();
+            var networkUI = network_manager.GetComponent<NetworkUIBehaviour>();
+            networkUI.DestroyUI();
+
+            //network_manager.StopClient();
             Destroy(netManager);
 
             SceneManager.LoadScene(GotoSceneString);
@@ -48,6 +52,12 @@ namespace UGP
             }
 
             var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            //DESTROY THE NETWORK MANAGER, AND ITS UI
+            var network_manager = netManager.GetComponent<NetworkManager>();
+            var networkUI = network_manager.GetComponent<NetworkUIBehaviour>();
+            networkUI.DestroyUI();
+
+            network_manager.StopClient();
             Destroy(netManager);
 
             SceneManager.LoadScene(scene);
