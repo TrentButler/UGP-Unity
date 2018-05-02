@@ -221,7 +221,10 @@ namespace UGP
             objectNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
         #endregion
-
+        [Command] public void CmdNameChanged(string name)
+        {
+            playerName = name;
+        }
         #region CLIENTRPC_FUNCTIONS
         //NEEDS WORK
         [ClientRpc] public void RpcTakeDamage(NetworkIdentity localPlayer, NetworkIdentity attacker, float damageDealt)

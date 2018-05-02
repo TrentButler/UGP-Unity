@@ -85,7 +85,10 @@ namespace UGP
             var allClients = NetworkClient.allClients;
             ClientScene.AddPlayer(allClients[0].connection, 0);
         }
-
+        public void ExitApplication()
+        {
+            Application.Quit();
+        }
         public void RestartServer()
         {
             var currentScene = SceneManager.GetActiveScene();

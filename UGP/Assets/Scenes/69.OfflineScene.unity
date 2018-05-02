@@ -275,11 +275,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &46636109 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1243284478806926, guid: 947e950339249af4196f55a87198909a,
-    type: 2}
-  m_PrefabInternal: {fileID: 1341712140}
 --- !u!1 &89147105
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,33 +1011,17 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114284836566354044, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+    - target: {fileID: 114096601438046330, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
         type: 2}
       propertyPath: PlayButton
       value: 
       objectReference: {fileID: 1874773761}
-    - target: {fileID: 114737505390158768, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
-        type: 2}
-      propertyPath: PLAYERNAME
-      value: 
-      objectReference: {fileID: 98003363}
-    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
-        type: 2}
-      propertyPath: clientUI
-      value: 
-      objectReference: {fileID: 89147105}
-    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
-        type: 2}
-      propertyPath: serverUI
-      value: 
-      objectReference: {fileID: 46636109}
-    - target: {fileID: 114284836566354044, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+    - target: {fileID: 114096601438046330, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
         type: 2}
       propertyPath: Server
       value: 
-      objectReference: {fileID: 1208067038}
-    m_RemovedComponents:
-    - {fileID: 114233916387941594, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1073438932
@@ -1160,18 +1139,6 @@ GameObject:
   m_PrefabParentObject: {fileID: 1807714000160766, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
     type: 2}
   m_PrefabInternal: {fileID: 1064463093}
---- !u!114 &1208067036 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114284836566354044, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
-    type: 2}
-  m_PrefabInternal: {fileID: 1064463093}
-  m_Script: {fileID: 11500000, guid: 3339736116cacde4a8af4fe231252515, type: 3}
---- !u!114 &1208067038 stripped
-MonoBehaviour:
-  m_PrefabParentObject: {fileID: 114737505390158768, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
-    type: 2}
-  m_PrefabInternal: {fileID: 1064463093}
-  m_Script: {fileID: 11500000, guid: 950c2f2ae4e042140807cea3a1899052, type: 3}
 --- !u!1 &1251998991
 GameObject:
   m_ObjectHideFlags: 0
@@ -1328,17 +1295,17 @@ Prefab:
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1208067036}
+      objectReference: {fileID: 0}
     - target: {fileID: 114434040668982670, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1208067036}
+      objectReference: {fileID: 0}
     - target: {fileID: 114921554023575308, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1208067036}
+      objectReference: {fileID: 0}
     - target: {fileID: 224800269519447910, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchorMin.y
@@ -1372,7 +1339,7 @@ Prefab:
     - target: {fileID: 224429873360752692, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -121.666664
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 224859520950035038, guid: 947e950339249af4196f55a87198909a,
         type: 2}
@@ -1392,7 +1359,7 @@ Prefab:
     - target: {fileID: 224859520950035038, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -243.33333
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1243284478806926, guid: 947e950339249af4196f55a87198909a, type: 2}
       propertyPath: m_IsActive
@@ -1830,7 +1797,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1208067036}
+      - m_Target: {fileID: 0}
         m_MethodName: StartClient
         m_Mode: 1
         m_Arguments:

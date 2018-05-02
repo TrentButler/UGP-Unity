@@ -11,10 +11,17 @@ namespace UGP
 
         public Text PLAYERNAME;
         public PlayerInfo Info;
-
+       
         //REFRENCE TO THE PREMATCH TIMER
         public InGameNetworkBehaviour net_companion;
         public GamemodeManager gamemode_manager;
+
+
+
+     
+
+      
+
 
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId)
         {
@@ -55,7 +62,38 @@ namespace UGP
 
         public void LateUpdate()
         {
-            Info.PlayerName = PLAYERNAME.text;
+        
         }
     }
+
+    public class PlayerNameManager : NetworkLobbyPlayer
+    {
+
+
+        [SyncVar(hook = "OnMyName")]
+        public string playerName = "";
+        public InputField nameInput;
+
+        public void OnMyName(string newName)
+        {
+            playerName = newName;
+            nameInput.text = playerName;
+        }
+        [Command]
+        public void CmdNameChanged(string name)
+        {
+            playerName = name;
+        }
+
+        public void OnNameChanged(string str)
+        {
+            CmdNameChanged(str);
+        }
+
+
+
+    }
+
+
+
 }
