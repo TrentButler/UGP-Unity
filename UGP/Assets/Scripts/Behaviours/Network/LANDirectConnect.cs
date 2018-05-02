@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace UGP
 {
@@ -12,6 +13,9 @@ namespace UGP
         private List<PlayerBehaviour> ListOfPlayers = new List<PlayerBehaviour>();
         public GameObject PlayerPrefab;
         public LANNetworkManager Server;
+
+        public InputField IPTEXT;
+        public string server_ip;
 
         public void ExitApplication()
         {
@@ -64,15 +68,13 @@ namespace UGP
 
         void LateUpdate()
         {
-            ListOfPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
-            //CHECK IF THE SERVER NEEDS TO BE STARTED
-            //IF THE 'server_restart' OBJECT ISNT NULL, 
-            //START THE SERVER
-            var server_restart = FindObjectOfType<ServerRestart>();
-            if(server_restart != null)
-            {
-                server_restart.Restart(this);
-            }
+            Server.networkAddress = IPTEXT.text;
+            server_ip = Server.networkAddress;
+
+            //if(Input.GetKeyDown(KeyCode.Keypad0))
+            //{
+            //    StartClient();
+            //}
         }
     }
 }

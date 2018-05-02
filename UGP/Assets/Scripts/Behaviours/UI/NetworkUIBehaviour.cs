@@ -11,9 +11,11 @@ namespace UGP
     {
         public GameObject clientUI;
         public GameObject serverUI;
+        public GameObject ipUI;
         
         public bool clientUIActive;
         public bool serverUIActive;
+        public bool ipUIActive;
 
         public void DestroyUI()
         {
@@ -38,6 +40,7 @@ namespace UGP
         {
             DontDestroyOnLoad(clientUI);
             DontDestroyOnLoad(serverUI);
+            DontDestroyOnLoad(ipUI);
         }
 
         private void Start()
@@ -56,6 +59,7 @@ namespace UGP
 
             clientUI.SetActive(clientUIActive);
             serverUI.SetActive(serverUIActive);
+            ipUI.SetActive(ipUIActive);
         }
     }
 }
