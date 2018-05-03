@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -25,7 +26,7 @@ namespace UGP
         [Range(1, 500)] public int TextCountLimit = 200;
 
         public NetworkUIBehaviour networkUI;
-
+        public LANDirectConnect lanDirectConnect;
 
         #region ServerCamera
         private GameObject server_camera;
@@ -395,13 +396,24 @@ namespace UGP
         {
             NetworkManager.singleton.ServerChangeScene(scene);
         }
-
-        [ClientRpc] public void RpcServer_Disconnect(NetworkIdentity localPlayer, string scene)
+        public void Server_ChangeSceneLocal(string scene)
         {
-            if(localPlayer.isLocalPlayer)
+            SceneManager.LoadScene(scene);
+            //NetworkManager.singleton.ServerChangeScene(scene);
+        }
+
+        public void Server_LANDisconnectAll()
+        {
+            var lanManager = FindObjectOfType<LANNetworkManager>();
+            lanManager.DisconnectAll();
+        }
+
+        [ClientRpc] public void RpcServer_Disconnect(NetworkIdentity player, string scene)
+        {
+            if(player.isLocalPlayer)
             {
-                NetworkManager.singleton.StopClient();
-                var playerUIBehaviour = localPlayer.GetComponent<PlayerUIBehaviour>();
+                //NetworkManager.singleton.StopClient();
+                var playerUIBehaviour = player.GetComponent<PlayerUIBehaviour>();
                 playerUIBehaviour.GotoScene(scene);
             }
         }
@@ -456,13 +468,14 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if(!isServer)
+            if (!isServer)
             {
                 networkUI.serverUIActive = false;
                 networkUI.clientUIActive = false;
+                networkUI.ipUIActive = false;
             }
 
-            if(isServer)
+            if (isServer)
             {
                 networkUI.clientUIActive = false;
             }

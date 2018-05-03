@@ -1685,7 +1685,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4193422416478236}
   - component: {fileID: 114491847686273560}
-  - component: {fileID: 114651501945256082}
   m_Layer: 0
   m_Name: PlayerVirtualCamera(Alt. Third Person)
   m_TagString: Untagged
@@ -4733,7 +4732,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1094490775518226}
-  m_LocalRotation: {x: 0.70432436, y: 0.00000006850912, z: -0.000000054307005, w: -0.7098783}
+  m_LocalRotation: {x: 0.7043245, y: 0.000000068509124, z: -0.000000054306998, w: -0.70987827}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -7631,29 +7630,6 @@ MonoBehaviour:
   m_LegacyHeightOffset: 3.4028235e+38
   m_LegacyHeadingBias: 3.4028235e+38
   m_HeadingIsSlave: 1
---- !u!114 &114651501945256082
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1581898745813548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CollideAgainst:
-    serializedVersion: 2
-    m_Bits: 1
-  m_IgnoreTag: 
-  m_MinimumDistanceFromTarget: 0.1
-  m_AvoidObstacles: 1
-  m_DistanceLimit: 0
-  m_CameraRadius: 0.1
-  m_Strategy: 2
-  m_MaximumEffort: 4
-  m_Damping: 0
-  m_OptimalTargetDistance: 0
 --- !u!114 &114665714560973308
 MonoBehaviour:
   m_ObjectHideFlags: 1
