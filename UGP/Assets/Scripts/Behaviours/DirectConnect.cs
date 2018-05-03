@@ -119,12 +119,18 @@ namespace UGP
             Server.matchMaker.ListMatches(0, 20, "", false, 0, 0, OnMatchList);
 
             if (AllMatches.Count > 0)
-            { 
-                PlayButton.SetActive(true);
+            {
+                if (PlayButton != null)
+                {
+                    PlayButton.SetActive(true);
+                }
             }
             if (AllMatches.Count == 0)
             {
-                PlayButton.SetActive(false);
+                if (PlayButton != null)
+                {
+                    PlayButton.SetActive(false);
+                }
             }
 
             MatchCount = AllMatches.Count;
