@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace UGP
 {
-    public class NetworkUIBehaviour : MonoBehaviour
+    public class NetworkUIBehaviour : NetworkBehaviour
     {
         public GameObject clientUI;
         public GameObject serverUI;
@@ -26,11 +26,10 @@ namespace UGP
 
         public void ToggleServerUI()
         {
-            if (serverUIActive == true)
+            if(isServer)
             {
-                serverUIActive = false;
+                canvas.SetActive(true);
             }
-
             else
             {
                 serverUIActive = true;
