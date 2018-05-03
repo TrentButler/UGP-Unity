@@ -9,10 +9,22 @@ namespace UGP
 {
     public class NetworkUIBehaviour : NetworkBehaviour
     {
-        public GameObject canvas;
-        public Text t;
+        public GameObject clientUI;
+        public GameObject serverUI;
+        public GameObject ipUI;
         
-        void Update()
+        public bool clientUIActive;
+        public bool serverUIActive;
+        public bool ipUIActive;
+
+        public void DestroyUI()
+        {
+            Destroy(clientUI);
+            Destroy(serverUI);
+            Destroy(ipUI);
+        }
+
+        public void ToggleServerUI()
         {
             if(isServer)
             {
@@ -20,18 +32,34 @@ namespace UGP
             }
             else
             {
-                canvas.SetActive(false);
+                serverUIActive = true;
+            }
+        }
+
+        private void Awake()
+        {
+            DontDestroyOnLoad(clientUI);
+            DontDestroyOnLoad(serverUI);
+            DontDestroyOnLoad(ipUI);
+        }
+
+        private void Start()
+        {
+            serverUI.SetActive(false);
+        }
+
+        private void Update()
+        {   
+            if (Input.GetKeyDown(KeyCode.BackQuote))
+            {
+                ToggleServerUI();
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
 
-            //var connections = NetworkServer.connections.ToList();
-            //connections.ForEach(connection =>
-            //{
-            //    string dump = "";
-            //    var ip = connection.address.ToString();
-            //    dump += ip;
-            //    dump += "\n";
-            //    t.text = dump;
-            //});
+            clientUI.SetActive(clientUIActive);
+            serverUI.SetActive(serverUIActive);
+            ipUI.SetActive(ipUIActive);
         }
     }
 }
