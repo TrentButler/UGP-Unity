@@ -32,8 +32,7 @@ namespace UGP
         #endregion
 
         #region ParticleSystems
-        public ParticleSystem VehicleDestroyedParticle;
-        public ParticleSystem BurningVehicleParticle;
+        public ParticleSystem VehicleDestroyedParticle; 
         #endregion
 
         public Transform seat;
@@ -129,24 +128,11 @@ namespace UGP
         [Command] public void CmdVehicleDestroyed()
         {
             VehicleDestroyedParticle.Play();
-            BurningVehicleParticle.Play();
             RpcVehicleDestroyed();
         }
         #endregion
 
         #region CLIENTRPC_FUNCTIONS
-        [ClientRpc] public void RpcTakeDamage(float healthTaken)
-        {
-            //DEPLETE THE VEHICLE'S HEALTH
-            vehicleHealth -= healthTaken;
-            //Debug.Log("VEHICLE TAKE " + healthTaken.ToString() + " DAMAGE");
-
-            if (vehicleHealth <= 0.0f)
-            {
-                vehicleActive = false;
-                isDestroyed = true;
-            }
-        }
         [ClientRpc] public void RpcSetVehicleActive(bool active)
         {
             vehicleActive = active;
@@ -162,7 +148,6 @@ namespace UGP
         [ClientRpc] public void RpcVehicleDestroyed()
         {
             VehicleDestroyedParticle.Play();
-            BurningVehicleParticle.Play();
         }
         #endregion
 
@@ -179,14 +164,11 @@ namespace UGP
 
                 if(seatedPlayer != null)
                 {
-                    seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999);
+                    seatedPlayer.CmdTakeDamage(999999);
                     seatedPlayer.RemovePlayerFromVehicle();
                 }
 
-                vehicleActive = false;
-                
                 VehicleDestroyedParticle.Play();
-                BurningVehicleParticle.Play();
                 CmdVehicleDestroyed();
             }
         }
@@ -501,15 +483,6 @@ namespace UGP
         {
             var rb = GetComponent<Rigidbody>();
             
-            if(isDestroyed)
-            {
-                ColorChangeOff();
-                //VehicleDestroyedParticle.Play();
-                BurningVehicleParticle.Play();
-                rb.isKinematic = true;
-                return;
-            }
-
             if (vehicleActive)
             {
                 rb.isKinematic = false;
@@ -522,7 +495,20 @@ namespace UGP
                 ColorChangeOff();
             }
         }
-        
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(collision.collider.CompareTag("Player"))
+            {
+                var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                var impact_velocity = collision.relativeVelocity;
+
+                player_behaviour.CmdTakeDamage(impact_velocity.magnitude);
+
+                Debug.Log("HIT PLAYER FOR " + impact_velocity.magnitude.ToString() + " DAMAGE");
+            }
+        }
+
         private void OnTriggerStay(Collider other)
         {
             if (other.CompareTag("Player"))

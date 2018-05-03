@@ -23,10 +23,6 @@ namespace UGP
         private NetworkIdentity item_network_identity;
         [SyncVar(hook = "OnisBeingHeldChange")] public bool isBeingHeld = false;
 
-        [Range(0, 999.0f)] public float DropItemPower = 1.5f;
-        [Range(0, 999.0f)] public float DropItemOffset = 1.5f;
-        private Vector3 nonTriggerColliderSize;
-
         [Command] public void CmdSetHolding(bool holding)
         {
             isBeingHeld = holding;
@@ -37,14 +33,8 @@ namespace UGP
             isBeingHeld = beingHeldChange;
         }
 
-        //FUNCTION TO CHECK IF ITEM IS GROUNDED
-        private bool CheckItemGrounded()
-        {
-            return Physics.BoxCast(rb.centerOfMass, nonTriggerColliderSize / 2, -Vector3.up);
-        }
-
         public void PickUp(PlayerInteractionBehaviour interaction)
-        {
+        {   
             player = interaction;
             player.item = this;
             var string_type = _I.GetType().ToString();
@@ -76,94 +66,32 @@ namespace UGP
             
             player.CmdSetHolding(false, "");
             player.CmdSetItemBeingHeld(false, item_network_identity);
-            isBeingHeld = false;
             player.item = null;
 
             var colliders = GetComponents<Collider>().ToList();
-            var trigger_size = Vector3.zero;
             colliders.ForEach(collider =>
             {
-                if (!collider.isTrigger)
-                {
-                    collider.enabled = true;
-                }
-                else
-                {
-                    collider.enabled = true;
-                    trigger_size = collider.bounds.size;
-                    collider.enabled = false;
-                }
+                collider.enabled = true;
             });
 
             rb.isKinematic = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
 
-            var drop_position = Vector3.zero;
+            var drop_position = player.HoldingItemPosition.position;
+            drop_position.x += 2;
+            //drop_position.y -= 2;
 
-            var isUsingItem = player.Ani.GetBool("UsingItem");
-            if(isUsingItem)
-            {
-                //DROP ITEM INFRONT OF PLAYER
-                var front_drop_position = trigger_size;
-                front_drop_position.x = 0;
-                front_drop_position.y = 0;
-                front_drop_position.z = front_drop_position.z * DropItemOffset;
-
-                drop_position = player.transform.TransformPoint(front_drop_position);
-            }
-            else
-            {
-                //DROP ITEM ON SIDE OF PLAYER
-                var side_drop_position = trigger_size;
-                side_drop_position.x = side_drop_position.x * DropItemOffset;
-                side_drop_position.y = 0;
-                side_drop_position.z = 0;
-
-                drop_position = player.transform.TransformPoint(side_drop_position);
-            }
-
-            drop_position.y = transform.position.y;
-
-            //var drop_position = player.HoldingItemPosition.position;
-            //trigger_size.y = 0;
-            //trigger_size.x = 0;
-            //trigger_size.z = -trigger_size.z;
-
-            //drop_position += trigger_size * DropItemOffset;
-
-            RaycastHit hit;
-            if(Physics.Raycast(transform.position, -Vector3.up, out hit))
-            {
-                //PUT THE ITEM ON THE GROUND
-                drop_position.y -= hit.distance;
-            }
-            
-            rb.transform.position = (drop_position);
-            //rb.MovePosition(drop_position);
-            rb.velocity = -Vector3.up * DropItemPower;
+            rb.MovePosition(drop_position);
+            rb.velocity = Vector3.zero;
 
             //rb.MovePosition(drop_position);
 
             player = null; //REMOVE REFRENCE TO PLAYER
         }
-
+        
         private void OnTriggerStay(Collider other)
         {
-            if(isServer)
-            {
-                return;
-            }
-
-            //var item_behaviour = other.GetComponentInParent<ItemBehaviour>();
-            //if (item_behaviour != null)
-            //{
-            //    var other_col_size = other.bounds.size;
-            //    other_col_size.y = 0;
-            //    transform.position = transform.position + (other_col_size * 1.5f);
-            //}
-
-
             if (other.tag == "Player")
             {
                 var player_identity = other.GetComponentInParent<NetworkIdentity>();
@@ -181,18 +109,6 @@ namespace UGP
                 }
             }
 
-            if (other.CompareTag("Hand"))
-            {
-                var player_interaction = other.GetComponentInParent<PlayerInteractionBehaviour>();
-                if (player_interaction != null)
-                {
-                    if (!player_interaction.isHolding && !isBeingHeld)
-                    {
-                        PickUp(player_interaction);
-                    }
-                }
-            }
-
             if (other.tag == "Vehicle")
             {
                 Debug.Log("COLLISION WITH: " + other.gameObject.name);
@@ -207,17 +123,15 @@ namespace UGP
 
                     if (vehicle_identity.hasAuthority)
                     {
+                        player.DropItem(); //REMOVE THE ITEM FROM THE PLAYER
                         player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity); //USE THE ITEM ON THE VEHICLE
                         player.p.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
-                        player._DropItem(); //REMOVE THE ITEM FROM THE PLAYER
 
-                        var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-                        net_companion.Server_Destroy(gameObject);
+                        NetworkServer.Destroy(gameObject); //DESTROY THIS ITEM ON SERVER AND ALL CLIENTS
                     }
                 }
             }
         }
-
         private void OnTriggerExit(Collider other)
         {
             ItemCanvas.SetActive(false);
@@ -253,15 +167,6 @@ namespace UGP
             {
                 item_network_identity = gameObject.AddComponent<NetworkIdentity>();
             }
-
-            var colliders = GetComponents<Collider>().ToList();
-            colliders.ForEach(col =>
-            {
-                if (!col.isTrigger)
-                {
-                    nonTriggerColliderSize = col.bounds.extents;
-                }
-            });
         }
 
         void FixedUpdate()
@@ -277,24 +182,6 @@ namespace UGP
                 rb.MovePosition(player.HoldingItemPosition.position);
                 rb.velocity = Vector3.zero;
                 rb.MoveRotation(player.HoldingItemPosition.rotation);
-            }
-            else
-            {
-                if(CheckItemGrounded())
-                {
-                    var colliders = GetComponents<Collider>().ToList();
-                    colliders.ForEach(collider =>
-                    {
-                        collider.enabled = true;
-                    });
-
-                    rb.velocity = Vector3.zero;
-                    rb.isKinematic = true;
-                }
-                else
-                {
-                    rb.isKinematic = false;
-                }
             }
         }
 

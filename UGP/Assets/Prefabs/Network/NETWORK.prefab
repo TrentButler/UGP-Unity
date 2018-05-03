@@ -20,8 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4900349327771586}
   - component: {fileID: 114640835714761928}
-  - component: {fileID: 114284836566354044}
-  - component: {fileID: 114287625760745646}
+  - component: {fileID: 114000747057042134}
   m_Layer: 0
   m_Name: NETWORK
   m_TagString: NetworkManager
@@ -36,13 +35,13 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1807714000160766}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3193.896, y: 1041.718, z: 1095.812}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114284836566354044
+--- !u!114 &114000747057042134
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -50,25 +49,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1807714000160766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3339736116cacde4a8af4fe231252515, type: 3}
+  m_Script: {fileID: 227461547, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Server: {fileID: 114640835714761928}
-  MatchCount: 0
-  ListOfPlayers: []
---- !u!114 &114287625760745646
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1807714000160766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91d1ee566aba19d4fa173d0051debd86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
-  active: 0
+  manager: {fileID: 0}
+  showGUI: 1
+  offsetX: 0
+  offsetY: 0
 --- !u!114 &114640835714761928
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -89,22 +76,20 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 1550974688005078, guid: 015eaae25481ce44cb44eb348709c40d,
+  m_PlayerPrefab: {fileID: 1800139849652126, guid: 5c66c3aa49abf1148b61e20a6ac51505,
     type: 2}
   m_AutoCreatePlayer: 1
-  m_PlayerSpawnMethod: 0
+  m_PlayerSpawnMethod: 1
   m_OfflineScene: 
-  m_OnlineScene: 05.PrisonDeathmatch
+  m_OnlineScene: 
   m_SpawnPrefabs:
-  - {fileID: 1753106163161976, guid: 7694304c9a2058c4d88270e4608f5f32, type: 2}
-  - {fileID: 1635836624532418, guid: 1679df7eae7b7cb4b93d9c5a7834dfaf, type: 2}
-  - {fileID: 1534243780155308, guid: 75cc783c2c9ed5f43bd7801ed228b5e2, type: 2}
-  - {fileID: 1777122563482306, guid: 149673a0bbe071846b71e1d2d3da57b0, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 1912099926934314, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
   - {fileID: 1537869310021538, guid: be405b0ceb96d894aa9e47b8e818eb35, type: 2}
-  - {fileID: 1526021633386524, guid: fcd7a2ee3882ec949b21cb793b5eb027, type: 2}
-  - {fileID: 1466913676474728, guid: 534cd9bf12194c04f9f6af9c8c613eb8, type: 2}
-  - {fileID: 1544895805012732, guid: 8afbf48a1562a6546be993b39d7e7172, type: 2}
-  - {fileID: 1978491074197374, guid: 66946e60c99eef847bc5a630042122ad, type: 2}
+  - {fileID: 0}
   m_CustomConfig: 0
   m_MaxConnections: 4
   m_ConnectionConfig:
@@ -157,6 +142,6 @@ MonoBehaviour:
   m_MatchHost: mm.unet.unity3d.com
   m_MatchPort: 443
   matchName: default
-  matchSize: 20
+  matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
