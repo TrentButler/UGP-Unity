@@ -12,7 +12,7 @@ namespace UnitySampleAssets.Vehicles.Car
         public bool OnGround { get; private set; }
         public Transform Hub { get; set; }
         public WheelCollider wheelCollider { get; private set; }
-        public CarController car { get; private set; }
+        public EnemyController car { get; private set; }
         public Transform skidTrailPrefab;
         public static Transform skidTrailsDetachedParent;
         public float loQualDist = 100;
@@ -55,7 +55,7 @@ namespace UnitySampleAssets.Vehicles.Car
 
         private void Start()
         {
-            car = transform.parent.GetComponent<CarController>();
+            car = transform.parent.GetComponent<EnemyController>();
             wheelCollider = GetComponent<Collider>() as WheelCollider;
 
             if (wheelModel != null)
