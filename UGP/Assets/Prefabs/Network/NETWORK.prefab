@@ -67,8 +67,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91d1ee566aba19d4fa173d0051debd86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
-  active: 0
+  clientUI: {fileID: 0}
+  serverUI: {fileID: 0}
+  ipUI: {fileID: 0}
+  clientUIActive: 0
+  serverUIActive: 0
+  ipUIActive: 0
 --- !u!114 &114640835714761928
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -91,7 +95,7 @@ MonoBehaviour:
   m_LogLevel: 2
   m_PlayerPrefab: {fileID: 1550974688005078, guid: 015eaae25481ce44cb44eb348709c40d,
     type: 2}
-  m_AutoCreatePlayer: 1
+  m_AutoCreatePlayer: 0
   m_PlayerSpawnMethod: 0
   m_OfflineScene: 
   m_OnlineScene: 05.PrisonDeathmatch
