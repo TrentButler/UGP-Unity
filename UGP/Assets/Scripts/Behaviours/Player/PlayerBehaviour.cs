@@ -9,12 +9,14 @@ namespace UGP
 {
     public class PlayerBehaviour : NetworkBehaviour
     {
+        [Header("Cameras")]
         public GameObject VirtualCamera;
         public GameObject model;
         public GameObject RagDoll;
         public Player PlayerConfig;
         [HideInInspector] public Player _p;
-
+        [Space]
+        public Transform Center;
         public VehicleBehaviour vehicle;
         public float TimeToExitVehicle;
         public float TimeToDestroyRagdoll = 10.0f;
@@ -331,7 +333,9 @@ namespace UGP
             CmdSetMaxHealth(_p.MaxHealth);
             CmdSetisDead(false);
             CmdSetDriving(false);
+            CmdSetActive(true);
             CmdSetHasControl(true);
+
             if (ani == null)
             {
                 ani = GetComponent<Animator>();
