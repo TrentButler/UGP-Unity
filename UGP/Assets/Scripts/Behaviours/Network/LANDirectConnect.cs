@@ -71,10 +71,15 @@ namespace UGP
             Server.networkAddress = IPTEXT.text;
             server_ip = Server.networkAddress;
 
-            //if(Input.GetKeyDown(KeyCode.Keypad0))
-            //{
-            //    StartClient();
-            //}
+            ListOfPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+            //CHECK IF THE SERVER NEEDS TO BE STARTED
+            //IF THE 'server_restart' OBJECT ISNT NULL, 
+            //START THE SERVER
+            var server_restart = FindObjectOfType<ServerRestart>();
+            if(server_restart != null)
+            {
+                server_restart.Restart(this);
+            }
         }
     }
 }

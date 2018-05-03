@@ -21,6 +21,7 @@ namespace UGP
         {
             Destroy(clientUI);
             Destroy(serverUI);
+            Destroy(ipUI);
         }
 
         public void ToggleServerUI()
