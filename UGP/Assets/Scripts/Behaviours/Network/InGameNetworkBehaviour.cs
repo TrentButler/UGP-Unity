@@ -468,13 +468,14 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if(!isServer)
+            if (!isServer)
             {
                 networkUI.serverUIActive = false;
                 networkUI.clientUIActive = false;
+                networkUI.ipUIActive = false;
             }
 
-            if(isServer)
+            if (isServer)
             {
                 networkUI.clientUIActive = false;
             }
