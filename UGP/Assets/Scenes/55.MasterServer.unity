@@ -185,12 +185,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82e54b562df669c47b9cf5e35002502a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LookForModules: 1
-  LookInChildrenOnly: 0
-  Permissions: []
-  Port: 5000
-  LogLevel: 3
-  AutoStartInEditor: 1
 --- !u!4 &54884270
 Transform:
   m_ObjectHideFlags: 0
@@ -304,14 +298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08ee5dd456b4d5c4e9eefbaef28ca081, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseAuthModule: 1
-  ForbiddenWordsInChNames: []
-  SetFirstChannelAsLocal: 1
-  SetLastChannelAsLocal: 1
-  AllowUsernamePicking: 1
-  MinChannelNameLength: 2
-  MaxChannelNameLength: 25
-  LogLevel: 4
 --- !u!1001 &488258358
 Prefab:
   m_ObjectHideFlags: 0
@@ -437,6 +423,46 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d5a8b5dda87d18a44b41021371c8f5af, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &540727463
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 540727464}
+  - component: {fileID: 540727465}
+  m_Layer: 0
+  m_Name: ServerStart
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &540727464
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 540727463}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.2827883, y: -2.8350906, z: 11.518121}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &540727465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 540727463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: debb884a24b330448aeae327db40875d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &605724092
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,12 +686,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e401e71d0a64ca74e9df70f81052b6e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CreateLobbiesPermissionLevel: 0
-  LogLevel: 4
-  DontAllowCreatingIfJoined: 1
-  JoinedLobbiesLimit: 1
-  SpawnersModule: {fileID: 0}
-  RoomsModule: {fileID: 0}
 --- !u!1 &1128725391
 GameObject:
   m_ObjectHideFlags: 0
@@ -709,19 +729,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704ad5df7a4cbed4ba0132a20b05a692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnableGuestLogin: 1
-  GuestPrefix: Guest-
-  GetPeerDataPermissionsLevel: 0
-  Config:
-    ForbiddenUsernames: []
-    ForbiddenWordsInUsernames: []
-    UsernameMaxChars: 12
-    UsernameMinChars: 3
-  Mailer: {fileID: 2077713958}
-  ActivationForm: '<h1>Activation</h1><p>Your email activation code is: <b>{0}</b>
-    </p>'
-  PasswordResetCode: '<h1>Password Reset Code</h1><p>Your password reset code is:
-    <b>{0}</b> </p>'
 --- !u!1 &1135343309
 GameObject:
   m_ObjectHideFlags: 0
@@ -845,10 +852,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0753438ce5d06cd47af23678e1f6397d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CreateSpawnerPermissionLevel: 0
-  LogLevel: 4
-  QueueUpdateFrequency: 0.1
-  EnableClientSpawnRequests: 1
 --- !u!1 &1393002213
 GameObject:
   m_ObjectHideFlags: 0
@@ -923,7 +926,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 968e9d6929f23b7498fb60957882fb43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Server: {fileID: 0}
+--- !u!1 &1511737344
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 488258358}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1511737345}
+  m_Layer: 0
+  m_Name: Missing Prefab
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1511737345
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 488258358}
+  m_GameObject: {fileID: 1511737344}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 834016622}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1572042347
 Prefab:
   m_ObjectHideFlags: 0
@@ -1047,6 +1077,53 @@ Prefab:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 86583eaf0acb94746a1cf3bd8fe4b6df, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1001 &1605494304
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 3193.896
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 1041.718
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 1095.812
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4900349327771586, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 114287625760745646, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: serverUI
+      value: 
+      objectReference: {fileID: 1876316441}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1661811885 stripped
 GameObject:
@@ -1253,7 +1330,7 @@ Prefab:
     - target: {fileID: 224800269519447910, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -182.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114578230361561604, guid: 947e950339249af4196f55a87198909a,
         type: 2}
@@ -1300,9 +1377,39 @@ Prefab:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 224429873360752692, guid: 947e950339249af4196f55a87198909a,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -121.666664
+      objectReference: {fileID: 0}
+    - target: {fileID: 224859520950035038, guid: 947e950339249af4196f55a87198909a,
+        type: 2}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224859520950035038, guid: 947e950339249af4196f55a87198909a,
+        type: 2}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224859520950035038, guid: 947e950339249af4196f55a87198909a,
+        type: 2}
+      propertyPath: m_AnchoredPosition.x
+      value: 170
+      objectReference: {fileID: 0}
+    - target: {fileID: 224859520950035038, guid: 947e950339249af4196f55a87198909a,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: -243.33333
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 947e950339249af4196f55a87198909a, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1876316441 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1243284478806926, guid: 947e950339249af4196f55a87198909a,
+    type: 2}
+  m_PrefabInternal: {fileID: 1876316440}
 --- !u!1 &1938473582
 GameObject:
   m_ObjectHideFlags: 0
@@ -1346,11 +1453,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4a353abf2efbb243a56de2ebee2194d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnloadProfileAfter: 20
-  SaveProfileInterval: 1
-  ClientUpdateInterval: 0
-  EditProfilePermissionLevel: 0
-  IgnoreProfileMissmatchError: 0
 --- !u!1 &1974947999
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,7 +1496,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 144ade74003708243aacbf31ffd1ea78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RegisterRoomPermissionLevel: 0
 --- !u!1 &2077713956
 GameObject:
   m_ObjectHideFlags: 0
@@ -1438,9 +1539,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 643b72b2583b2ad4f83aae31a07036cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SmtpHost: smtp.gmail.com
-  SmtpPort: 587
-  SmtpUsername: username@gmail.com
-  SmtpPassword: password
-  EmailFrom: YourGame@gmail.com
-  SenderDisplayName: Awesome Game

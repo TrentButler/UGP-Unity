@@ -122,6 +122,11 @@ namespace UGP
         void LateUpdate()
         {
             ListOfPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+            var server_restart = FindObjectOfType<ServerRestart>();
+            if(server_restart != null)
+            {
+                server_restart.Restart(this);
+            }
         }
     }
 }
