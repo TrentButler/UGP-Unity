@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,10 +12,7 @@ namespace UGP
     public class BuildingBehaviour : MonoBehaviour
     {
         public List<GameObject> VehiclePrefabs;
-        public Transform VehicleSpawn;
-
         public List<GameObject> ItemPrefabs;
-        public List<Transform> ItemSpawns;
 
         public List<GameObject> Doors;
 
@@ -26,28 +24,26 @@ namespace UGP
             {
                 if(server.isServer)
                 {
-                    //SPAWN THE VEHICLE 
-                    //var vehicle_index = Random.Range(0, VehilcePrefabs.Count);
-                    var vehicle_index = 0;
-                    //var vehicle = Instantiate(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation);
-                    //NetworkServer.Spawn(vehicle);
-
                     if (VehiclePrefabs.Count > 0)
                     {
-                        server.Spawn(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation); //SPAWN THE VEHICLE
+                        var vehicleSpawns = FindObjectsOfType<VehicleSpawn>().ToList();
+                        vehicleSpawns.ForEach(spawn => 
+                        {
+                            var vehicle_index = Random.Range(0, VehiclePrefabs.Count);
+                            server.Spawn(VehiclePrefabs[vehicle_index], spawn.transform.position, spawn.transform.rotation); //SPAWN THE VEHICLE
+                        });
                     }
 
-                    //SPAWN THE ITEMS
-                    int i = 0;
-                    ItemPrefabs.ForEach(item =>
+                    if (ItemPrefabs.Count > 0)
                     {
-                        //var spawnPoint = Random.Range(0, ItemSpawns.Count);
-                        var spawn = ItemSpawns[i];
-                        server.Spawn(item, spawn.position, spawn.rotation);
-                        i++;
-                        //var i = Instantiate(item, spawn.position, spawn.rotation);
-                        //NetworkServer.Spawn(i);
-                    });
+                        var itemSpawns = FindObjectsOfType<ItemSpawn>().ToList();
+                        itemSpawns.ForEach(spawn =>
+                        {
+                            var item_index = Random.Range(0, ItemPrefabs.Count);
+                            server.Spawn(ItemPrefabs[item_index], spawn.transform.position, spawn.transform.rotation);
+
+                        });
+                    }
 
                     Doors.ForEach(door =>
                     {
@@ -61,28 +57,30 @@ namespace UGP
         public void ServerSpawn(InGameNetworkBehaviour s)
         {
             server = s;
-            //SPAWN THE VEHICLE 
-            //var vehicle_index = Random.Range(0, VehilcePrefabs.Count);
-            var vehicle_index = 0;
-            //var vehicle = Instantiate(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation);
-            //NetworkServer.Spawn(vehicle);
 
-            if(VehiclePrefabs.Count > 0)
+            if (VehiclePrefabs.Count > 0)
             {
-                server.Spawn(VehiclePrefabs[vehicle_index], VehicleSpawn.position, VehicleSpawn.rotation); //SPAWN THE VEHICLE
+                var vehicleSpawns = FindObjectsOfType<VehicleSpawn>().ToList();
+                vehicleSpawns.ForEach(spawn =>
+                {
+                    var vehicle_index = Random.Range(0, VehiclePrefabs.Count);
+                    var v = VehiclePrefabs[vehicle_index];
+                    var vBehaviour = v.GetComponent<VehicleShootBehaviour>();
+                    vBehaviour.OnSpawn(server);
+                    server.Spawn(v, spawn.transform.position, spawn.transform.rotation); //SPAWN THE VEHICLE
+                });
             }
 
-            //SPAWN THE ITEMS
-            int i = 0;
-            ItemPrefabs.ForEach(item =>
+            if (ItemPrefabs.Count > 0)
             {
-                //var spawnPoint = Random.Range(0, ItemSpawns.Count);
-                var spawn = ItemSpawns[i];
-                server.Spawn(item, spawn.position, spawn.rotation);
-                i++;
-                //var i = Instantiate(item, spawn.position, spawn.rotation);
-                //NetworkServer.Spawn(i);
-            });
+                var itemSpawns = FindObjectsOfType<ItemSpawn>().ToList();
+                itemSpawns.ForEach(spawn =>
+                {
+                    var item_index = Random.Range(0, ItemPrefabs.Count);
+                    server.Spawn(ItemPrefabs[item_index], spawn.transform.position, spawn.transform.rotation);
+
+                });
+            }
 
             Doors.ForEach(door =>
             {

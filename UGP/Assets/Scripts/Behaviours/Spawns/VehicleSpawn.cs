@@ -1,5 +1,9 @@
 ﻿using UnityEngine;
 
-public class VehicleSpawn : MonoBehaviour {
-    
+namespace UGP
+{
+    public class VehicleSpawn : MonoBehaviour
+    {
+
+    } 
 }

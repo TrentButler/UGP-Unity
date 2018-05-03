@@ -17,6 +17,7 @@ namespace UGP
     public class VehicleShootBehaviour : NetworkBehaviour
     {
         public Weapon w;
+        public List<GameObject> weapons = new List<GameObject>();
 
         public GameObject bulletPrefab;
         public Transform GunBarrel;
@@ -45,6 +46,45 @@ namespace UGP
         public int roundsFired = 0;
         private Vector3 barrelLookAt;
         public VehicleBehaviour v;
+
+        public NetworkAnimator weaponAnimator;
+        public GameObject activeWeapon;
+        [SyncVar(hook = "OnSWeaponChange")] public string s_weapon;
+        [SyncVar(hook = "OnWeaponActiveChange")] public bool weaponActive;
+
+        private void OnSWeaponChange(string weaponChange)
+        {
+            s_weapon = weaponChange;
+        }
+        private void OnWeaponActiveChange(bool activeChange)
+        {
+            weaponActive = activeChange;
+        }
+
+        public void OnSpawn(InGameNetworkBehaviour netCompanion)
+        {
+            if(weapons.Count > 0)
+            {
+                var randomWeapon = Random.Range(0, weapons.Count);
+                activeWeapon = weapons[randomWeapon];
+                s_weapon = activeWeapon.name;
+                
+                weaponAnimator = activeWeapon.GetComponent<NetworkAnimator>();
+
+                weaponActive = true;
+                RpcSetWeaponActive(true);
+            }
+        }
+
+        [ClientRpc] public void RpcSetWeaponActive(bool active)
+        {
+            weaponActive = active;
+            CmdSetWeaponActive(active);
+        }
+        [Command] public void CmdSetWeaponActive(bool active)
+        {
+            weaponActive = active;
+        }
 
         [Command] private void CmdFireRound(NetworkIdentity owner, Vector3 position, Quaternion rotation, float strength)
         {
@@ -76,6 +116,7 @@ namespace UGP
                             //v._v.ammunition.Assault -= 1;
                             v.CmdUseAmmunition(1, 0, 0, 0);
                             //audio.Play();
+                            weaponAnimator.SetTrigger("Fire");
                             CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
@@ -92,6 +133,7 @@ namespace UGP
                         {
                             v.CmdUseAmmunition(0, 1, 0, 0);
                             //audio.Play();
+                            weaponAnimator.SetTrigger("Fire");
                             CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
@@ -107,6 +149,7 @@ namespace UGP
                         if (sniper > 0)
                         {
                             v.CmdUseAmmunition(0, 0, 1, 0);
+                            weaponAnimator.SetTrigger("Fire");
                             CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                             //audio.Play();
                         }
@@ -124,6 +167,7 @@ namespace UGP
                         {
                             v.CmdUseAmmunition(0, 0, 0, 1);
                             //audio.Play();
+                            weaponAnimator.SetTrigger("Fire");
                             CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
                         }
                         else
@@ -341,7 +385,7 @@ namespace UGP
             {
                 if(hasAuthority && !isServer)
                 {
-                    Aim();
+                    //Aim();
                     Fire();
 
                     Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
@@ -359,6 +403,23 @@ namespace UGP
 
         private void LateUpdate()
         {
+            if (activeWeapon == null)
+            {
+                weapons.ForEach(w =>
+                {
+                    if (w.name == s_weapon)
+                    {
+                        activeWeapon = w;
+                    }
+                    if (weaponAnimator == null)
+                    {
+                        weaponAnimator = activeWeapon.GetComponent<NetworkAnimator>();
+                    }
+                });
+            }
+
+            activeWeapon.SetActive(weaponActive);
+
             if (!isLocalPlayer)
             {
                 if(hasAuthority)

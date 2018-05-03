@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemSpawn : MonoBehaviour {
+namespace UGP
+{
+    public class ItemSpawn : MonoBehaviour
+    {
 
+    }
 }
