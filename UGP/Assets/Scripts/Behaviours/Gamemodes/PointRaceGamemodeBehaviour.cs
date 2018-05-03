@@ -8,41 +8,56 @@ using UnityEngine.SceneManagement;
 
 namespace UGP
 {
-    public class PointRaceGamemodeBehaviour : NetworkBehaviour
+    public class PointRaceGamemodeBehaviour : Gamemode
     {
-        public List<PlayerBehaviour> players = new List<PlayerBehaviour>();
-        public List<PlayerBehaviour> finished_players = new List<PlayerBehaviour>();
+        private List<PlayerBehaviour> _players = new List<PlayerBehaviour>();
+        private List<PlayerBehaviour> finished_players = new List<PlayerBehaviour>();
         public Transform Finish;
-
-        public InGameNetworkBehaviour server;
+        
         public Text LiveRaceText;
         public Text EndOfRaceText;
-        public Text PlayerEndOfRaceText;
+        public Text PreRaceTimerText;
 
-        public GameObject ResultsPanel;
-        public GameObject PlayerResultsPanel;
+        public GameObject PreRaceTimerUI;
+        public GameObject EndOfRaceUI;
 
         [SyncVar] private string _t;
+        [SyncVar] private string _endofrace;
+        [SyncVar(hook = "OnPreRaceTimerChange")] public float PreRaceTimer;
+        [SyncVar(hook = "OnPostRaceTimerChange")] public float PostRaceTimer;
         [SyncVar(hook = "OnRaceTimerChange")] public float RaceTimer;
-        [SyncVar(hook = "OnEndOfRaceTimerChange")] public float EndOfRaceTimer;
-        [SyncVar(hook = "OnTimerChange")] private float timer = 0.0f;
-        [SyncVar(hook = "OnRaceFinishChange")] public bool isRaceFinished;
 
+        private void OnPreRaceTimerChange(float timerChange)
+        {
+            PreRaceTimer = timerChange;
+            PreRaceTimer = Mathf.Clamp(PreRaceTimer, 0.0f, PreMatchTimer);
+        }
+        private void OnPostRaceTimerChange(float timerChange)
+        {
+            PostRaceTimer = timerChange;
+            PostRaceTimer = Mathf.Clamp(PostRaceTimer, 0.0f, 999999);
+        }
         private void OnRaceTimerChange(float timerChange)
         {
             RaceTimer = timerChange;
         }
-        private void OnEndOfRaceTimerChange(float timerChange)
+
+        [ClientRpc] private void RpcToggleEndOfRaceUI(bool toggle)
         {
-            EndOfRaceTimer = timerChange;
+            EndOfRaceUI.SetActive(toggle);
         }
-        private void OnTimerChange(float timerChange)
+        [ClientRpc] private void RpcTogglePreRaceTimerUI(bool toggle)
         {
-            timer = timerChange;
+            PreRaceTimerUI.SetActive(toggle);
         }
-        private void OnRaceFinishChange(bool finished)
+
+        private void ToggleEndOfRaceUI(bool toggle)
         {
-            isRaceFinished = finished;
+            EndOfRaceUI.SetActive(toggle);
+        }
+        private void TogglePreRaceTimerUI(bool toggle)
+        {
+            PreRaceTimerUI.SetActive(toggle);
         }
 
         public void RestartRace(string scene)
@@ -51,118 +66,141 @@ namespace UGP
             players.ForEach(player =>
             {
                 var player_networkID = player.GetComponent<NetworkIdentity>();
-                server.ServerRespawnPlayer(player_networkID);
+                netCompanion.ServerRespawnPlayer(player_networkID);
             });
 
-            server.Server_ChangeScene(scene);
+            netCompanion.Server_ChangeScene(scene);
         }
 
         private void EndOfRace()
         {
-            PlayerResultsPanel.SetActive(false);
-            ResultsPanel.SetActive(true);
+            PostRaceTimer -= Time.deltaTime;
+            if (PostRaceTimer <= 0.0f)
+            {
+                Players.ForEach(player =>
+                {
+                    var client_scene = SceneManager.GetActiveScene();
+                    var network_identity = player.GetComponent<NetworkIdentity>();
+                    netCompanion.RpcServer_Disconnect(network_identity, client_scene.name);
+                });
 
-            EndOfRaceText.text = "RACE COMPLETE \n";
+                //CHECK IF THERE ARE NO PLAYERS CONNECTED BEFORE CHANGING THE SCENE
+                //server.Server_LANDisconnectAll();
+
+                if(Players.Count == 0)
+                {
+                    var server_scene = SceneManager.GetActiveScene();
+                    EndMatchLAN(server_scene.name);
+                }
+            }
+
+            _endofrace = "RACE COMPLETE \n";
             //EndOfRaceText.text += "TIME REMAINING: " + RaceTimer.ToString() + "\n";
-            EndOfRaceText.text += "RACE RESTART IN: " + timer.ToString() + "\n";
-            var _i = 1;
-            for (int i = finished_players.Count; i > 0; i--)
+            _endofrace += "NEW RACE IN: " + PostRaceTimer.ToString() + "\n";
+
+            //LIST ALL PLAYERS SORTED BY DISTANCE TO GOAL
+            int place = 1;
+            Players.ForEach(player =>
             {
-                EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
-                _i++;
-            }
+                _endofrace += string.Format("{0}.{1}", place, player.playerName);
+                place += 1;
+            });
+
+            #region OLD
+            //var _i = 1;
+            //for (int i = finished_players.Count; i > 0; i--)
+            //{
+            //    EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
+            //    _i++;
+            //} 
+            #endregion
         }
 
-        [ClientRpc] private void RpcPlayerEndOfRace(NetworkIdentity player)
-        {
-            if (player.isLocalPlayer)
-            {
-                PlayerResultsPanel.SetActive(true);
+        //[ClientRpc] private void RpcPlayerEndOfRace(NetworkIdentity player)
+        //{
+        //    if (player.isLocalPlayer)
+        //    {
+        //        PlayerResultsPanel.SetActive(true);
 
-                PlayerEndOfRaceText.text = "RACE COMPLETE \n";
-                PlayerEndOfRaceText.text += "FINISH TIME: " + RaceTimer.ToString() + "\n";
+        //        PlayerEndOfRaceText.text = "RACE COMPLETE \n";
+        //        PlayerEndOfRaceText.text += "FINISH TIME: " + RaceTimer.ToString() + "\n";
 
-                var _i = 1;
-                for (int i = finished_players.Count; i > 0; i--)
-                {
-                    EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
-                    _i++;
-                }
-            }
-        }
+        //        var _i = 1;
+        //        for (int i = finished_players.Count; i > 0; i--)
+        //        {
+        //            EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
+        //            _i++;
+        //        }
+        //    }
+        //}
 
-        private void Start()
-        {
-            if (isServer)
-            {
-                players = FindObjectsOfType<PlayerBehaviour>().ToList();
-                //net.SpawnAllVehicles();
-                timer = EndOfRaceTimer;
-            }
-        }
+        //private void Start()
+        //{
+        //    if (isServer)
+        //    {
+        //        //players = FindObjectsOfType<PlayerBehaviour>().ToList();
+        //        //net.SpawnAllVehicles();
+        //        //timer = EndOfRaceTimer;
+        //    }
+        //}
 
-        private void FixedUpdate()
-        {
-            if (isServer)
-            {
-                //CHECK TO SEE IF THE LIST OF PLAYERBEHAVIOUR IS EMPTY, FIND ALL OF THEM BY TYPE 'PLAYERBEHAVIOUR'
-                if (players.Count <= 0)
-                {
-                    players = FindObjectsOfType<PlayerBehaviour>().ToList();
-                }
+        //private void FixedUpdate()
+        //{
+        //    if (isServer)
+        //    {
+        //        //CHECK TO SEE IF THE LIST OF PLAYERBEHAVIOUR IS EMPTY, FIND ALL OF THEM BY TYPE 'PLAYERBEHAVIOUR'
+        //        //if (players.Count <= 0)
+        //        //{
+        //        //    players = FindObjectsOfType<PlayerBehaviour>().ToList();
+        //        //}
 
-                //if (finished_players.Count == players.Count)
-                //{
-                //    isRaceFinished = true;
-                //    return;
-                //}
-                //else
-                //{
-                //    isRaceFinished = false;
-                //}
+        //        //if (finished_players.Count == players.Count)
+        //        //{
+        //        //    isRaceFinished = true;
+        //        //    return;
+        //        //}
+        //        //else
+        //        //{
+        //        //    isRaceFinished = false;
+        //        //}
 
-                RaceTimer -= Time.deltaTime;
-                if (RaceTimer <= 0.0f)
-                {
-                    isRaceFinished = true;
-                    return;
-                }
 
-                //SORT THE LIST OF PLAYERS BY THEIR DISTANCE TO THE 'FINISH'
-                var sorted_players = players.OrderBy(x => Vector3.Distance(x.transform.position, Finish.transform.position)).ToList();
-                players = sorted_players;
-
-                _t = "";
-                _t += "Timer: " + RaceTimer.ToString() + "\n";
-
-                for (int i = 0; i < players.Count; i++)
-                {
-                    _t += (i + 1).ToString() + ". " + players[i].playerName + "\n";
-                }
-            }
-
-            LiveRaceText.text = "";
-            LiveRaceText.text = _t;
-        }
+        //    }
+        //}
 
         private void LateUpdate()
         {
-            if (isServer)
-            {
-                if (isRaceFinished)
-                {
-                    timer -= Time.deltaTime;
-                    if (timer <= 0.0f)
-                    {
-                        RestartRace("99.debug");
-                    }
-                }
-            }
 
-            if (isRaceFinished)
-            {
-                EndOfRace();
-            }
+
+            //SYNC UI TEXT
+
+            LiveRaceText.text = "";
+            LiveRaceText.text = _t;
+
+            PreRaceTimerText.text = "";
+            PreRaceTimerText.text = "BEGIN IN: " + PreRaceTimer.ToString();
+
+            EndOfRaceText.text = "";
+            EndOfRaceText.text = _endofrace;
+
+            #region OLD
+            //if (isServer)
+            //{
+            //    if (isRaceFinished)
+            //    {
+            //        timer -= Time.deltaTime;
+            //        if (timer <= 0.0f)
+            //        {
+            //            RestartRace("99.debug");
+            //        }
+            //    }
+            //}
+
+            //if (isRaceFinished)
+            //{
+            //    EndOfRace();
+            //} 
+            #endregion
         }
 
         //NEEDS WORK
@@ -186,14 +224,18 @@ namespace UGP
                     var p_netIdentity = other.GetComponentInParent<NetworkIdentity>();
 
                     Debug.Log(p_behaviour.gameObject.name + " FINISHED");
-                    server.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
+                    netCompanion.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
                     finished_players.Add(p_behaviour);
 
                     var ic = p_behaviour.ic;
                     ic.enabled = false; //DISABLE THE PLAYER MOVEMENT
                     p_behaviour.isActive = false;
                     p_behaviour.RpcSetActive(false);
-                    RpcPlayerEndOfRace(p_netIdentity);
+
+                    var sorted_players = Players.OrderBy(x => Vector3.Distance(x.transform.position, Finish.transform.position)).ToList();
+                    Players = sorted_players;
+                    WinCondition = true;
+                    //RpcPlayerEndOfRace(p_netIdentity);
                 }
             }
 
@@ -205,7 +247,7 @@ namespace UGP
                     vehicle_behaviour.seatedPlayer.RemovePlayerFromVehicle();
                 }
 
-                server.Server_Destroy(vehicle_behaviour.gameObject);
+                netCompanion.Server_Destroy(vehicle_behaviour.gameObject);
 
                 #region OLD
                 //Debug.Log("COLLISION WITH VEHICLE");
@@ -226,6 +268,96 @@ namespace UGP
                 //    }
                 //}); 
                 #endregion
+            }
+        }
+
+        public override bool CheckWinCondition()
+        {
+            return false;
+        }
+
+        public override bool CheckLoseCondition()
+        {
+            if (RaceTimer <= 0.0f)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override void OnWinCondition()
+        {
+            EndOfRace();
+            TogglePlayerControl(false);
+            ToggleEndOfRaceUI(true);
+            RpcToggleEndOfRaceUI(true);
+        }
+
+        public override void OnLoseCondition()
+        {
+            EndOfRace();
+            TogglePlayerControl(false);
+            ToggleEndOfRaceUI(true);
+            RpcToggleEndOfRaceUI(true);
+        }
+
+        public override void GameLoop()
+        {
+            PreRaceTimer -= Time.deltaTime;
+
+            if(Players.Count <= 0)
+            {
+                RestartPreMatchTimer();
+            }
+
+            if(PreRaceTimer > 0.0f)
+            {
+                TogglePlayerControl(false); //DISABLE PLAYER CONTROL
+
+                PreRaceTimerUI.SetActive(true); //ENABLE THE PRERACETIMER UI
+                RpcTogglePreRaceTimerUI(true);
+            }
+            else
+            {
+                TogglePlayerControl(true); //ENABLE PLAYER CONTROL
+
+                PreRaceTimerUI.SetActive(false); //DISABLE THE PRERACETIMER UI
+                RpcTogglePreRaceTimerUI(false);
+                
+                MatchBegun = true;
+
+                RaceTimer -= Time.deltaTime; //DECREMENT THE RACE TIMER
+            }
+
+            //SORT THE LIST OF PLAYERS BY THEIR DISTANCE TO THE 'FINISH'
+            var sorted_players = Players.OrderBy(x => Vector3.Distance(x.transform.position, Finish.transform.position)).ToList();
+            _players = sorted_players;
+
+            _t = "";
+            _t += "Timer: " + RaceTimer.ToString() + "\n";
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                _t += (i + 1).ToString() + ". " + _players[i].playerName + "\n";
+            }
+        }
+
+        public override void Initialize()
+        {
+            RaceTimer = MatchTimer;
+            PreRaceTimer = PreMatchTimer;
+            PostRaceTimer = PostMatchTimer;
+            _players = Players;
+        }
+
+        public override void RestartPreMatchTimer()
+        {
+            if(!MatchBegun)
+            {
+                PreRaceTimer = PreMatchTimer;
             }
         }
     }
