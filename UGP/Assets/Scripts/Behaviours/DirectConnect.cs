@@ -9,7 +9,7 @@ namespace UGP
 {
     public class DirectConnect : MonoBehaviour
     {
-
+        public GameObject PlayButton;
         public NetworkManager Server;
         public List<UnityEngine.Networking.Match.MatchInfoSnapshot> AllMatches = new List<UnityEngine.Networking.Match.MatchInfoSnapshot>();
         public int MatchCount;
@@ -28,10 +28,6 @@ namespace UGP
         public void StartServer()
         {
             Server.matchMaker.CreateMatch("Core", Server.matchSize, true, "", "", "", 0, 0, Server.OnMatchCreate);
-        }
-        public void StopServer()
-        {
-            Server.StopMatchMaker();
         }
         public void MasterServer()
         {
@@ -89,12 +85,15 @@ namespace UGP
             var allClients = NetworkClient.allClients;
             ClientScene.AddPlayer(allClients[0].connection, 0);
         }
-
+        public void ExitApplication()
+        {
+            Application.Quit();
+        }
         public void RestartServer()
         {
             var currentScene = SceneManager.GetActiveScene();
             var scene_string = currentScene.name;
-
+          
             NetworkManager.singleton.ServerChangeScene(scene_string);
         }
 
@@ -112,9 +111,15 @@ namespace UGP
 
         void Update()
         {
-            if (AllMatches.Count <= 0)
+            Server.matchMaker.ListMatches(0, 20, "", false, 0, 0, OnMatchList);
+
+            if (AllMatches.Count > 0)
+            { 
+                PlayButton.SetActive(true);
+            }
+            if (AllMatches.Count == 0)
             {
-                Server.matchMaker.ListMatches(0, 20, "", false, 0, 0, OnMatchList);
+                PlayButton.SetActive(false);
             }
 
             MatchCount = AllMatches.Count;

@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4758227070792124}
   - component: {fileID: 114939143555023340}
-  - component: {fileID: 114185577816566600}
+  - component: {fileID: 114876807119346568}
   m_Layer: 0
   m_Name: '[NetworkCompanion]'
   m_TagString: Untagged
@@ -41,7 +41,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114185577816566600
+--- !u!114 &114876807119346568
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -49,19 +49,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 1939178618770096}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8fb8c0a20c05574fa58cccd292b3486, type: 3}
+  m_Script: {fileID: 11500000, guid: 69251d46c1b58ba44847b88e3cf50e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  VehiclePrefabs: []
-  ItemPrefabs: []
-  BuildingPrefabs: []
+  VehiclePrefabs:
+  - {fileID: 1912099926934314, guid: a083931ef9db2a2469ed5c0eaea69157, type: 2}
+  - {fileID: 1978491074197374, guid: 66946e60c99eef847bc5a630042122ad, type: 2}
+  - {fileID: 1594409605834688, guid: 2332336a42dec1b4eba62f986165cbe9, type: 2}
+  - {fileID: 1978491074197374, guid: 66946e60c99eef847bc5a630042122ad, type: 2}
+  ItemPrefabs:
+  - {fileID: 1171274522040198, guid: 63d71747ae427da4b9136a3d9e8eeeaf, type: 2}
+  - {fileID: 1469922796016240, guid: fa179cff9dc56aa46b71e5d2761100bb, type: 2}
   OriginVehicleSpawn: {fileID: 0}
-  vehiclePositionOffset: 0
-  ItemPositionOffset: 5
+  vehiclePositionOffset: 10
   cameraSpeed: 2.5
   cameraTranslationSpeed: 10
-  scoreboardText: 
-  scoreboard: {fileID: 0}
 --- !u!114 &114939143555023340
 MonoBehaviour:
   m_ObjectHideFlags: 1
