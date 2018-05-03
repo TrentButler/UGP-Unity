@@ -489,6 +489,7 @@ namespace UGP
             
             CmdSetHealth(_p.MaxHealth);
             CmdSetMaxHealth(_p.MaxHealth);
+            CmdSetHasControl(true);
             CmdSetActive(true);
             CmdSetisDead(false);
             CmdSetDriving(false);
