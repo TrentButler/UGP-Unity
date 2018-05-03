@@ -29,10 +29,6 @@ namespace UGP
         {
             Server.matchMaker.CreateMatch("Core", Server.matchSize, true, "", "", "", 0, 0, Server.OnMatchCreate);
         }
-        public void StopServer()
-        {
-            Server.StopMatchMaker();
-        }
         public void MasterServer()
         {
             Server.matchMaker.CreateMatch("Core", Server.matchSize, true, "", "", "", 0, 0, Server.OnMatchCreate);
