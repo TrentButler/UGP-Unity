@@ -151,7 +151,10 @@ namespace UGP
             playerNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
         #endregion
-
+        [Command] public void CmdNameChanged(string name)
+        {
+            playerName = name;
+        }
         #region CLIENTRPC_FUNCTIONS
         //NEEDS WORK
         [ClientRpc] private void RpcKillPlayer()
@@ -328,7 +331,7 @@ namespace UGP
             CmdSetMaxHealth(_p.MaxHealth);
             CmdSetisDead(false);
             CmdSetDriving(false);
-
+            CmdSetHasControl(true);
             if (ani == null)
             {
                 ani = GetComponent<Animator>();
