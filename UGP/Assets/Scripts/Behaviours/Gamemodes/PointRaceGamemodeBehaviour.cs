@@ -13,7 +13,10 @@ namespace UGP
         private List<PlayerBehaviour> _players = new List<PlayerBehaviour>();
         private List<PlayerBehaviour> finished_players = new List<PlayerBehaviour>();
         public Transform Finish;
-        
+
+        public Transform Storm;
+        [Range(0.0001f, 999999)] public float StormTravelSpeed;
+
         public Text LiveRaceText;
         public Text EndOfRaceText;
         public Text PreRaceTimerText;
@@ -26,6 +29,7 @@ namespace UGP
         [SyncVar(hook = "OnPreRaceTimerChange")] public float PreRaceTimer;
         [SyncVar(hook = "OnPostRaceTimerChange")] public float PostRaceTimer;
         [SyncVar(hook = "OnRaceTimerChange")] public float RaceTimer;
+        [SyncVar(hook = "OnPreStormTimerChange")] [Range(0.001f, 999999)] public float PreStormTimer;
 
         private void OnPreRaceTimerChange(float timerChange)
         {
@@ -35,11 +39,17 @@ namespace UGP
         private void OnPostRaceTimerChange(float timerChange)
         {
             PostRaceTimer = timerChange;
-            PostRaceTimer = Mathf.Clamp(PostRaceTimer, 0.0f, 999999);
+            PostRaceTimer = Mathf.Clamp(PostRaceTimer, 0.0f, PostMatchTimer);
         }
         private void OnRaceTimerChange(float timerChange)
         {
             RaceTimer = timerChange;
+            RaceTimer = Mathf.Clamp(RaceTimer, 0, MatchTimer);
+        }
+        private void OnPreStormTimerChange(float timerChange)
+        {
+            PreStormTimer = timerChange;
+            PreStormTimer = Mathf.Clamp(PreStormTimer, 0, 999999);
         }
 
         [ClientRpc] private void RpcToggleEndOfRaceUI(bool toggle)
@@ -330,6 +340,11 @@ namespace UGP
                 MatchBegun = true;
 
                 RaceTimer -= Time.deltaTime; //DECREMENT THE RACE TIMER
+                PreStormTimer -= Time.deltaTime;
+                if(PreStormTimer <= 0.0f)
+                {
+                    Storm.position = Vector3.Lerp(Storm.position, Finish.position, Time.deltaTime * StormTravelSpeed);
+                }
             }
 
             //SORT THE LIST OF PLAYERS BY THEIR DISTANCE TO THE 'FINISH'
