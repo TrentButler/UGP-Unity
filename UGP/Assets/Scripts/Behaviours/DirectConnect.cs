@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
-using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 namespace UGP
@@ -14,6 +13,7 @@ namespace UGP
         public List<UnityEngine.Networking.Match.MatchInfoSnapshot> AllMatches = new List<UnityEngine.Networking.Match.MatchInfoSnapshot>();
         public int MatchCount;
         public List<PlayerBehaviour> ListOfPlayers = new List<PlayerBehaviour>();
+        public List<string> PlayerNames = new List<string>();
 
 
 
@@ -127,6 +127,12 @@ namespace UGP
         void LateUpdate()
         {
             ListOfPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+
+            PlayerNames.Clear();
+            ListOfPlayers.ForEach(player =>
+            {
+                PlayerNames.Add(player.playerName);
+            });
         }
     }
 }
