@@ -666,11 +666,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 114096601438046330, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
-        type: 2}
-      propertyPath: PlayButton
-      value: 
-      objectReference: {fileID: 412475725}
     - target: {fileID: 114997952938784990, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
         type: 2}
       propertyPath: clientUI
@@ -681,6 +676,16 @@ Prefab:
       propertyPath: serverUI
       value: 
       objectReference: {fileID: 368509873}
+    - target: {fileID: 114096601438046330, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: PlayButton
+      value: 
+      objectReference: {fileID: 412475725}
+    - target: {fileID: 114763262661023920, guid: c2a40cf7e57106a41973d1a8b0dd45cd,
+        type: 2}
+      propertyPath: m_MaxConnections
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c2a40cf7e57106a41973d1a8b0dd45cd, type: 2}
   m_IsPrefabParent: 0
@@ -953,7 +958,7 @@ Prefab:
     - target: {fileID: 224859520950035038, guid: 947e950339249af4196f55a87198909a,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -121.666664
       objectReference: {fileID: 0}
     - target: {fileID: 224800269519447910, guid: 947e950339249af4196f55a87198909a,
         type: 2}
@@ -1443,7 +1448,7 @@ Prefab:
     - target: {fileID: 224527031771975018, guid: 86583eaf0acb94746a1cf3bd8fe4b6df,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 86583eaf0acb94746a1cf3bd8fe4b6df, type: 2}
