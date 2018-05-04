@@ -2,8 +2,6 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
-
 
 namespace UGP
 {
@@ -18,18 +16,10 @@ namespace UGP
         public GameObject VirtualCamera;
         public NetworkUserControl ic;
         public VehicleShootBehaviour shootBehaviour;
+        public VehicleUIBehaviour vehicleUIBehaviour;
 
         public Vehicle VehicleConfig;
         [HideInInspector] public Vehicle _v;
-
-        //CREATE A SCRIPT FOR THIS
-        //VEHICLEUIBEHAVIOUR
-        #region UI
-        public GameObject vehicleUI;
-        public GameObject enterVehicleUI;
-        public Slider HealthSlider;
-        public Slider FuelSlider;
-        #endregion
 
         #region ParticleSystems
         public ParticleSystem VehicleDestroyedParticle;
@@ -44,7 +34,7 @@ namespace UGP
         [SyncVar(hook = "OnIsDestroyedChange")] public bool isDestroyed = false;
         [SyncVar] public Color vColor;
         [SyncVar] public bool playerInSeat = false;
-        [SyncVar] private float max_health, max_fuel;
+        [SyncVar] public float max_health, max_fuel;
         [SyncVar(hook = "OnVehicleHealthChange")] public float vehicleHealth;
         [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
         [SyncVar] public int Assault, Shotgun, Sniper, Rocket;
@@ -219,22 +209,6 @@ namespace UGP
             //FuelSlider.maxValue = max_fuel;
         }
 
-        public void UpdateVehicleUI()
-        {
-            HealthSlider.value = Mathf.Clamp(vehicleHealth, 0.0f, max_health);
-            FuelSlider.value = Mathf.Clamp(vehicleFuel, 0.0f, max_fuel);
-
-            var text = vehicleUI.GetComponentInChildren<Text>();
-
-            string sAssault = "ASSAULT: " + Assault;
-            string sShotgun = "SHOTGUN: " + Shotgun;
-            string sSniper = "SNIPER: " + Sniper;
-            string sRocket = "ROCKET: " + Rocket;
-
-            text.text = sAssault + "\n" + sShotgun + "\n"
-                + sSniper + "\n" + sRocket;
-        }
-
         //private void UpdateVehicle()
         //{
         //    //- SERVER ONLY
@@ -303,12 +277,6 @@ namespace UGP
             });
         }
 
-        public override void OnStartClient()
-        {
-            HealthSlider.maxValue = max_health;
-            FuelSlider.maxValue = max_fuel;
-        }
-
         private void Start()
         {
             if (!isLocalPlayer)
@@ -324,9 +292,9 @@ namespace UGP
 
                         _v = Instantiate(VehicleConfig);
                         
-                        //vehicleHealth = _v.MaxHealth; //INITALIZE THE VEHICLE WITH FULL HEALTH
+                        vehicleHealth = _v.MaxHealth; //INITALIZE THE VEHICLE WITH FULL HEALTH
                         //vehicleFuel = _v.MaxFuel; //INITALIZE THE VEHICLE WITH FULL FUEL
-                        vehicleHealth = _v.MaxHealth / 2; //INITALIZE THE VEHICLE WITH HALF HEALTH
+                        //vehicleHealth = _v.MaxHealth / 2; //INITALIZE THE VEHICLE WITH HALF HEALTH
                         vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
 
                         max_fuel = _v.MaxFuel;
@@ -355,9 +323,6 @@ namespace UGP
                         pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
                     }
 
-                    HealthSlider.maxValue = max_health;
-                    FuelSlider.maxValue = max_fuel;
-
                     models.ForEach(m =>
                     {
                         m.material.color = Vector4.one;
@@ -378,9 +343,9 @@ namespace UGP
 
                 _v = Instantiate(VehicleConfig);
 
-                //vehicleHealth = _v.MaxHealth; //INITALIZE THE VEHICLE WITH FULL HEALTH
+                vehicleHealth = _v.MaxHealth; //INITALIZE THE VEHICLE WITH FULL HEALTH
                 //vehicleFuel = _v.MaxFuel; //INITALIZE THE VEHICLE WITH FULL FUEL
-                vehicleHealth = _v.MaxHealth / 2; //INITALIZE THE VEHICLE WITH HALF HEALTH
+                //vehicleHealth = _v.MaxHealth / 2; //INITALIZE THE VEHICLE WITH HALF HEALTH
                 vehicleFuel = 0.0f; //INITALIZE THE VEHICLE WITH NO FUEL
 
                 max_fuel = _v.MaxFuel;
@@ -414,9 +379,6 @@ namespace UGP
                 pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
             }
 
-            HealthSlider.maxValue = max_health;
-            FuelSlider.maxValue = max_fuel;
-
             models.ForEach(m =>
             {
                 m.material.color = Vector4.one;
@@ -425,12 +387,6 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            //if (isServer)
-            //{
-            //    UpdateVehicle();
-            //    return;
-            //}
-
             if (!isLocalPlayer)
             {
                 if (hasAuthority && !isServer)
@@ -441,8 +397,6 @@ namespace UGP
                         Cursor.visible = false;
                         ic.enabled = true;
                         shootBehaviour.enabled = true;
-                        UpdateVehicleUI();
-                        vehicleUI.SetActive(true);
                     }
                     else
                     {
@@ -462,11 +416,6 @@ namespace UGP
                     return;
                 }
 
-                if (!playerInSeat)
-                {
-                    vehicleUI.SetActive(false);
-                }
-
                 VirtualCamera.SetActive(false);
                 return;
             }
@@ -477,8 +426,6 @@ namespace UGP
                 Cursor.visible = false;
                 ic.enabled = true;
                 shootBehaviour.enabled = true;
-                vehicleUI.SetActive(true);
-                UpdateVehicleUI();
             }
             else
             {
@@ -494,7 +441,6 @@ namespace UGP
                 Cursor.visible = true;
                 ic.enabled = false;
                 shootBehaviour.enabled = false;
-                vehicleUI.SetActive(false);
             }
         }
 
@@ -515,31 +461,12 @@ namespace UGP
             {
                 rb.isKinematic = false;
                 ColorChangeOn();
-                enterVehicleUI.SetActive(false);
             }
             else
             {
                 rb.isKinematic = true;
                 ColorChangeOff();
             }
-        }
-        
-        private void OnTriggerStay(Collider other)
-        {
-            if (other.CompareTag("Player"))
-            {
-                //ENABLE THE ENTERVEHICLE UI
-                var player_network_identity = other.GetComponentInParent<NetworkIdentity>();
-                if(player_network_identity.isLocalPlayer && !vehicleActive && !playerInSeat)
-                {
-                    enterVehicleUI.SetActive(true);
-                }
-            }
-        }
-        private void OnTriggerExit(Collider other)
-        {
-            //DISABLE THE ENTERVEHICLE UI
-            enterVehicleUI.SetActive(false);
         }
     }
 }
