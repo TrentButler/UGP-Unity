@@ -20,6 +20,7 @@ namespace UGP
         public List<GameObject> weapons = new List<GameObject>();
 
         public GameObject bulletPrefab;
+        public Transform GunTransform;
         public Transform GunBarrel;
         public AudioSource audio;
 
@@ -104,7 +105,7 @@ namespace UGP
 
         private void Shoot()
         {
-            var networkIdentity = v.seatedPlayer.GetComponent<NetworkIdentity>();
+            var networkIdentity = v.owner;
 
             switch (w)
             {

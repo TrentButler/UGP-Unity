@@ -640,6 +640,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1398205318884326
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4775941905556922}
+  m_Layer: 0
+  m_Name: Barrel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1400654050452440
 GameObject:
   m_ObjectHideFlags: 1
@@ -2125,7 +2140,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1477921475720674}
-  m_LocalRotation: {x: 0.6309911, y: 0.00000006282613, z: -0.00000006079034, w: -0.7757901}
+  m_LocalRotation: {x: 0.60215896, y: 0.00000006055781, z: -0.00000006305035, w: -0.79837626}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -2197,6 +2212,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4054558577819758}
+  - {fileID: 4775941905556922}
   m_Father: {fileID: 4503127605025256}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2232,7 +2248,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1018354720547246}
-  m_LocalRotation: {x: 0.69979477, y: 0.00000006816235, z: -0.000000054741403, w: -0.714344}
+  m_LocalRotation: {x: 0.6705556, y: 0.000000065909916, z: -0.000000057433343, w: -0.7418593}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -2296,7 +2312,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1519007674334296}
-  m_LocalRotation: {x: 0.60243213, y: 0.00000006058119, z: -0.000000063029475, w: -0.7981701}
+  m_LocalRotation: {x: 0.57282305, y: 0.00000005823417, z: -0.00000006520431, w: -0.81967914}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -2672,7 +2688,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1194378595244046}
   m_LocalRotation: {x: -0.6637882, y: -0.00000006538541, z: 0.00000005803015, w: -0.7479207}
-  m_LocalPosition: {x: 0, y: 1.44, z: -9}
+  m_LocalPosition: {x: 0, y: 2.73, z: -11.56}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4761803228826454}
@@ -2681,6 +2697,19 @@ Transform:
   - {fileID: 4323982798724864}
   m_Father: {fileID: 4503127605025256}
   m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4775941905556922
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1398205318884326}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.106, z: 2.194}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4376820081687172}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4779091412980376
 Transform:
@@ -3939,7 +3968,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4044717213e31446939f7bd49c896ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_TrackedObjectOffset: {x: 0, y: 2, z: 0}
+  m_TrackedObjectOffset: {x: 0, y: 2.52, z: 0}
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 10
   m_HorizontalDamping: 0
@@ -4919,9 +4948,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9384ab8608cdc3d479fe89cd51eed48f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BindingMode: 5
-  m_FollowOffset: {x: 0, y: 1.44, z: -9}
-  m_XDamping: 1
+  m_BindingMode: 3
+  m_FollowOffset: {x: 0, y: 2.73, z: -11.56}
+  m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0.5
   m_PitchDamping: 0
@@ -4933,13 +4962,13 @@ MonoBehaviour:
     m_HeadingBias: 0
   m_RecenterToTargetHeading:
     m_enabled: 1
-    m_RecenterWaitTime: 1
-    m_RecenteringTime: 2
+    m_RecenterWaitTime: 0.25
+    m_RecenteringTime: 0.25
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 150
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -5145,7 +5174,8 @@ MonoBehaviour:
   - {fileID: 1692385803364058}
   bulletPrefab: {fileID: 1537869310021538, guid: be405b0ceb96d894aa9e47b8e818eb35,
     type: 2}
-  GunBarrel: {fileID: 4376820081687172}
+  GunTransform: {fileID: 4376820081687172}
+  GunBarrel: {fileID: 4775941905556922}
   audio: {fileID: 82160715551518716}
   particle: {fileID: 0}
   crosshair: {fileID: 114466743276617544}
@@ -5155,7 +5185,7 @@ MonoBehaviour:
   crosshairWorldOffset: {x: 0, y: 0, z: 58}
   AutomaticFireRate: 0.25
   SemiAutoFireRate: 2
-  ShotStrength: 500
+  ShotStrength: 1000
   WeaponRange: 180
   AimCooldown: 2.5
   roundsFired: 0
@@ -5657,9 +5687,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9384ab8608cdc3d479fe89cd51eed48f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BindingMode: 5
-  m_FollowOffset: {x: 0, y: 1.44, z: -9}
-  m_XDamping: 1
+  m_BindingMode: 3
+  m_FollowOffset: {x: 0, y: 2.73, z: -11.56}
+  m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0.5
   m_PitchDamping: 0
@@ -5671,13 +5701,13 @@ MonoBehaviour:
     m_HeadingBias: 0
   m_RecenterToTargetHeading:
     m_enabled: 0
-    m_RecenterWaitTime: 1
-    m_RecenteringTime: 2
+    m_RecenterWaitTime: 0.25
+    m_RecenteringTime: 0.25
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 150
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -5894,7 +5924,7 @@ MonoBehaviour:
     Dutch: 0
   m_YAxis:
     Value: 0.5
-    m_MaxSpeed: 2
+    m_MaxSpeed: 3
     m_AccelTime: 0.2
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -5902,7 +5932,7 @@ MonoBehaviour:
     m_InvertAxis: 0
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 150
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -5914,17 +5944,17 @@ MonoBehaviour:
     m_HeadingBias: 0
   m_RecenterToTargetHeading:
     m_enabled: 1
-    m_RecenterWaitTime: 1
-    m_RecenteringTime: 2
+    m_RecenterWaitTime: 0.25
+    m_RecenteringTime: 0.25
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
-  m_BindingMode: 5
+  m_BindingMode: 3
   m_SplineCurvature: 0.493
   m_Orbits:
   - m_Height: 2
     m_Radius: 3
-  - m_Height: 1.44
-    m_Radius: 9
+  - m_Height: 2.73
+    m_Radius: 11.56
   - m_Height: 1.76
     m_Radius: 3
   m_LegacyHeadingBias: 3.4028235e+38
@@ -6036,9 +6066,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9384ab8608cdc3d479fe89cd51eed48f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BindingMode: 5
-  m_FollowOffset: {x: 0, y: 1.44, z: -9}
-  m_XDamping: 1
+  m_BindingMode: 3
+  m_FollowOffset: {x: 0, y: 2.73, z: -11.56}
+  m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0.5
   m_PitchDamping: 0
@@ -6050,13 +6080,13 @@ MonoBehaviour:
     m_HeadingBias: 0
   m_RecenterToTargetHeading:
     m_enabled: 0
-    m_RecenterWaitTime: 1
-    m_RecenteringTime: 2
+    m_RecenterWaitTime: 0.25
+    m_RecenteringTime: 0.25
     m_LegacyHeadingDefinition: -1
     m_LegacyVelocityFilterStrength: -1
   m_XAxis:
     Value: 0
-    m_MaxSpeed: 300
+    m_MaxSpeed: 150
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: 
@@ -7269,7 +7299,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -902070850
+  randomSeed: 894674388
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -10675,7 +10705,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: 802116651
+  randomSeed: 2096742643
   InitialModule:
     serializedVersion: 3
     enabled: 1

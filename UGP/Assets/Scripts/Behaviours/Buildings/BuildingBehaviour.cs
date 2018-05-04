@@ -14,8 +14,6 @@ namespace UGP
         public List<GameObject> VehiclePrefabs;
         public List<GameObject> ItemPrefabs;
 
-        public List<GameObject> Doors;
-
         private InGameNetworkBehaviour server;
 
         public void Spawn()
@@ -45,7 +43,8 @@ namespace UGP
                         });
                     }
 
-                    Doors.ForEach(door =>
+                    var doors = FindObjectsOfType<DoorSpawn>().ToList();
+                    doors.ForEach(door =>
                     {
                         var door_behaviour = door.GetComponent<DoorBehaviour>();
                         door_behaviour.SpawnButtons();
@@ -82,7 +81,8 @@ namespace UGP
                 });
             }
 
-            Doors.ForEach(door =>
+            var doors = FindObjectsOfType<DoorSpawn>().ToList();
+            doors.ForEach(door =>
             {
                 var door_behaviour = door.GetComponent<DoorBehaviour>();
                 door_behaviour.SpawnButtons();

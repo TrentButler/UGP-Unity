@@ -246,9 +246,10 @@ namespace UGP
                             CmdSetVehicleColor(p.vehicleColor, vehicleIdentity);
                             CmdAssignVehicleAuthority(vehicleIdentity);
 
-                            //var player_network_identity = GetComponent<NetworkIdentity>();
+                            var player_network_identity = GetComponent<NetworkIdentity>();
                             //v.CmdSetPlayer(player_network_identity);
                             v.seatedPlayer = p;
+                            v.owner = player_network_identity;
                         }
                     }
                 }

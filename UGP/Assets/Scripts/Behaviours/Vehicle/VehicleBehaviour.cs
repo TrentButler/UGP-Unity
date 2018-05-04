@@ -51,6 +51,7 @@ namespace UGP
         #endregion
 
         public PlayerBehaviour seatedPlayer;
+        public NetworkIdentity owner;
 
         #region COMMAND_FUNCTIONS
         [Command] public void CmdTakeHealth(float healthTaken)
