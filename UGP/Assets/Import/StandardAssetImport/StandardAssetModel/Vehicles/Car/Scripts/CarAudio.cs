@@ -2,7 +2,7 @@
 
 namespace UnitySampleAssets.Vehicles.Car
 {
-    [RequireComponent(typeof (EnemyController))]
+    [RequireComponent(typeof (CarController))]
     public class CarAudio : MonoBehaviour
     {
 
@@ -49,13 +49,13 @@ namespace UnitySampleAssets.Vehicles.Car
         private AudioSource highDecel; // Source for the high deceleration sounds
         private AudioSource skidSource; // Source for the low acceleration sounds
         private bool startedSound; // flag for knowing if we have started sounds
-        private EnemyController carController; // Reference to car we are controlling
+        private CarController carController; // Reference to car we are controlling
 
         private void StartSound()
         {
 
             // get the carcontroller ( this will not be null as we have require component)
-            carController = GetComponent<EnemyController>();
+            carController = GetComponent<CarController>();
 
             // setup the simple audio source
             highAccel = SetUpEngineAudioSource(highAccelClip);

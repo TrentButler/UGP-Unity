@@ -17,9 +17,7 @@ namespace UGP
 
         public Transform Center;
         public VehicleBehaviour vehicle;
-        public float TimeToExitVehicle;
         public float TimeToDestroyRagdoll = 10.0f;
-        private float exitTimer = 0.0f;
         public NetworkUserControl ic;
         public PlayerInteractionBehaviour interaction;
         public PlayerUIBehaviour ui;
@@ -221,10 +219,7 @@ namespace UGP
             objectNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
         #endregion
-        [Command] public void CmdNameChanged(string name)
-        {
-            playerName = name;
-        }
+
         #region CLIENTRPC_FUNCTIONS
         //NEEDS WORK
         [ClientRpc] public void RpcTakeDamage(NetworkIdentity localPlayer, NetworkIdentity attacker, float damageDealt)
@@ -373,59 +368,14 @@ namespace UGP
             var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
             interaction.CmdSetVehicleActive(false, vehicleIdentity);
             interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
-
-            //vehicle.CmdRemovePlayer();
+            
             vehicle.seatedPlayer = null;
             CmdRemoveVehicleAuthority(vehicleIdentity);
-
-            exitTimer = 0.0f; //RESET THE TIMER
-
-            //var rb = GetComponent<Rigidbody>();
-            //rb.velocity = Vector3.zero;
-            //rb.MovePosition(vehicle.seat.position);
-            //rb.MoveRotation(vehicle.seat.rotation);
 
             transform.position = vehicle.seat.position;
             transform.rotation = vehicle.seat.rotation;
 
             vehicle = null;
-        }
-
-        private void ExitVehicleWithTimer()
-        {
-            if (Input.GetKey(KeyCode.F))
-            {
-                exitTimer += Time.fixedDeltaTime; //INCREMENT TIME WHILE THE 'F' KEY IS HELD
-            }
-            else
-            {
-                exitTimer = 0; //RESET TIMER
-            }
-
-            if (exitTimer >= TimeToExitVehicle)
-            {
-                isDriving = false;
-                CmdSetDriving(false);
-                var vehicleIdentity = vehicle.GetComponent<NetworkIdentity>();
-                interaction.CmdSetVehicleActive(false, vehicleIdentity);
-                interaction.CmdSetPlayerInSeat(false, vehicleIdentity);
-
-                //vehicle.CmdRemovePlayer();
-                vehicle.seatedPlayer = null;
-                CmdRemoveVehicleAuthority(vehicleIdentity);
-
-                exitTimer = 0.0f; //RESET THE TIMER
-
-                //var rb = GetComponent<Rigidbody>();
-                //rb.velocity = Vector3.zero;
-                //rb.MovePosition(vehicle.seat.position);
-                //rb.MoveRotation(vehicle.seat.rotation);
-
-                transform.position = vehicle.seat.position;
-                transform.rotation = vehicle.seat.rotation;
-
-                vehicle = null;
-            }
         }
 
         private void LookAt(Transform t)
@@ -495,7 +445,7 @@ namespace UGP
             CmdSetActive(true);
             CmdSetisDead(false);
             CmdSetDriving(false);
-            CmdSetHasControl(true);
+
             if (ani == null)
             {
                 ani = GetComponent<Animator>();
@@ -526,20 +476,18 @@ namespace UGP
                 {
                     VirtualCamera.SetActive(false);
                     ic.enabled = false;
-                    interaction.enabled = false;
+                    //interaction.enabled = false;
 
                     ani.SetFloat("Walk", 0.0f);
 
                     transform.position = vehicle.seat.position;
                     transform.rotation = vehicle.seat.rotation;
-
-                    ExitVehicleWithTimer(); //EXIT THE VEHICLE
                 }
                 else
                 {
                     VirtualCamera.SetActive(true);
                     ic.enabled = true;
-                    interaction.enabled = true;
+                    //interaction.enabled = true;
 
                     //PICKUP ITEM
                     //CHANGE THIS TO THE INPUTCONTROLLER.BUTTONINPUTYOUNEED

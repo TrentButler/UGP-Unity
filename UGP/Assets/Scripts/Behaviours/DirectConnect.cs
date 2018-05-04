@@ -25,6 +25,11 @@ namespace UGP
             DisableServerPlayer();
 
         }
+        public void StopServer()
+        {
+            Server.StopMatchMaker();
+            Server.StopHost();
+        }
         public void StartServer()
         {
             Server.matchMaker.CreateMatch("Core", Server.matchSize, true, "", "", "", 0, 0, Server.OnMatchCreate);

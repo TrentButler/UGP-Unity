@@ -14,7 +14,11 @@ namespace UGP
         private List<PlayerBehaviour> finished_players = new List<PlayerBehaviour>();
         public Transform Finish;
 
-        public InGameNetworkBehaviour server;
+        public Transform Storm;
+        [SyncVar(hook = "OnStormPositionChange")] public Vector3 StormPosition;
+        [SyncVar(hook = "OnStormRotationChange")] public Quaternion StormRotation;
+        [Range(0.0001f, 999999)] public float StormTravelSpeed;
+
         public Text LiveRaceText;
         public Text EndOfRaceText;
         public Text PreRaceTimerText;
@@ -27,6 +31,7 @@ namespace UGP
         [SyncVar(hook = "OnPreRaceTimerChange")] public float PreRaceTimer;
         [SyncVar(hook = "OnPostRaceTimerChange")] public float PostRaceTimer;
         [SyncVar(hook = "OnRaceTimerChange")] public float RaceTimer;
+        [SyncVar(hook = "OnPreStormTimerChange")] [Range(0.001f, 999999)] public float PreStormTimer;
 
         private void OnPreRaceTimerChange(float timerChange)
         {
@@ -36,11 +41,25 @@ namespace UGP
         private void OnPostRaceTimerChange(float timerChange)
         {
             PostRaceTimer = timerChange;
-            PostRaceTimer = Mathf.Clamp(PostRaceTimer, 0.0f, 999999);
+            PostRaceTimer = Mathf.Clamp(PostRaceTimer, 0.0f, PostMatchTimer);
         }
         private void OnRaceTimerChange(float timerChange)
         {
             RaceTimer = timerChange;
+            RaceTimer = Mathf.Clamp(RaceTimer, 0, MatchTimer);
+        }
+        private void OnPreStormTimerChange(float timerChange)
+        {
+            PreStormTimer = timerChange;
+            PreStormTimer = Mathf.Clamp(PreStormTimer, 0, 999999);
+        }
+        private void OnStormPositionChange(Vector3 positionChange)
+        {
+            StormPosition = positionChange;
+        }
+        private void OnStormRotationChange(Quaternion rotationChange)
+        {
+            StormRotation = rotationChange;
         }
 
         [ClientRpc] private void RpcToggleEndOfRaceUI(bool toggle)
@@ -67,10 +86,10 @@ namespace UGP
             players.ForEach(player =>
             {
                 var player_networkID = player.GetComponent<NetworkIdentity>();
-                server.ServerRespawnPlayer(player_networkID);
+                netCompanion.ServerRespawnPlayer(player_networkID);
             });
 
-            server.Server_ChangeScene(scene);
+            netCompanion.Server_ChangeScene(scene);
         }
 
         private void EndOfRace()
@@ -80,12 +99,19 @@ namespace UGP
             {
                 Players.ForEach(player =>
                 {
+                    var client_scene = SceneManager.GetActiveScene();
                     var network_identity = player.GetComponent<NetworkIdentity>();
-                    server.RpcServer_Disconnect(network_identity, "");
+                    netCompanion.RpcServer_Disconnect(network_identity, client_scene.name);
                 });
 
-                var current_scene = SceneManager.GetActiveScene().name;
-                server.Server_ChangeScene(current_scene);
+                //CHECK IF THERE ARE NO PLAYERS CONNECTED BEFORE CHANGING THE SCENE
+                //server.Server_LANDisconnectAll();
+
+                if(Players.Count == 0)
+                {
+                    var server_scene = SceneManager.GetActiveScene();
+                    EndMatchLAN(server_scene.name);
+                }
             }
 
             _endofrace = "RACE COMPLETE \n";
@@ -164,6 +190,10 @@ namespace UGP
 
         private void LateUpdate()
         {
+            //SYNC STORM POSITION/ROTATION
+            Storm.transform.position = StormPosition;
+            Storm.transform.rotation = StormRotation;
+
             //SYNC UI TEXT
 
             LiveRaceText.text = "";
@@ -216,7 +246,7 @@ namespace UGP
                     var p_netIdentity = other.GetComponentInParent<NetworkIdentity>();
 
                     Debug.Log(p_behaviour.gameObject.name + " FINISHED");
-                    server.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
+                    netCompanion.PlayerFinishRace(p_netIdentity, " FINISHED RACE! \n");
                     finished_players.Add(p_behaviour);
 
                     var ic = p_behaviour.ic;
@@ -239,7 +269,7 @@ namespace UGP
                     vehicle_behaviour.seatedPlayer.RemovePlayerFromVehicle();
                 }
 
-                server.Server_Destroy(vehicle_behaviour.gameObject);
+                netCompanion.Server_Destroy(vehicle_behaviour.gameObject);
 
                 #region OLD
                 //Debug.Log("COLLISION WITH VEHICLE");
@@ -322,6 +352,14 @@ namespace UGP
                 MatchBegun = true;
 
                 RaceTimer -= Time.deltaTime; //DECREMENT THE RACE TIMER
+                PreStormTimer -= Time.deltaTime;
+                if(PreStormTimer <= 0.0f)
+                {
+                    //MOVE AND ROTATE THE STORM ON THE SERVER
+                    StormPosition = Vector3.Lerp(Storm.position, Finish.position, Time.deltaTime * StormTravelSpeed);
+                    Storm.transform.LookAt(Finish);
+                    StormRotation = Storm.transform.rotation;
+                }
             }
 
             //SORT THE LIST OF PLAYERS BY THEIR DISTANCE TO THE 'FINISH'

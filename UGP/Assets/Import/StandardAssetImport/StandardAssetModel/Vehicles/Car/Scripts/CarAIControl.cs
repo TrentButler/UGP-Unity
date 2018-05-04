@@ -2,8 +2,8 @@ using UnityEngine;
 
 namespace UnitySampleAssets.Vehicles.Car
 {
-    [RequireComponent(typeof (EnemyController))]
-    public class EnemyBehaviour : MonoBehaviour
+    [RequireComponent(typeof (CarController))]
+    public class CarAIControl : MonoBehaviour
     {
         // This script provides input to the car controller in the same way that the user control script does.
         // As such, it is really 'driving' the car, with no special physics or animation tricks to make the car behave properly.
@@ -38,7 +38,7 @@ namespace UnitySampleAssets.Vehicles.Car
 
 
         private float randomPerlin;// A random value for the car to base its wander on (so that AI cars don't all wander in the same pattern)
-        private EnemyController carController; // Reference to actual car controller we are controlling
+        private CarController carController; // Reference to actual car controller we are controlling
 
         // if this AI car collides with another car, it can take evasive action for a short duration:
         private float avoidOtherCarTime; // time until which to avoid the car we recently collided with
@@ -48,7 +48,7 @@ namespace UnitySampleAssets.Vehicles.Car
         private void Awake()
         {
             // get the car controller reference
-            carController = GetComponent<EnemyController>();
+            carController = GetComponent<CarController>();
 
             // give the random perlin a random value
             randomPerlin = Random.value*100;
@@ -186,7 +186,7 @@ namespace UnitySampleAssets.Vehicles.Car
             // detect collision against other cars, so that we can take evasive action
             if (col.rigidbody != null)
             {
-                var otherAI = col.rigidbody.GetComponent<EnemyBehaviour>();
+                var otherAI = col.rigidbody.GetComponent<CarAIControl>();
                 if (otherAI != null)
                 {
                     // we'll take evasive action for 1 second

@@ -2,7 +2,7 @@
 
 namespace UnitySampleAssets.Vehicles.Car
 {
-    public class EnemyController : MonoBehaviour
+    public class CarController : MonoBehaviour
     {
 
         // This car component is designed to be used on a gameobject which has wheels attached.
