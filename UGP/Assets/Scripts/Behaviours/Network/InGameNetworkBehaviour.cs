@@ -468,6 +468,11 @@ namespace UGP
 
         private void LateUpdate()
         {
+            if(networkUI == null)
+            {
+                networkUI = FindObjectOfType<NetworkUIBehaviour>();
+            }
+
             if (!isServer)
             {
                 networkUI.serverUIActive = false;
