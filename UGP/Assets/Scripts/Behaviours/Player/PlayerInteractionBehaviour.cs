@@ -10,7 +10,11 @@ namespace UGP
     //NEEDS WORK
     public class PlayerInteractionBehaviour : NetworkBehaviour
     {
-        public PlayerBehaviour p;
+        public PlayerBehaviour playerBrain;
+        [Range(0.01f, 999.0f)] public float TimeToEnterVehicle;
+        [Range(0.01f, 999.0f)] public float TimeToExitVehicle;
+        private float enterTimer = 0.0f;
+        private float exitTimer = 0.0f;
         public Transform HoldingItemPosition;
         [SyncVar(hook = "OnisHoldingChange")] public bool isHolding = false;
         [SyncVar(hook = "OnItemChange")] public string current_item = "";
@@ -35,6 +39,8 @@ namespace UGP
 
         public ItemBehaviour item;
         [Range(0, 999.0f)] public float DroppingItemOffset = 0.5f;
+        //MOVE THIS TO THE VEHICLEBEHAVIOUR
+        [Range(0, 999.0f)] public float ExitVehicleOffset;
 
         #region COMMAND_FUNCTIONS
         [Command]
@@ -84,7 +90,7 @@ namespace UGP
         [Command]
         public void CmdAssignVehicleAuthority(NetworkIdentity vehicleIdentity)
         {
-            var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
+            var localPlayerNetworkIdentity = playerBrain.GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
 
             var vehicleNetworkIdentity = vehicleIdentity;
@@ -111,7 +117,7 @@ namespace UGP
         public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
         {
             //Debug.Log(player.gameObject.name + " ASSIGN AUTHORITY TO: " + gameObject.name);
-            var localPlayerNetworkIdentity = p.GetComponent<NetworkIdentity>();
+            var localPlayerNetworkIdentity = playerBrain.GetComponent<NetworkIdentity>();
             var localPlayerConn = localPlayerNetworkIdentity.connectionToClient;
 
             var itemNetworkIdentity = itemIdentity;
@@ -134,6 +140,89 @@ namespace UGP
             itemNetworkIdentity.RemoveClientAuthority(localPlayerConn);
         }
         #endregion
+
+        private void ExitVehicleWithTimer()
+        {
+            if (Input.GetKey(KeyCode.F))
+            {
+                exitTimer += Time.fixedDeltaTime; //INCREMENT TIME WHILE THE 'F' KEY IS HELD
+            }
+            else
+            {
+                exitTimer = 0; //RESET TIMER
+            }
+
+            if (exitTimer >= TimeToExitVehicle)
+            {
+                playerBrain.isDriving = false;
+                playerBrain.CmdSetDriving(false);
+                var vehicleIdentity = playerBrain.vehicle.GetComponent<NetworkIdentity>();
+                CmdSetVehicleActive(false, vehicleIdentity);
+                CmdSetPlayerInSeat(false, vehicleIdentity);
+
+                //vehicle.CmdRemovePlayer();
+                playerBrain.vehicle.seatedPlayer = null;
+                playerBrain.CmdRemoveVehicleAuthority(vehicleIdentity);
+
+                exitTimer = 0.0f; //RESET THE TIMER
+                enterTimer = 0.0f;
+
+                float exit_x_offset = 0.0f;
+                var allColliders = GetComponents<Collider>().ToList();
+                allColliders.ForEach(col =>
+                {
+                    if(col.isTrigger)
+                    {
+                        exit_x_offset = col.bounds.size.x;
+                    }
+                });
+
+                //MOVE THE 'ExitVehicleOffset' TO THE VEHICLEBEHAVIOUR
+                var exitPosition = playerBrain.vehicle.seat.TransformPoint(new Vector3(exit_x_offset + ExitVehicleOffset, 0, 0));
+
+                transform.position = exitPosition;
+                transform.rotation = playerBrain.vehicle.seat.rotation;
+
+                playerBrain.vehicle = null;
+            }
+        }
+
+        private void EnterVehicleWithTimer(VehicleBehaviour vehicleBrain)
+        {
+            if (Input.GetKey(KeyCode.F))
+            {
+                enterTimer += Time.fixedDeltaTime; //INCREMENT TIME WHILE THE 'F' KEY IS HELD
+            }
+            else
+            {
+                enterTimer = 0; //RESET TIMER
+            }
+
+            if (enterTimer >= TimeToEnterVehicle)
+            {
+                var vActive = vehicleBrain.vehicleActive;
+                var vehicleIdentity = vehicleBrain.GetComponent<NetworkIdentity>();
+
+                if (!isHolding && !vehicleBrain.isDestroyed) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM, OR IF THE VEHICLE IS DESTROYED
+                {
+                    if (!vActive && playerBrain.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
+                    {
+                        //GET IN THE VEHICLE
+                        playerBrain.CmdSetDriving(true);
+                        playerBrain.SetVehicle(vehicleBrain);
+                        CmdSetVehicleActive(true, vehicleIdentity);
+                        CmdSetPlayerInSeat(true, vehicleIdentity);
+                        CmdSetVehicleColor(playerBrain.vehicleColor, vehicleIdentity);
+                        CmdAssignVehicleAuthority(vehicleIdentity);
+
+                        vehicleBrain.seatedPlayer = playerBrain;
+
+                        exitTimer = 0.0f;
+                        enterTimer = 0.0f;
+                    }
+                }
+            }
+        }
 
         public void PickUpItem()
         {
@@ -226,32 +315,7 @@ namespace UGP
             if (other.tag == "Vehicle")
             {
                 var v = other.GetComponentInParent<VehicleBehaviour>();
-                var vActive = v.vehicleActive;
-                var vehicleIdentity = v.GetComponent<NetworkIdentity>();
-
-                if (!isHolding && !v.isDestroyed) //DO NOT ENTER VEHICLE WHILE HOLDING AN ITEM, OR IF THE VEHICLE IS DESTROYED
-                {
-                    if (!vActive && p.vehicle == null) //CHECK IF THE VEHICLE IS ALREADY IN USE
-                    {
-                        Debug.Log("PRESS F TO ENTER VEHICLE");
-
-                        //F KEY PRESS TO ENTER THE VEHICLE
-                        if (Input.GetKeyDown(KeyCode.F))
-                        {
-                            //GET IN THE VEHICLE
-                            p.CmdSetDriving(true);
-                            p.SetVehicle(v);
-                            CmdSetVehicleActive(true, vehicleIdentity);
-                            CmdSetPlayerInSeat(true, vehicleIdentity);
-                            CmdSetVehicleColor(p.vehicleColor, vehicleIdentity);
-                            CmdAssignVehicleAuthority(vehicleIdentity);
-
-                            //var player_network_identity = GetComponent<NetworkIdentity>();
-                            //v.CmdSetPlayer(player_network_identity);
-                            v.seatedPlayer = p;
-                        }
-                    }
-                }
+                EnterVehicleWithTimer(v);
             }
         }
 
@@ -277,7 +341,7 @@ namespace UGP
                         return;
                     }
 
-                    p.RpcTakeDamage(player_networkIdentity, ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+                    playerBrain.RpcTakeDamage(player_networkIdentity, ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
 
                     var server = FindObjectOfType<InGameNetworkBehaviour>();
                     server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
@@ -289,7 +353,7 @@ namespace UGP
         
         private void FixedUpdate()
         {
-            if(!isLocalPlayer)
+            if (!isLocalPlayer)
             {
                 return;
             }
@@ -306,6 +370,11 @@ namespace UGP
                 {
                     Ani.SetBool("UsingItem", false);
                 }
+            }
+
+            if (playerBrain.isDriving)
+            {
+                ExitVehicleWithTimer(); //EXIT THE VEHICLE
             }
         }
 

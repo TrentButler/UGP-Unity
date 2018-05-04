@@ -1790,14 +1790,16 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1912099926934314}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bf963e9850229c40a60eb8074b37573, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   w: 2
+  weapons: []
   bulletPrefab: {fileID: 1537869310021538, guid: be405b0ceb96d894aa9e47b8e818eb35,
     type: 2}
+  GunTransform: {fileID: 0}
   GunBarrel: {fileID: 4052162712709280}
   audio: {fileID: 82707565670537792}
   particle: {fileID: 0}
@@ -1808,10 +1810,15 @@ MonoBehaviour:
   crosshairWorldOffset: {x: 0, y: 0, z: 58}
   AutomaticFireRate: 0.25
   SemiAutoFireRate: 0.5
+  ShotStrength: 500
   WeaponRange: 180
   AimCooldown: 2.5
   roundsFired: 0
   v: {fileID: 114843804702031498}
+  weaponAnimator: {fileID: 0}
+  activeWeapon: {fileID: 0}
+  s_weapon: 
+  weaponActive: 0
 --- !u!114 &114129542144825068
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1967,6 +1974,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputHorizontal: Horizontal
   InputVertical: Vertical
+  AltInputHorizontal: 
+  AltInputVertical: 
   CameraInputHorizontal: 
   CameraInputVertical: 
   InvertCameraHorizontal: 0
@@ -3286,11 +3295,15 @@ MonoBehaviour:
   VehicleConfig: {fileID: 11400000, guid: aa4dc7568a4573147b4190c5385ef569, type: 2}
   _v: {fileID: 0}
   vehicleUI: {fileID: 1874825454472314}
+  enterVehicleUI: {fileID: 0}
   HealthSlider: {fileID: 114028939043363892}
   FuelSlider: {fileID: 114358088618495944}
+  VehicleDestroyedParticle: {fileID: 0}
+  BurningVehicleParticle: {fileID: 0}
   seat: {fileID: 4126962040237516}
   ani: {fileID: 95847938825256242}
   vehicleActive: 0
+  isDestroyed: 0
   vColor: {r: 1, g: 0.42647058, b: 0.9841786, a: 1}
   playerInSeat: 0
   vehicleHealth: 0
@@ -3299,6 +3312,7 @@ MonoBehaviour:
   Shotgun: 0
   Sniper: 0
   Rocket: 0
+  seatedPlayer: {fileID: 0}
 --- !u!114 &114846417567106178
 MonoBehaviour:
   m_ObjectHideFlags: 1
