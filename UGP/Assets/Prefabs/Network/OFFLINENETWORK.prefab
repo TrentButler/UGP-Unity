@@ -9,74 +9,60 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1807714000160766}
+  m_RootGameObject: {fileID: 1669349187395724}
   m_IsPrefabParent: 1
---- !u!1 &1807714000160766
+--- !u!1 &1669349187395724
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4900349327771586}
-  - component: {fileID: 114096601438046330}
-  - component: {fileID: 114159401763631294}
-  - component: {fileID: 114997952938784990}
-  - component: {fileID: 114763262661023920}
+  - component: {fileID: 4556760120709610}
+  - component: {fileID: 114355198376578198}
+  - component: {fileID: 114954834279698654}
   m_Layer: 0
-  m_Name: NETWORK
+  m_Name: OFFLINENETWORK
   m_TagString: NetworkManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4900349327771586
+--- !u!4 &4556760120709610
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1807714000160766}
+  m_GameObject: {fileID: 1669349187395724}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3193.896, y: 1041.718, z: 1095.812}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114284836566354044
+--- !u!114 &114355198376578198
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1807714000160766}
+  m_GameObject: {fileID: 1669349187395724}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3339736116cacde4a8af4fe231252515, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   PlayButton: {fileID: 0}
-  Server: {fileID: 114763262661023920}
+  Server: {fileID: 114954834279698654}
   MatchCount: 0
   ListOfPlayers: []
   PlayerNames: []
---- !u!114 &114159401763631294
+--- !u!114 &114954834279698654
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1807714000160766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91d1ee566aba19d4fa173d0051debd86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Server: {fileID: 114096601438046330}
---- !u!114 &114763262661023920
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1807714000160766}
+  m_GameObject: {fileID: 1669349187395724}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 950c2f2ae4e042140807cea3a1899052, type: 3}
@@ -93,7 +79,7 @@ MonoBehaviour:
   m_LogLevel: 2
   m_PlayerPrefab: {fileID: 1550974688005078, guid: 015eaae25481ce44cb44eb348709c40d,
     type: 2}
-  m_AutoCreatePlayer: 0
+  m_AutoCreatePlayer: 1
   m_PlayerSpawnMethod: 0
   m_OfflineScene: 
   m_OnlineScene: 05.PrisonDeathmatch
@@ -144,7 +130,7 @@ MonoBehaviour:
     m_MaxTimerTimeout: 12000
     m_MinNetSimulatorTimeout: 1
     m_MaxNetSimulatorTimeout: 12000
-  m_Channels: 0500000000000000
+  m_Channels: 
   m_UseWebSockets: 0
   m_UseSimulator: 0
   m_SimulatedLatency: 1
@@ -154,21 +140,6 @@ MonoBehaviour:
   m_MatchHost: mm.unet.unity3d.com
   m_MatchPort: 443
   matchName: default
-  matchSize: 8
+  matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
---- !u!114 &114997952938784990
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1807714000160766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91d1ee566aba19d4fa173d0051debd86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  clientUI: {fileID: 0}
-  serverUI: {fileID: 0}
-  clientUIActive: 0
-  serverUIActive: 1
