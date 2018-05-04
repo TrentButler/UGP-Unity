@@ -27,6 +27,8 @@ namespace UGP
                 var playerConnection = playerNetIdentity.connectionToClient.connectionId;
                 if(playerConnection == conn.connectionId)
                 {
+                    player.playerName = RandomUserNames.GetUsername();
+                    player.vehicleColor = RandomUserNames.GetColor();
                     //ADD THIS PLAYER TO THE GAMEMODES LIST OF PLAYERS
                     gamemode_manager.gamemode.Players.Add(player);
                 }

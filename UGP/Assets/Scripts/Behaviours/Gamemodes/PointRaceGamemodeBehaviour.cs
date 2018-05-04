@@ -15,9 +15,13 @@ namespace UGP
         public Transform Finish;
 
         public Transform Storm;
+        [Range(0.0001f, 999999)] public float StormTravelSpeed;
         [SyncVar(hook = "OnStormPositionChange")] public Vector3 StormPosition;
         [SyncVar(hook = "OnStormRotationChange")] public Quaternion StormRotation;
-        [Range(0.0001f, 999999)] public float StormTravelSpeed;
+        [SyncVar(hook = "OnStormProgressionChange")] public float StormProgression;
+        [SyncVar(hook = "OnTotalStormDistanceChange")] public float TotalStormDistance;
+        public float currentStormDistFromFinish;
+        public Slider StormProgressionSlider;
 
         public Text LiveRaceText;
         public Text EndOfRaceText;
@@ -60,6 +64,14 @@ namespace UGP
         private void OnStormRotationChange(Quaternion rotationChange)
         {
             StormRotation = rotationChange;
+        }
+        private void OnStormProgressionChange(float progressionChange)
+        {
+            StormProgression = progressionChange;
+        }
+        private void OnTotalStormDistanceChange(float totalDistanceChange)
+        {
+            TotalStormDistance = totalDistanceChange;
         }
 
         [ClientRpc] private void RpcToggleEndOfRaceUI(bool toggle)
@@ -136,65 +148,42 @@ namespace UGP
             #endregion
         }
 
-        //[ClientRpc] private void RpcPlayerEndOfRace(NetworkIdentity player)
-        //{
-        //    if (player.isLocalPlayer)
-        //    {
-        //        PlayerResultsPanel.SetActive(true);
+        private float GetStormProgression()
+        {
+            var currentDistance = Vector3.Distance(StormPosition, Finish.position);
+            //currentStormDistFromFinish = currentDistance;
+            //var progression_displacement = currentDistance / TotalStormDistance;
+            //var calc = new Vector3(progression_displacement, 0, 0);
+            //return calc.normalized.x;
 
-        //        PlayerEndOfRaceText.text = "RACE COMPLETE \n";
-        //        PlayerEndOfRaceText.text += "FINISH TIME: " + RaceTimer.ToString() + "\n";
+            return -(1 / TotalStormDistance) * currentDistance + 1;
+        }
 
-        //        var _i = 1;
-        //        for (int i = finished_players.Count; i > 0; i--)
-        //        {
-        //            EndOfRaceText.text += _i.ToString() + ". " + finished_players[i - 1].playerName + "\n";
-        //            _i++;
-        //        }
-        //    }
-        //}
+        private void Start()
+        {
+            if(!isServer)
+            {
+                return;
+            }
 
-        //private void Start()
-        //{
-        //    if (isServer)
-        //    {
-        //        //players = FindObjectsOfType<PlayerBehaviour>().ToList();
-        //        //net.SpawnAllVehicles();
-        //        //timer = EndOfRaceTimer;
-        //    }
-        //}
-
-        //private void FixedUpdate()
-        //{
-        //    if (isServer)
-        //    {
-        //        //CHECK TO SEE IF THE LIST OF PLAYERBEHAVIOUR IS EMPTY, FIND ALL OF THEM BY TYPE 'PLAYERBEHAVIOUR'
-        //        //if (players.Count <= 0)
-        //        //{
-        //        //    players = FindObjectsOfType<PlayerBehaviour>().ToList();
-        //        //}
-
-        //        //if (finished_players.Count == players.Count)
-        //        //{
-        //        //    isRaceFinished = true;
-        //        //    return;
-        //        //}
-        //        //else
-        //        //{
-        //        //    isRaceFinished = false;
-        //        //}
-
-
-        //    }
-        //}
+            StormPosition = Storm.position;
+            StormRotation = Storm.rotation;
+            TotalStormDistance = Vector3.Distance(StormPosition, Finish.position);
+        }
 
         private void LateUpdate()
         {
+            var StormGOActive = Storm.gameObject.activeInHierarchy;
+            if (!StormGOActive)
+            {
+                Storm.gameObject.SetActive(true);
+            }
+
             //SYNC STORM POSITION/ROTATION
             Storm.transform.position = StormPosition;
             Storm.transform.rotation = StormRotation;
 
-            //SYNC UI TEXT
+            //SYNC UI STUFF
 
             LiveRaceText.text = "";
             LiveRaceText.text = _t;
@@ -204,6 +193,8 @@ namespace UGP
 
             EndOfRaceText.text = "";
             EndOfRaceText.text = _endofrace;
+
+            StormProgressionSlider.value = StormProgression;
 
             #region OLD
             //if (isServer)
@@ -224,12 +215,7 @@ namespace UGP
             //} 
             #endregion
         }
-
-        //NEEDS WORK
-        //INVOKE A CMD CALL TO DISABLE THE PLAYER MODEL ON THE SERVER/CONNECTED CLIENTS
-        //ADD A BOOLEAN VARIABLE TO DETERMINE IF THE PLAYER IS 'ACTIVE' OR NOT
-        //WHEN THE PLAYER COLLIDES WITH THE 'FINISH LINE' DISABLE INPUT CONTROLLER, PLAYER MODEL
-        //ENABLE THE END OF RACE CANVAS FOR THIS PLAYER
+        
         private void OnTriggerStay(Collider other)
         {
             if (!isServer)
@@ -355,10 +341,18 @@ namespace UGP
                 PreStormTimer -= Time.deltaTime;
                 if(PreStormTimer <= 0.0f)
                 {
+                    var StormGOActive = Storm.gameObject.activeInHierarchy;
+                    if(!StormGOActive)
+                    {
+                        Storm.gameObject.SetActive(true);
+                    }
+
                     //MOVE AND ROTATE THE STORM ON THE SERVER
                     StormPosition = Vector3.Lerp(Storm.position, Finish.position, Time.deltaTime * StormTravelSpeed);
                     Storm.transform.LookAt(Finish);
                     StormRotation = Storm.transform.rotation;
+
+                    StormProgression = GetStormProgression();
                 }
             }
 

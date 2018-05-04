@@ -19,10 +19,9 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4900349327771586}
-  - component: {fileID: 114096601438046330}
-  - component: {fileID: 114159401763631294}
   - component: {fileID: 114997952938784990}
-  - component: {fileID: 114763262661023920}
+  - component: {fileID: 114879963126078514}
+  - component: {fileID: 114452950120619184}
   m_Layer: 0
   m_Name: NETWORK
   m_TagString: NetworkManager
@@ -36,14 +35,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1807714000160766}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114096601438046330
+--- !u!114 &114452950120619184
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -51,15 +50,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1807714000160766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3339736116cacde4a8af4fe231252515, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f6818b69e4d7ca41921636e95fd4f0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayButton: {fileID: 0}
-  Server: {fileID: 114763262661023920}
-  MatchCount: 0
-  ListOfPlayers: []
-  PlayerNames: []
---- !u!114 &114159401763631294
+  PlayerPrefab: {fileID: 1550974688005078, guid: 015eaae25481ce44cb44eb348709c40d,
+    type: 2}
+  Server: {fileID: 114879963126078514}
+  IPTEXT: {fileID: 0}
+  server_ip: 
+--- !u!114 &114879963126078514
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -67,19 +66,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1807714000160766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f183f270e7e1fc4fbabb019b16d7dd7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Server: {fileID: 114096601438046330}
---- !u!114 &114763262661023920
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1807714000160766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 950c2f2ae4e042140807cea3a1899052, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d4d618dbef54ca4c94d2005bafe673f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_NetworkPort: 7777
@@ -91,18 +78,24 @@ MonoBehaviour:
   m_ScriptCRCCheck: 1
   m_MaxDelay: 0.01
   m_LogLevel: 2
-  m_PlayerPrefab: {fileID: 1550974688005078, guid: 015eaae25481ce44cb44eb348709c40d,
-    type: 2}
-  m_AutoCreatePlayer: 0
-  m_PlayerSpawnMethod: 0
+  m_PlayerPrefab: {fileID: 0}
+  m_AutoCreatePlayer: 1
+  m_PlayerSpawnMethod: 1
   m_OfflineScene: 
-  m_OnlineScene: 05.PrisonDeathmatch
+  m_OnlineScene: 
   m_SpawnPrefabs:
+  - {fileID: 1537869310021538, guid: be405b0ceb96d894aa9e47b8e818eb35, type: 2}
   - {fileID: 1777122563482306, guid: 149673a0bbe071846b71e1d2d3da57b0, type: 2}
-  - {fileID: 1534243780155308, guid: 75cc783c2c9ed5f43bd7801ed228b5e2, type: 2}
   - {fileID: 1635836624532418, guid: 1679df7eae7b7cb4b93d9c5a7834dfaf, type: 2}
+  - {fileID: 1534243780155308, guid: 75cc783c2c9ed5f43bd7801ed228b5e2, type: 2}
+  - {fileID: 1526021633386524, guid: fcd7a2ee3882ec949b21cb793b5eb027, type: 2}
+  - {fileID: 1466913676474728, guid: 534cd9bf12194c04f9f6af9c8c613eb8, type: 2}
+  - {fileID: 1544895805012732, guid: 8afbf48a1562a6546be993b39d7e7172, type: 2}
   - {fileID: 1753106163161976, guid: 7694304c9a2058c4d88270e4608f5f32, type: 2}
-  m_CustomConfig: 0
+  - {fileID: 1978491074197374, guid: 66946e60c99eef847bc5a630042122ad, type: 2}
+  - {fileID: 1234980606368964, guid: 677491c5ef333e048b7fa4505f7299d7, type: 2}
+  - {fileID: 1849297453288764, guid: 97e21037c82e6a94fbe270c30a390087, type: 2}
+  m_CustomConfig: 1
   m_MaxConnections: 4
   m_ConnectionConfig:
     m_PacketSize: 1440
@@ -154,9 +147,11 @@ MonoBehaviour:
   m_MatchHost: mm.unet.unity3d.com
   m_MatchPort: 443
   matchName: default
-  matchSize: 8
+  matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
+  net_companion: {fileID: 0}
+  gamemode_manager: {fileID: 0}
 --- !u!114 &114997952938784990
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -170,5 +165,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clientUI: {fileID: 0}
   serverUI: {fileID: 0}
-  clientUIActive: 0
-  serverUIActive: 1
+  ipUI: {fileID: 0}
+  clientUIActive: 1
+  serverUIActive: 0
+  ipUIActive: 1
