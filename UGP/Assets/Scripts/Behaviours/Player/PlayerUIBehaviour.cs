@@ -14,7 +14,7 @@ namespace UGP
         public GameObject PlayerUI;
         public GameObject PlayerDeadCanvas;
         public GameObject SettingsCanvas;
-        public Slider HealthSlider;
+        public Image HealthSlider;
         public GameObject PlayerNameTag;
         public Text PlayerNameText;
         public string GotoSceneString;
@@ -63,7 +63,6 @@ namespace UGP
             SceneManager.LoadScene(scene);
         }
 
-
         public void RespawnPlayer()
         {
             if(!isLocalPlayer)
@@ -76,6 +75,13 @@ namespace UGP
 
             net_manager.RespawnPlayer(player_identity);
         }
+
+        public float GetPlayerHealth()
+        {
+            var health_displacement = PlayerBrain.playerHealth / PlayerBrain.MaxHealth;
+            var calc = new Vector3(health_displacement, 0, 0);
+            return calc.normalized.x;
+        }
         
         private void Start()
         {
@@ -84,7 +90,7 @@ namespace UGP
                 return;
             }
 
-            HealthSlider.maxValue = PlayerBrain.MaxHealth;
+            //HealthSlider.maxValue = PlayerBrain.MaxHealth;
             PlayerNameText.text = PlayerBrain.playerName;
         }
 
@@ -127,12 +133,13 @@ namespace UGP
 
             PlayerNameTag.SetActive(false);
 
-            if (HealthSlider.maxValue <= 0.0f)
-            {
-                HealthSlider.maxValue = PlayerBrain.MaxHealth;
-            }
+            //if (HealthSlider.maxValue <= 0.0f)
+            //{
+            //    HealthSlider.maxValue = PlayerBrain.MaxHealth;
+            //}
 
-            HealthSlider.value = PlayerBrain.playerHealth;
+            //HealthSlider.value = PlayerBrain.playerHealth;
+            HealthSlider.fillAmount = GetPlayerHealth();
 
             if(PlayerBrain.isDead)
             {

@@ -13,6 +13,8 @@ namespace UGP
 
         public string InputHorizontal = "Horizontal";
         public string InputVertical = "Vertical";
+        public string AltInputHorizontal;
+        public string AltInputVertical;
         public string CameraInputHorizontal = "Mouse X";
         public string CameraInputVertical = "Mouse Y";
         public bool InvertCameraHorizontal = false;
@@ -28,8 +30,9 @@ namespace UGP
                 {
                     var _h = Input.GetAxis(InputHorizontal);
                     var _v = Input.GetAxis(InputVertical);
+                    var alt_h = Input.GetAxis(AltInputHorizontal);
                     ic.Move(_h, _v);
-                    ic.Rotate(_h, _v, 0.0f);
+                    ic.Rotate(alt_h, _v, 0.0f);
                     return;
                 }
 
