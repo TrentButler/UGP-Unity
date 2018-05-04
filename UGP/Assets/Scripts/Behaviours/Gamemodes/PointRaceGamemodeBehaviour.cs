@@ -15,6 +15,8 @@ namespace UGP
         public Transform Finish;
 
         public Transform Storm;
+        [SyncVar(hook = "OnStormPositionChange")] public Vector3 StormPosition;
+        [SyncVar(hook = "OnStormRotationChange")] public Quaternion StormRotation;
         [Range(0.0001f, 999999)] public float StormTravelSpeed;
 
         public Text LiveRaceText;
@@ -50,6 +52,14 @@ namespace UGP
         {
             PreStormTimer = timerChange;
             PreStormTimer = Mathf.Clamp(PreStormTimer, 0, 999999);
+        }
+        private void OnStormPositionChange(Vector3 positionChange)
+        {
+            StormPosition = positionChange;
+        }
+        private void OnStormRotationChange(Quaternion rotationChange)
+        {
+            StormRotation = rotationChange;
         }
 
         [ClientRpc] private void RpcToggleEndOfRaceUI(bool toggle)
@@ -180,7 +190,9 @@ namespace UGP
 
         private void LateUpdate()
         {
-
+            //SYNC STORM POSITION/ROTATION
+            Storm.transform.position = StormPosition;
+            Storm.transform.rotation = StormRotation;
 
             //SYNC UI TEXT
 
@@ -343,7 +355,10 @@ namespace UGP
                 PreStormTimer -= Time.deltaTime;
                 if(PreStormTimer <= 0.0f)
                 {
-                    Storm.position = Vector3.Lerp(Storm.position, Finish.position, Time.deltaTime * StormTravelSpeed);
+                    //MOVE AND ROTATE THE STORM ON THE SERVER
+                    StormPosition = Vector3.Lerp(Storm.position, Finish.position, Time.deltaTime * StormTravelSpeed);
+                    Storm.transform.LookAt(Finish);
+                    StormRotation = Storm.transform.rotation;
                 }
             }
 
