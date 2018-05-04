@@ -2128,13 +2128,14 @@ GameObject:
   m_Component:
   - component: {fileID: 4966280404343292}
   - component: {fileID: 114077896546731124}
+  - component: {fileID: 114864021847920470}
   m_Layer: 0
   m_Name: PlayerCamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1909028332151632
 GameObject:
   m_ObjectHideFlags: 1
@@ -2565,7 +2566,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1505014503416636}
-  m_LocalRotation: {x: 0.058842335, y: -0, z: -0, w: 0.9982673}
+  m_LocalRotation: {x: 0.059157617, y: -0, z: -0, w: 0.9982487}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
@@ -2898,7 +2899,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1550974688005078}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 2.135}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4858903044815516}
@@ -3949,7 +3950,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1478623515323350}
-  m_LocalRotation: {x: -0.01854045, y: -0, z: -0, w: 0.99982816}
+  m_LocalRotation: {x: -0.3927872, y: -0, z: -0, w: 0.9196294}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
@@ -4127,7 +4128,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1762063946471960}
-  m_LocalRotation: {x: -0.01854045, y: -0, z: -0, w: 0.99982816}
+  m_LocalRotation: {x: -0.3927872, y: -0, z: -0, w: 0.9196294}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
@@ -4637,7 +4638,7 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 10000
     Dutch: 0
   m_ComponentOwner: {fileID: 4407026344860200}
 --- !u!114 &114059784659142500
@@ -4731,7 +4732,7 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 10000
     Dutch: 0
   m_YAxis:
     Value: 0.5
@@ -4784,7 +4785,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f38f72ae025b6d49a114bd372a2646c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  p: {fileID: 114386874542141472}
+  playerBrain: {fileID: 114386874542141472}
+  TimeToEnterVehicle: 1.5
+  TimeToExitVehicle: 0.5
   HoldingItemPosition: {fileID: 4776415799628130}
   isHolding: 0
   current_item: 
@@ -4796,6 +4799,7 @@ MonoBehaviour:
   NetworkAni: {fileID: 114162178429960720}
   item: {fileID: 0}
   DroppingItemOffset: 0.5
+  ExitVehicleOffset: 2.5
 --- !u!114 &114122658572345846
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4910,7 +4914,7 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 10000
     Dutch: 0
   m_ComponentOwner: {fileID: 4181897650350384}
 --- !u!114 &114162178429960720
@@ -5437,7 +5441,6 @@ MonoBehaviour:
   _p: {fileID: 0}
   Center: {fileID: 4507530567443048}
   vehicle: {fileID: 0}
-  TimeToExitVehicle: 0.4
   TimeToDestroyRagdoll: 10
   ic: {fileID: 114554935871039238}
   interaction: {fileID: 114092347888957772}
@@ -5714,6 +5717,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InputHorizontal: Horizontal
   InputVertical: Vertical
+  AltInputHorizontal: 
+  AltInputVertical: 
   CameraInputHorizontal: Mouse X
   CameraInputVertical: Mouse Y
   InvertCameraHorizontal: 0
@@ -5789,7 +5794,7 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 5000
+    FarClipPlane: 10000
     Dutch: 0
   m_ComponentOwner: {fileID: 4217889883123478}
 --- !u!114 &114713747032240794
@@ -6099,6 +6104,29 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Exit
+--- !u!114 &114864021847920470
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1903247657202816}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e501d18bb52cf8c40b1853ca4904654f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_CollideAgainst:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IgnoreTag: Player
+  m_MinimumDistanceFromTarget: 0.1
+  m_AvoidObstacles: 1
+  m_DistanceLimit: 0
+  m_CameraRadius: 0.01
+  m_Strategy: 2
+  m_MaximumEffort: 4
+  m_Damping: 1
+  m_OptimalTargetDistance: 0
 --- !u!114 &114876366702931602
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -208,7 +208,7 @@ namespace UGP
                     if (vehicle_identity.hasAuthority)
                     {
                         player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity); //USE THE ITEM ON THE VEHICLE
-                        player.p.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
+                        player.playerBrain.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
                         player._DropItem(); //REMOVE THE ITEM FROM THE PLAYER
 
                         var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
