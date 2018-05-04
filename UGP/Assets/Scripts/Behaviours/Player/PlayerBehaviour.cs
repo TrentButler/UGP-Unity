@@ -92,6 +92,13 @@ namespace UGP
 
                 if(isLocalPlayer)
                 {
+                    if(isDriving)
+                    {
+                        if(vehicle != null)
+                        {
+                            RemovePlayerFromVehicle();
+                        }
+                    }
                     CmdSpawnRagdoll();
                 }
             }

@@ -170,8 +170,8 @@ namespace UGP
 
                 if(seatedPlayer != null)
                 {
-                    seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999);
-                    seatedPlayer.RemovePlayerFromVehicle();
+                    seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999); //APPLY ENOUGH DAMAGE TO KILL THE PLAYER
+                    //seatedPlayer.RemovePlayerFromVehicle();
                 }
 
                 vehicleActive = false;
