@@ -11,7 +11,6 @@ namespace UGP
     //IMPLEMENT PLAYER THROW ITEM TO VEHICLE MECHANIC
     public class ItemBehaviour : NetworkBehaviour
     {
-        public Text ItemName;
         public GameObject ItemCanvas;
         public Item ItemConfig;
         [HideInInspector]
@@ -148,6 +147,11 @@ namespace UGP
             player = null; //REMOVE REFRENCE TO PLAYER
         }
 
+        private void ItemUILookat(Transform target)
+        {
+            ItemCanvas.transform.LookAt(target);
+        }
+
         private void OnTriggerStay(Collider other)
         {
             if(isServer)
@@ -155,23 +159,17 @@ namespace UGP
                 return;
             }
 
-            //var item_behaviour = other.GetComponentInParent<ItemBehaviour>();
-            //if (item_behaviour != null)
-            //{
-            //    var other_col_size = other.bounds.size;
-            //    other_col_size.y = 0;
-            //    transform.position = transform.position + (other_col_size * 1.5f);
-            //}
-
-
             if (other.tag == "Player")
             {
                 var player_identity = other.GetComponentInParent<NetworkIdentity>();
                 if (player_identity.isLocalPlayer && !isBeingHeld)
                 {
-                    Debug.Log("Press F To Pick Up " + _I.name);
-                    ItemName.text = ItemConfig.name;
                     ItemCanvas.SetActive(true);
+                    var player_behaviour = player_identity.GetComponent<PlayerBehaviour>();
+                    //var camTransform = player_behaviour.VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().GetRig(1).transform;
+                    var cinemachine_rig = player_behaviour.VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().LiveChildOrSelf;
+                    var camTransform = cinemachine_rig.VirtualCameraGameObject.transform;
+                    ItemUILookat(camTransform);
                 }
                 
                 var player_interaction = other.GetComponentInParent<PlayerInteractionBehaviour>();

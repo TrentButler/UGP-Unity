@@ -109,21 +109,24 @@ namespace UGP
             PostRaceTimer -= Time.deltaTime;
             if (PostRaceTimer <= 0.0f)
             {
-                Players.ForEach(player =>
-                {
-                    var client_scene = SceneManager.GetActiveScene();
-                    var network_identity = player.GetComponent<NetworkIdentity>();
-                    netCompanion.RpcServer_Disconnect(network_identity, client_scene.name);
-                });
+                //Players.ForEach(player =>
+                //{
+                //    var client_scene = SceneManager.GetActiveScene();
+                //    var network_identity = player.GetComponent<NetworkIdentity>();
+                //    netCompanion.RpcServer_Disconnect(network_identity, client_scene.name);
+                //});
 
                 //CHECK IF THERE ARE NO PLAYERS CONNECTED BEFORE CHANGING THE SCENE
                 //server.Server_LANDisconnectAll();
 
-                if(Players.Count == 0)
-                {
-                    var server_scene = SceneManager.GetActiveScene();
-                    EndMatchLAN(server_scene.name);
-                }
+                var server_scene = SceneManager.GetActiveScene();
+                EndMatchLAN(server_scene.name);
+
+                //if(Players.Count == 0)
+                //{
+                //    var server_scene = SceneManager.GetActiveScene();
+                //    EndMatchLAN(server_scene.name);
+                //}
             }
 
             _endofrace = "RACE COMPLETE \n";
@@ -150,8 +153,8 @@ namespace UGP
 
         private float GetStormProgression()
         {
-            var currentDistance = Vector3.Distance(StormPosition, Finish.position);
-            //currentStormDistFromFinish = currentDistance;
+            var currentDistance = Vector3.Distance(Storm.position, Finish.position);
+            currentStormDistFromFinish = currentDistance;
             //var progression_displacement = currentDistance / TotalStormDistance;
             //var calc = new Vector3(progression_displacement, 0, 0);
             //return calc.normalized.x;

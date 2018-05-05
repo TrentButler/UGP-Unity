@@ -20,7 +20,7 @@ namespace UGP
         [SyncVar(hook = "OnLoseConditionChange")] public bool LoseCondition;
         [SyncVar(hook = "OnMatchBegunChange")] public bool MatchBegun;
         public InGameNetworkBehaviour netCompanion;        
-        public bool destroyUI, stopServer, restartServer, destroyNetManager, localSceneSwitch;
+        public bool destroyUI, stopServer, restartServer, respawnAll, destroyNetManager, localSceneSwitch;
         public List<PlayerBehaviour> Players = new List<PlayerBehaviour>();
 
         private void OnWinConditionChange(bool winChange)
@@ -89,6 +89,11 @@ namespace UGP
                 directConnect.RestartServer();
                 directConnect.StopServer();
             }
+
+            if (respawnAll)
+            {
+                directConnect.RespawnAllPlayers();
+            }
             
             if (destroyNetManager)
             {
@@ -128,6 +133,11 @@ namespace UGP
                 //RESTART THE SERVER
                 directConnect.RestartServer();
                 directConnect.StopServer();
+            }
+
+            if (respawnAll)
+            {
+                //directConnect.RespawnAllPlayers();
             }
 
             if (destroyNetManager)
