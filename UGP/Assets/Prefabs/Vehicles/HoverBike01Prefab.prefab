@@ -2204,7 +2204,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1018354720547246}
-  m_LocalRotation: {x: 0.6705556, y: 0.000000065909916, z: -0.000000057433343, w: -0.7418593}
+  m_LocalRotation: {x: 0.6705556, y: 0.00000006590708, z: -0.000000057432008, w: -0.7418593}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -2335,7 +2335,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1978491074197374}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.5395153, y: 4.3057103e-19, z: 24.59}
+  m_LocalPosition: {x: 2.5395153, y: 0.57, z: 24.59}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4635698420635970}
@@ -4233,7 +4233,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 9e50b5b322d19384ca3301155077ac4b, type: 3}
     m_FontSize: 27
     m_FontStyle: 3
     m_BestFit: 0
@@ -4522,6 +4522,8 @@ MonoBehaviour:
   - {fileID: 23558278274967876}
   colorChangeSpeed: 0.265
   VirtualCamera: {fileID: 1194378595244046}
+  RagDoll: {fileID: 1706523731340640, guid: 562facd419f821341bd9bd44f27dbbc2, type: 2}
+  Model: {fileID: 1463482265724598}
   ic: {fileID: 114584750268079746}
   shootBehaviour: {fileID: 114693570556457754}
   vehicleUIBehaviour: {fileID: 114245439544492256}
@@ -4922,7 +4924,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 9e50b5b322d19384ca3301155077ac4b, type: 3}
     m_FontSize: 12
     m_FontStyle: 3
     m_BestFit: 1
@@ -5129,7 +5131,7 @@ MonoBehaviour:
   GunBarrel: {fileID: 4775941905556922}
   audio: {fileID: 82160715551518716}
   particle: {fileID: 0}
-  crosshair: {fileID: 0}
+  crosshair: {fileID: 114609527646782092}
   crosshairXOffset: 0
   crosshairYOffset: 0
   crosshairSpeed: 1.5
@@ -5192,7 +5194,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 9e50b5b322d19384ca3301155077ac4b, type: 3}
     m_FontSize: 22
     m_FontStyle: 3
     m_BestFit: 0
@@ -14182,7 +14184,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -27}
   m_SizeDelta: {x: 25, y: 25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224241813038527624

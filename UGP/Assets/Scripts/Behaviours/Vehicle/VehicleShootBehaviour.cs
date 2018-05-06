@@ -95,7 +95,7 @@ namespace UGP
 
             var b_rb = b.GetComponent<Rigidbody>();
 
-            var force = b_rb.transform.forward.normalized * strength;
+            var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
             //b_rb.rotation = GunBarrel.rotation;
             b_rb.velocity = force;
 
@@ -232,76 +232,86 @@ namespace UGP
         private float aimTimer = 0;
         private void Aim()
         {
-            //var h = Input.GetAxis("Mouse X");
-            var v = Input.GetAxis("Mouse Y");
+            ////var h = Input.GetAxis("Mouse X");
+            //var v = Input.GetAxis("Mouse Y");
 
-            var aimVector = new Vector3(0, v, 0);
+            //var aimVector = new Vector3(0, 0, 0);
 
-            var vehicleThrottle = GetComponent<DefaultVehicleController>().currentVehicleThrottle;
-            var vehicleStrafe = GetComponent<DefaultVehicleController>().currentVehicleStrafe;
-            Vector3 moveVector = new Vector3(0, 0, vehicleThrottle);
+            //var vehicleThrottle = GetComponent<DefaultVehicleController>().currentVehicleThrottle;
+            //var vehicleStrafe = GetComponent<DefaultVehicleController>().currentVehicleStrafe;
+            //Vector3 moveVector = new Vector3(0, 0, vehicleThrottle);
             
-            if(moveVector.magnitude <= 0)
-            {
-                //crosshairWorldOffset.z = 58.0f;
-                //crosshairYOffset = 82.0f;
+            //if(moveVector.magnitude <= 0)
+            //{
+            //    //crosshairWorldOffset.z = 58.0f;
+            //    //crosshairYOffset = 82.0f;
 
-                if (aimVector.magnitude <= 0)
-                {
-                    aimTimer += Time.deltaTime;
+            //    if (aimVector.magnitude <= 0)
+            //    {
+            //        aimTimer += Time.deltaTime;
 
-                    if (aimTimer >= AimCooldown)
-                    {
-                        #region UI_CROSSHAIR
-                        var rectTrans = c.GetComponent<RectTransform>();
+            //        if (aimTimer >= AimCooldown)
+            //        {
+            //            #region UI_CROSSHAIR
+            //            var rectTrans = c.GetComponent<RectTransform>();
 
-                        var _w = rectTrans.rect.width;
-                        var _h = rectTrans.rect.height;
+            //            var _w = rectTrans.rect.width;
+            //            var _h = rectTrans.rect.height;
 
-                        var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
-                        var p = crosshair.rectTransform.position;
+            //            var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
+            //            var p = crosshair.rectTransform.position;
 
-                        var lerpX = Mathf.Lerp(p.x, center.x, Time.deltaTime);
-                        var lerpY = Mathf.Lerp(p.y, center.y, Time.deltaTime);
+            //            var lerpX = Mathf.Lerp(p.x, center.x, Time.deltaTime);
+            //            var lerpY = Mathf.Lerp(p.y, center.y, Time.deltaTime);
 
-                        var lerpPos = new Vector3(lerpX, lerpY, 0);
+            //            var lerpPos = new Vector3(lerpX, lerpY, 0);
 
-                        //RETURN CROSSHAIR TO CENTER OVER TIME
-                        crosshair.rectTransform.position = lerpPos;
-                        #endregion
-                    }
-                }
-                else
-                {
-                    //MOVE THE UI CROSSHAIR BASED ON MOUSE INPUT
-                    crosshair.rectTransform.position += (aimVector * crosshairSpeed);
-                    ClampCrosshairUI();
+            //            //RETURN CROSSHAIR TO CENTER OVER TIME
+            //            crosshair.rectTransform.position = lerpPos;
+            //            #endregion
+            //        }
+            //    }
+            //    else
+            //    {
+            //        var rectTrans = c.GetComponent<RectTransform>();
 
-                    aimTimer = 0;
-                }
-            }
-            else
-            {
-                //CENTER THE CROSSHAIR WHEN VEHICLE IS MOVING
-                //crosshairWorldOffset.z = 11.8f;
-                //crosshairYOffset = 91.0f;
+            //        var _w = rectTrans.rect.width;
+            //        var _h = rectTrans.rect.height;
+
+            //        var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
+
+            //        crosshair.rectTransform.position = center;
+
+            //        //MOVE THE UI CROSSHAIR BASED ON MOUSE INPUT
+            //        crosshair.rectTransform.position = crosshair.rectTransform.TransformPoint(aimVector * crosshairSpeed);
+            //        ClampCrosshairUI();
+
+            //        aimTimer = 0;
+            //    }
+            //}
+            //else
+            //{
+            //    //CENTER THE CROSSHAIR WHEN VEHICLE IS MOVING
+            //    //crosshairWorldOffset.z = 11.8f;
+            //    //crosshairYOffset = 91.0f;
 
 
-                var rectTrans = c.GetComponent<RectTransform>();
+            //    var rectTrans = c.GetComponent<RectTransform>();
 
-                var _w = rectTrans.rect.width;
-                var _h = rectTrans.rect.height;
+            //    var _w = rectTrans.rect.width;
+            //    var _h = rectTrans.rect.height;
 
-                var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
+            //    var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
 
-                crosshair.rectTransform.position = center;
-            }
+            //    crosshair.rectTransform.position = center;
+            //}
 
             //CREATE A LOOK AT VECTOR FOR THE GUNBARREL
             var cam = Camera.main;
             var uiCrosshair = crosshair.rectTransform.position;
             barrelLookAt = cam.ScreenToWorldPoint(uiCrosshair + crosshairWorldOffset);
             GunBarrel.LookAt(barrelLookAt);
+            GunTransform.LookAt(barrelLookAt);
         }
         
         private void Fire()
@@ -386,7 +396,7 @@ namespace UGP
             {
                 if(hasAuthority && !isServer)
                 {
-                    //Aim();
+                    Aim();
                     Fire();
 
                     Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);

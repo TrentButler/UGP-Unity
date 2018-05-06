@@ -14,6 +14,8 @@ namespace UGP
         #endregion
 
         public GameObject VirtualCamera;
+        public GameObject RagDoll;
+        public GameObject Model;
         public NetworkUserControl ic;
         public VehicleShootBehaviour shootBehaviour;
         public VehicleUIBehaviour vehicleUIBehaviour;
@@ -120,8 +122,13 @@ namespace UGP
         [Command] public void CmdVehicleDestroyed()
         {
             VehicleDestroyedParticle.Play();
-            BurningVehicleParticle.Play();
+            //BurningVehicleParticle.Play();
             RpcVehicleDestroyed();
+        }
+        [Command] private void CmdSpawnRagdoll()
+        {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.Spawn(RagDoll, transform.position, transform.rotation);
         }
         #endregion
 
@@ -153,7 +160,7 @@ namespace UGP
         [ClientRpc] public void RpcVehicleDestroyed()
         {
             VehicleDestroyedParticle.Play();
-            BurningVehicleParticle.Play();
+            //BurningVehicleParticle.Play();
         }
         #endregion
 
@@ -161,24 +168,25 @@ namespace UGP
         {
             isDestroyed = destroyedChange;
             if (isDestroyed)
-            { 
+            {
                 //CHECK FOR THE PLAYER
                 //REMOVE THE PLAYER FROM THE VEHICLE
                 //KILL THE PLAYER
                 //PLAY EXPLOSION
                 //DESTROY THE VEHICLE
+                vehicleActive = false;
 
-                if(seatedPlayer != null)
+                VehicleDestroyedParticle.Play();
+                //BurningVehicleParticle.Play();
+                shootBehaviour.CmdSetWeaponActive(false);
+                CmdVehicleDestroyed();
+                CmdSpawnRagdoll();
+
+                if (seatedPlayer != null)
                 {
                     seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999); //APPLY ENOUGH DAMAGE TO KILL THE PLAYER
                     //seatedPlayer.RemovePlayerFromVehicle();
                 }
-
-                vehicleActive = false;
-                
-                VehicleDestroyedParticle.Play();
-                BurningVehicleParticle.Play();
-                CmdVehicleDestroyed();
             }
         }
         public void OnVehicleHealthChange(float healthChange)
@@ -276,6 +284,22 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            var col = collision.collider;
+            if (col.CompareTag("Ammo"))
+            {
+                var ammo_behaviour = col.GetComponent<DefaultRoundBehaviour>();
+                if (ammo_behaviour.owner == owner)
+                {
+                    return;
+                }
+                CmdTakeDamage(ammo_behaviour.DamageDealt);
+                ammo_behaviour.DestroyBullet();
+            }
+        }
+
 
         private void Start()
         {
@@ -393,6 +417,14 @@ namespace UGP
                 {
                     if (vehicleActive)
                     {
+                        if(Input.GetKeyDown(KeyCode.Keypad0))
+                        {
+                            CmdTakeDamage(999999);
+                        }
+                        if (Input.GetKeyDown(KeyCode.Keypad0))
+                        {
+                            CmdTakeHealth(999999);
+                        }
                         VirtualCamera.SetActive(true);
                         Cursor.visible = false;
                         ic.enabled = true;
@@ -458,11 +490,18 @@ namespace UGP
                     }
                 }
 
+                Model.SetActive(false);
+                shootBehaviour.weaponActive = false;
+
                 ColorChangeOff();
                 //VehicleDestroyedParticle.Play();
-                BurningVehicleParticle.Play();
+                //BurningVehicleParticle.Play();
                 rb.isKinematic = true;
                 return;
+            }
+            else
+            {
+                Model.SetActive(true);
             }
 
             if (vehicleActive)

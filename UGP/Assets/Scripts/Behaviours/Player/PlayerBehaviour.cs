@@ -197,8 +197,11 @@ namespace UGP
         }
         [Command] private void CmdSpawnRagdoll()
         {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
             var ragdoll = Instantiate(RagDoll, transform.position, transform.rotation);
-            NetworkServer.Spawn(ragdoll);
+
+            net_companion.Spawn(ragdoll);
+
             RpcSetRagdollPos(ragdoll);
         }
         [Command] public void CmdRespawn(Vector3 position, Quaternion rotation)

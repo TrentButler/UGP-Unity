@@ -23,13 +23,18 @@ namespace UGP
             }
         }
 
+        public void DestroyBullet()
+        {
+            var server = FindObjectOfType<InGameNetworkBehaviour>();
+            server.Server_Destroy(gameObject);
+        }
+
         private void LateUpdate()
         {
             delete_timer -= Time.deltaTime;
             if(delete_timer <= 0.0f)
             {
-                var server = FindObjectOfType<InGameNetworkBehaviour>();
-                server.Server_Destroy(gameObject);
+                DestroyBullet();
             }
         }
 
@@ -40,23 +45,18 @@ namespace UGP
                 return;
             }
 
-            if (collision.collider.tag == "Vehicle")
-            {
-                var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
-                var vehicle_owner = vehicle_behaviour.owner;
+            //if (collision.collider.tag == "Vehicle")
+            //{
+            //    var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
+            //    //var network_identity = vehicle_behaviour.GetComponent<NetworkIdentity>();
+            //    //if(network_identity.hasAuthority)
+            //    //{
+            //    //    return;
+            //    //}
 
-                if (owner != null)
-                {
-                    var playerBehaviour = owner.GetComponent<PlayerBehaviour>();
-                    if(vehicle_owner == owner)
-                    {
-                        return;
-                    }
-
-                    vehicle_behaviour.RpcTakeDamage(DamageDealt);
-                    Destroy(gameObject);
-                }
-            }
+            //    vehicle_behaviour.RpcTakeDamage(DamageDealt);
+            //    Destroy(gameObject);
+            //}
 
             //if (collision.collider.tag == "Player")
             //{
