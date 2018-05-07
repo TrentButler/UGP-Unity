@@ -135,15 +135,11 @@ namespace UGP
         #region CLIENTRPC_FUNCTIONS
         [ClientRpc] public void RpcTakeDamage(float healthTaken)
         {
-            //DEPLETE THE VEHICLE'S HEALTH
-            vehicleHealth -= healthTaken;
-            //Debug.Log("VEHICLE TAKE " + healthTaken.ToString() + " DAMAGE");
-
-            if (vehicleHealth <= 0.0f)
-            {
-                vehicleActive = false;
-                isDestroyed = true;
-            }
+            CmdTakeDamage(healthTaken);
+        }
+        [ClientRpc] public void RpcTakeHealth(float healthTaken)
+        {
+            CmdTakeHealth(healthTaken);
         }
         [ClientRpc] public void RpcSetVehicleActive(bool active)
         {
