@@ -92,6 +92,13 @@ namespace UGP
 
                 if(isLocalPlayer)
                 {
+                    if(isDriving)
+                    {
+                        if(vehicle != null)
+                        {
+                            RemovePlayerFromVehicle();
+                        }
+                    }
                     CmdSpawnRagdoll();
                 }
             }
@@ -254,7 +261,7 @@ namespace UGP
                 return;
             LookAt(ragdoll.transform);
         }
-        [ClientRpc] private void RpcRespawn(Vector3 pos, Quaternion rot)
+        [ClientRpc] public void RpcRespawn(Vector3 pos, Quaternion rot)
         {
             interaction.enabled = true;
 

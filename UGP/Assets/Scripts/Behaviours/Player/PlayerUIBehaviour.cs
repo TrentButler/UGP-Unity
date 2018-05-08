@@ -78,9 +78,11 @@ namespace UGP
 
         public float GetPlayerHealth()
         {
-            var health_displacement = PlayerBrain.playerHealth / PlayerBrain.MaxHealth;
-            var calc = new Vector3(health_displacement, 0, 0);
-            return calc.normalized.x;
+            //var health_displacement = PlayerBrain.playerHealth / PlayerBrain.MaxHealth;
+            //var calc = new Vector3(health_displacement, 0, 0);
+            //return calc.normalized.x;
+
+            return (1 / PlayerBrain.MaxHealth) * PlayerBrain.playerHealth;
         }
         
         private void Start()
