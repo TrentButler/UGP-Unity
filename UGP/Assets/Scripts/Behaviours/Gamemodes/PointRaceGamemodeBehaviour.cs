@@ -17,7 +17,7 @@ namespace UGP
         public Transform Storm;
         private Vector3 OriginalStormPosition;
         private Quaternion OriginalStormRotation;
-        [Range(0.0001f, 999999)] public float StormTravelSpeed;
+        [Range(0.0f, 999999)] public float StormTravelSpeed;
         [SyncVar(hook = "OnStormPositionChange")] public Vector3 StormPosition;
         [SyncVar(hook = "OnStormRotationChange")] public Quaternion StormRotation;
         [SyncVar(hook = "OnStormProgressionChange")] public float StormProgression;

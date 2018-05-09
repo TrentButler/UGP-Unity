@@ -499,6 +499,7 @@ namespace UGP
                 networkUI.clientUIActive = false;
             }
 
+            scoreboard.text = "";
             scoreboard.text = scoreboardText;
         }
     }

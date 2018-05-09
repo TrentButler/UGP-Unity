@@ -39,6 +39,8 @@ namespace UGP
                 playerIndex = message_stream.value;
             }
 
+            playerIndex = Random.Range(0, PlayerPrefabs.Count);
+
             short controller_id = 0;
 
             var spawn = GetStartPosition();

@@ -40,6 +40,7 @@ namespace UGP
         [SyncVar(hook = "OnVehicleHealthChange")] public float vehicleHealth;
         [SyncVar(hook = "OnVehicleFuelChange")] public float vehicleFuel;
         [SyncVar] public int Assault, Shotgun, Sniper, Rocket;
+        [SyncVar(hook = "OnRagdollSpawnedChange")] public bool ragdollSpawned = false;
         #endregion
 
         public PlayerBehaviour seatedPlayer;
@@ -127,8 +128,12 @@ namespace UGP
         }
         [Command] private void CmdSpawnRagdoll()
         {
-            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-            net_companion.Spawn(RagDoll, transform.position, transform.rotation);
+            if(!ragdollSpawned)
+            {
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                net_companion.Spawn(RagDoll, transform.position, transform.rotation);
+                ragdollSpawned = true;
+            }
         }
         #endregion
 
@@ -140,6 +145,10 @@ namespace UGP
         [ClientRpc] public void RpcTakeHealth(float healthTaken)
         {
             CmdTakeHealth(healthTaken);
+        }
+        [ClientRpc] public void RpcTakeAmmunition(int assault, int shotgun, int sniper, int rocket)
+        {
+            CmdTakeAmmunition(assault, shotgun, sniper, rocket);
         }
         [ClientRpc] public void RpcSetVehicleActive(bool active)
         {
@@ -211,6 +220,10 @@ namespace UGP
 
             //FuelSlider.value = vehicleFuel;
             //FuelSlider.maxValue = max_fuel;
+        }
+        public void OnRagdollSpawnedChange(bool spawnChange)
+        {
+            ragdollSpawned = spawnChange;
         }
 
         //private void UpdateVehicle()
@@ -295,7 +308,6 @@ namespace UGP
                 ammo_behaviour.DestroyBullet();
             }
         }
-
 
         private void Start()
         {

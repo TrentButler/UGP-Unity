@@ -37,6 +37,7 @@ namespace UGP
         [SyncVar(hook = "OnVehicleColorChange")] public Color vehicleColor;
         [SyncVar(hook = "OnMaxHealthAssign")] public float MaxHealth;
         [SyncVar(hook = "OnPlayerNameChange")] public string playerName;
+        [SyncVar(hook = "OnRagdollSpawnedChange")] public bool ragdollSpawned = false;
         #endregion
 
         #region SYNCVAR_HOOK_FUNCTIONS
@@ -115,6 +116,10 @@ namespace UGP
         {
             playerName = nameChange;
         }
+        private void OnRagdollSpawnedChange(bool spawnChange)
+        {
+            ragdollSpawned = spawnChange;
+        }
         #endregion
 
         #region COMMAND_FUNCTIONS
@@ -185,6 +190,10 @@ namespace UGP
         {
             isDriving = driving;
         }
+        [Command] public void CmdSetRagdollSpawned(bool spawned)
+        {
+            ragdollSpawned = spawned;
+        }
         [Command] public void CmdRemoveVehicleAuthority(NetworkIdentity vehicleIdentity)
         {
             var localPlayerNetworkIdentity = GetComponent<NetworkIdentity>();
@@ -197,12 +206,16 @@ namespace UGP
         }
         [Command] private void CmdSpawnRagdoll()
         {
-            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-            var ragdoll = Instantiate(RagDoll, transform.position, transform.rotation);
+            if(!ragdollSpawned)
+            {
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                //var ragdoll = Instantiate(RagDoll, transform.position, transform.rotation);
 
-            net_companion.Spawn(ragdoll);
+                net_companion.Spawn(RagDoll, transform.position, transform.rotation);
+                ragdollSpawned = true;
 
-            RpcSetRagdollPos(ragdoll);
+                //RpcSetRagdollPos(ragdoll);
+            }
         }
         [Command] public void CmdRespawn(Vector3 position, Quaternion rotation)
         {
@@ -246,6 +259,10 @@ namespace UGP
                 CmdTakeDamage_Other(attacker, damageDealt);
             }
         }
+        [ClientRpc] public void RpcTakeHealth(float healthTaken)
+        {
+            CmdTakeHealth(healthTaken);
+        }
         [ClientRpc] private void RpcKillPlayer()
         {
             if (!isLocalPlayer)
@@ -285,6 +302,7 @@ namespace UGP
                 isActive = true;
                 isDead = false;
                 isDriving = false;
+                ragdollSpawned = false;
 
                 colliders.ForEach(collider =>
                 {
@@ -302,6 +320,7 @@ namespace UGP
                 CmdSetActive(true);
                 CmdSetisDead(false);
                 CmdSetDriving(false);
+                CmdSetRagdollSpawned(false);
                 transform.position = pos;
                 transform.rotation = rot;
                 LookAt(transform);
