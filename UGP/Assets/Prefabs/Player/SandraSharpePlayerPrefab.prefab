@@ -713,6 +713,7 @@ GameObject:
   - component: {fileID: 114316783040159628}
   - component: {fileID: 114602231297565754}
   - component: {fileID: 143147099705403650}
+  - component: {fileID: 114507249523129640}
   m_Layer: 9
   m_Name: SandraSharpePlayerPrefab
   m_TagString: Player
@@ -3615,7 +3616,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1027086062391228}
-  m_LocalRotation: {x: 0.045352485, y: 0.25524756, z: -0.39303982, w: 0.8822196}
+  m_LocalRotation: {x: 0.04535249, y: 0.2552476, z: -0.39303985, w: 0.8822197}
   m_LocalPosition: {x: -0.005, y: 0.016, z: 0.064}
   m_LocalScale: {x: 0.25000024, y: 0.2500005, z: 0.25000042}
   m_Children:
@@ -3658,7 +3659,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1005226976055812}
-  m_LocalRotation: {x: -0.62502754, y: 0.41160068, z: -0.049907368, w: 0.6613886}
+  m_LocalRotation: {x: -0.6250275, y: 0.41160062, z: -0.04990736, w: 0.6613885}
   m_LocalPosition: {x: 0.001, y: 0.086, z: 0.108}
   m_LocalScale: {x: 0.25000066, y: 0.2500002, z: 0.25000063}
   m_Children: []
@@ -5441,6 +5442,23 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!114 &114507249523129640
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1245720650040214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bddc0e800d7d3a4e8b61c8e6908722d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SkinColor: {r: 0, g: 0, b: 0, a: 0}
+  ShirtColor: {r: 0, g: 0, b: 0, a: 0}
+  PantsColor: {r: 0, g: 0, b: 0, a: 0}
+  Skin: {fileID: 137810180359773976}
+  Shirt: {fileID: 137504823826081486}
+  Pants: {fileID: 137071322035375772}
 --- !u!114 &114517824269475772
 MonoBehaviour:
   m_ObjectHideFlags: 1
