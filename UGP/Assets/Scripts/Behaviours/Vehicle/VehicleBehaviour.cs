@@ -296,6 +296,11 @@ namespace UGP
 
         private void OnCollisionEnter(Collision collision)
         {
+            if(!isServer)
+            {
+                return;
+            }
+
             var col = collision.collider;
             if (col.CompareTag("Ammo"))
             {
@@ -304,7 +309,7 @@ namespace UGP
                 {
                     return;
                 }
-                CmdTakeDamage(ammo_behaviour.DamageDealt);
+                RpcTakeDamage(ammo_behaviour.DamageDealt);
                 ammo_behaviour.DestroyBullet();
             }
         }
