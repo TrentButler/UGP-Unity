@@ -52,6 +52,16 @@ namespace UGP
             }
         }
 
+        public void MaxVehicleResources()
+        {
+            var allVehicles = FindObjectsOfType<VehicleBehaviour>().ToList();
+            allVehicles.ForEach(vehicle =>
+            {
+                vehicle.CmdTakeHealth(99999);
+                vehicle.CmdTakeAmmunition(999, 999, 999, 999);
+            });
+        }
+
         public void RespawnAllPlayers()
         {
             var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();

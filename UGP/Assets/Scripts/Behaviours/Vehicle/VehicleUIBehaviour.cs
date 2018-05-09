@@ -40,30 +40,30 @@ namespace UGP
             var text = vehicleUI.GetComponentInChildren<Text>();
             var shoot_behaviour = VehicleBrain.shootBehaviour;
 
-            switch(shoot_behaviour.w)
+            switch(shoot_behaviour.weapon.type)
             {
-                case Weapon.ASSAULT:
+                case WeaponType.ASSAULT:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Assault.ToString();
                         break;
                     }
 
-                case Weapon.SHOTGUN:
+                case WeaponType.SHOTGUN:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Shotgun.ToString();
                         break;
                     }
 
-                case Weapon.SNIPER:
+                case WeaponType.SNIPER:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Sniper.ToString();
                         break;
                     }
 
-                case Weapon.ROCKET:
+                case WeaponType.ROCKET:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Rocket.ToString();
