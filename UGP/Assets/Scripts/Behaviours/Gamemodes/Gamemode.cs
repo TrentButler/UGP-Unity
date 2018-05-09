@@ -52,7 +52,18 @@ namespace UGP
         public abstract void GameLoop();
         public abstract void Initialize();
         public abstract void RestartPreMatchTimer();
+        public abstract void RestartMatch();
 
+        protected void ClearAllVehicles()
+        {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.ClearAllVehicles();
+        }
+        protected void ClearAllItems()
+        {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.ClearAllItems();
+        }
         protected void SetMatchBegun(bool begun)
         {
             MatchBegun = begun;
@@ -63,6 +74,17 @@ namespace UGP
             {
                 player.RpcSetUserControl(control);
             });
+        }
+        protected void RespawnAll()
+        {
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            var directConnect = netManager.GetComponent<LANDirectConnect>();
+            directConnect.RespawnAllPlayers();
+        }
+        protected void SpawnEverything()
+        {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.SpawnBuildings();
         }
         protected void EndMatchLAN(string scene)
         {
