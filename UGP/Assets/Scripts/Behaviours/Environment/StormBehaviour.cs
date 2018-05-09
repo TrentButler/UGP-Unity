@@ -23,6 +23,11 @@ namespace UGP
             {
                 if(!playerBehaviour.isDead)
                 {
+                    if(playerBehaviour.isDriving)
+                    {
+                        return;
+                    }
+
                     var player_identity = playerBehaviour.GetComponent<NetworkIdentity>();
                     damage_timer += Time.deltaTime;
                     if (damage_timer > TimeTakenToDamage)
@@ -33,7 +38,7 @@ namespace UGP
                 }
             }
 
-            var vehicleBehaviour = other.GetComponent<VehicleBehaviour>();
+            var vehicleBehaviour = other.GetComponentInParent<VehicleBehaviour>();
             if (vehicleBehaviour != null)
             {
                 if(!vehicleBehaviour.isDestroyed)

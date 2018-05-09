@@ -11,7 +11,6 @@ namespace UGP
     public class LANDirectConnect : MonoBehaviour
     {
         private List<PlayerBehaviour> ListOfPlayers = new List<PlayerBehaviour>();
-        public GameObject PlayerPrefab;
         public LANNetworkManager Server;
 
         public InputField IPTEXT;
@@ -53,6 +52,16 @@ namespace UGP
             }
         }
 
+        public void RespawnAllPlayers()
+        {
+            var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
+            allPlayers.ForEach(player =>
+            {
+                var spawn = Server.GetStartPosition();
+                player.RpcRespawn(spawn.position, spawn.rotation);
+            });
+        }
+
         void Awake()
         {
             Server = GetComponent<LANNetworkManager>();
@@ -63,7 +72,7 @@ namespace UGP
             if (Server == null)
                 Server = FindObjectOfType<LANNetworkManager>();
 
-            Server.playerPrefab = PlayerPrefab;
+            //Server.playerPrefab = PlayerPrefab;
         }
 
         void LateUpdate()

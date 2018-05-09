@@ -450,6 +450,14 @@ namespace UGP
             
             if(isDestroyed)
             {
+                if(!isServer)
+                {
+                    if (seatedPlayer != null)
+                    {
+                        seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999); //APPLY ENOUGH DAMAGE TO KILL THE PLAYER
+                    }
+                }
+
                 ColorChangeOff();
                 //VehicleDestroyedParticle.Play();
                 BurningVehicleParticle.Play();
