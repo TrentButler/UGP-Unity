@@ -22,6 +22,15 @@ namespace UGP
 
         public InputController ic;
 
+        public float GetCurrentVerticalInput()
+        {
+            return Input.GetAxis(InputVertical);
+        }
+        public float GetCurrentHorizontalInput()
+        {
+            return Input.GetAxis(InputHorizontal);
+        }
+
         void FixedUpdate()
         {
             if(!isLocalPlayer)
