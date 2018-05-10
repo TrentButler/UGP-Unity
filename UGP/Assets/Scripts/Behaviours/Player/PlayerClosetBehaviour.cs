@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 namespace UGP
 {
 
@@ -62,10 +63,13 @@ namespace UGP
         }
         private MeshType type;
 
-
         public GameObject currentPlayer;
         public SkinnedMeshRenderer currentMeshRender;
         public Color currentColor;
+
+        public Text playerNameText;
+
+        public List<string> UsernamesList = new List<string>();
 
         public void OnSandra()
         {
@@ -129,7 +133,11 @@ namespace UGP
             PlayerCam.SetActive(true);
             vehicleChange = false;
         }
+        public void OnRandomized()
+        {
+            index = Random.Range(0, UsernamesList.Count);
 
+        }
         public void OnApply()
         {
             var player_dress = FindObjectOfType<PlayerDress>();
@@ -140,7 +148,8 @@ namespace UGP
                 player_dress.ShirtColor = ShirtColor;
                 player_dress.PantsColor = PantsColor;
                 player_dress.SkinColor = SkinColor;
-                player_dress.PlayerIndex = PlayerIndex;   
+                player_dress.PlayerIndex = PlayerIndex;
+                player_dress.PlayerName = PlayerName;
             }
             else
             {
@@ -152,7 +161,7 @@ namespace UGP
                 PlayerDressBehaviour.PantsColor = PantsColor;
                 PlayerDressBehaviour.SkinColor = SkinColor;
                 PlayerDressBehaviour.PlayerIndex = PlayerIndex;
-        
+                PlayerDressBehaviour.PlayerName = PlayerName;
 
                 DontDestroyOnLoad(playerDress);
             }
@@ -215,16 +224,37 @@ namespace UGP
             }
         }
 
+        private int index = 0;
+   
+        public void OnNext()
+        {
+            if(index < UsernamesList.Count - 1)
+            {
+                index++;
+            }
+        }
+        public void OnPrevious()
+        {
+            if (index > 0)
+            {
+                index--;
+            }
+        }
         public void OnclickChangeColor()
         {
             Panel.SetActive(true);
 
             //GetComponent<ChangeColorBehaviour>().HoverCraft.GetComponent<MeshRenderer>().material.color = new Color(Red, Green, Blue);
         }
+        public void OnJoin()
+        {
+            SceneManager.LoadScene("03.CORERace");
+        }
         // Use this for initialization
         void Start()
         {
             //Sandra.SetActive(false);
+            UsernamesList = RandomUserNames.UserNames;
             OnShannon();
             ToggleShirt();
             VehicleCam.SetActive(false);
@@ -270,6 +300,9 @@ namespace UGP
             }
 
             currentPlayer.transform.Rotate(Vector3.up * Time.smoothDeltaTime);
+
+            playerNameText.text = UsernamesList[index];
+            PlayerName = UsernamesList[index];
         }
     }
 }
