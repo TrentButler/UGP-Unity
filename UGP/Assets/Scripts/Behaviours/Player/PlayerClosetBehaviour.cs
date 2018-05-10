@@ -15,6 +15,11 @@ namespace UGP
 
         public GameObject Sandra;
 
+        public bool vehicleChange;
+        public GameObject PlayerCam;
+        public GameObject VehicleCam;
+        public bool PlayerChange;
+        public GameObject currentCam;
         public int PlayerIndex;
         #endregion
         #region PlayerName
@@ -56,6 +61,7 @@ namespace UGP
             Pants = 2,
         }
         private MeshType type;
+
 
         public GameObject currentPlayer;
         public SkinnedMeshRenderer currentMeshRender;
@@ -107,6 +113,28 @@ namespace UGP
             //ShannonSkin.GetComponent<SkinnedMeshRenderer>().material.color = new Color(Red, Green, Blue);
             //SandraSkin.GetComponent<SkinnedMeshRenderer>().material.color = new Color(Red, Green, Blue);
         }
+        public void OnVehicleChange()
+        {
+            currentCam = VehicleCam;
+            vehicleChange = true;
+            VehicleCam.SetActive(true);
+            PlayerCam.SetActive(false);
+   
+
+        }
+        public void OnPlayerChange()
+        {
+            currentCam = PlayerCam;
+            VehicleCam.SetActive(false);
+            PlayerCam.SetActive(true);
+            vehicleChange = false;
+        }
+
+        public void OnApply()
+        {
+
+        }
+
         public void OnShannon()
         {
             currentPlayer = Shannon;
@@ -176,6 +204,7 @@ namespace UGP
             //Sandra.SetActive(false);
             OnShannon();
             ToggleShirt();
+            VehicleCam.SetActive(false);
         }
 
         // Update is called once per frame
