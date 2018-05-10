@@ -28,6 +28,13 @@ namespace UGP
             PantsColor = change;
         }
 
+        public void Load(PlayerDress playerDress)
+        {
+            SkinColor = playerDress.SkinColor;
+            ShirtColor = playerDress.ShirtColor;
+            PantsColor = playerDress.PantsColor;
+        }
+
         private void LateUpdate()
         {
             Skin.material.color = SkinColor;

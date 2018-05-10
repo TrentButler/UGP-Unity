@@ -14,7 +14,15 @@ namespace UGP
         public GamemodeManager gamemode_manager;
         public List<GameObject> PlayerPrefabs = new List<GameObject>();
         public List<NetworkConnection> allConnections = new List<NetworkConnection>();
-        public int playerIndex = 0;
+        public int player_Index = 0;
+        public PlayerDress player_Dress;
+        //public VehicleDress vehicle_Dress;
+
+        public class NetworkMessage : MessageBase
+        {
+            public PlayerDress player_dress;
+            public VehicleDress vehicle_dress;
+        }
 
         public override void OnClientConnect(NetworkConnection conn)
         {
@@ -24,7 +32,7 @@ namespace UGP
 
             IntegerMessage prefabIndexMessage = new IntegerMessage(playerIndex); 
 
-            ClientScene.AddPlayer(conn, controllerID, prefabIndexMessage);
+            ClientScene.AddPlayer(conn, controllerID, prefabIndexMessage,);
         }
 
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader reader)
@@ -34,9 +42,13 @@ namespace UGP
             //GET MESSAGE FROM CLIENT FOR WHICH PLAYER PREFAB TO SPAWN
             if (reader != null)
             {
-                var message_stream = reader.ReadMessage<IntegerMessage>();
+                var message_stream = reader.ReadMessage<NetworkMessage>();
 
-                playerIndex = message_stream.value;
+                player_Dress = message_stream.player_dress;
+                player_Index = player_Dress.PlayerIndex;
+                //player_Index = message_stream.player_index;
+
+                //vehicleDress = message_stream.vehicle_dress;
             }
 
             //playerIndex = Random.Range(0, PlayerPrefabs.Count);
@@ -45,15 +57,17 @@ namespace UGP
 
             var spawn = GetStartPosition();
 
-            var spawn_player = Instantiate(PlayerPrefabs[playerIndex], spawn.position, spawn.rotation);
+            var spawn_player = Instantiate(PlayerPrefabs[player_Index], spawn.position, spawn.rotation);
 
             var playerBehaviour = spawn_player.GetComponent<PlayerBehaviour>();
-            var playerDress = spawn_player.GetComponent<PlayerDressBehaviour>();
-            playerDress.SkinColor = RandomUserNames.GetColor();
-            playerDress.ShirtColor = RandomUserNames.GetColor();
-            playerDress.PantsColor = RandomUserNames.GetColor();
+            var playerDressBehaviour = spawn_player.GetComponent<PlayerDressBehaviour>();
+            playerDressBehaviour.Load(player_Dress);
 
-            playerBehaviour.playerName = RandomUserNames.GetUsername();
+            //playerDress.SkinColor = RandomUserNames.GetColor();
+            //playerDress.ShirtColor = RandomUserNames.GetColor();
+            //playerDress.PantsColor = RandomUserNames.GetColor();
+
+            playerBehaviour.playerName = player_Dress.PlayerName;
             playerBehaviour.vehicleColor = RandomUserNames.GetColor();
 
             NetworkServer.AddPlayerForConnection(conn, spawn_player, controller_id);
