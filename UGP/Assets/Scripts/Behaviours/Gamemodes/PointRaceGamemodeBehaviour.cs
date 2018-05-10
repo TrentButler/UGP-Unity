@@ -15,7 +15,9 @@ namespace UGP
         public Transform Finish;
 
         public Transform Storm;
-        [Range(0.0001f, 999999)] public float StormTravelSpeed;
+        private Vector3 OriginalStormPosition;
+        private Quaternion OriginalStormRotation;
+        [Range(0.0f, 999999)] public float StormTravelSpeed;
         [SyncVar(hook = "OnStormPositionChange")] public Vector3 StormPosition;
         [SyncVar(hook = "OnStormRotationChange")] public Quaternion StormRotation;
         [SyncVar(hook = "OnStormProgressionChange")] public float StormProgression;
@@ -36,6 +38,7 @@ namespace UGP
         [SyncVar(hook = "OnPostRaceTimerChange")] public float PostRaceTimer;
         [SyncVar(hook = "OnRaceTimerChange")] public float RaceTimer;
         [SyncVar(hook = "OnPreStormTimerChange")] [Range(0.001f, 999999)] public float PreStormTimer;
+        private float OriginalPreStormTimer;
 
         private void OnPreRaceTimerChange(float timerChange)
         {
@@ -104,26 +107,34 @@ namespace UGP
             netCompanion.Server_ChangeScene(scene);
         }
 
-        private void EndOfRace()
+        private bool EndOfRace()
         {
             PostRaceTimer -= Time.deltaTime;
             if (PostRaceTimer <= 0.0f)
             {
-                Players.ForEach(player =>
-                {
-                    var client_scene = SceneManager.GetActiveScene();
-                    var network_identity = player.GetComponent<NetworkIdentity>();
-                    netCompanion.RpcServer_Disconnect(network_identity, client_scene.name);
-                });
+                RestartMatch();
+                return true;
+
+                #region OLD
+                //Players.ForEach(player =>
+                //{
+                //    var client_scene = SceneManager.GetActiveScene();
+                //    var network_identity = player.GetComponent<NetworkIdentity>();
+                //    netCompanion.RpcServer_Disconnect(network_identity, client_scene.name);
+                //});
 
                 //CHECK IF THERE ARE NO PLAYERS CONNECTED BEFORE CHANGING THE SCENE
                 //server.Server_LANDisconnectAll();
 
-                if(Players.Count == 0)
-                {
-                    var server_scene = SceneManager.GetActiveScene();
-                    EndMatchLAN(server_scene.name);
-                }
+                //var server_scene = SceneManager.GetActiveScene();
+                //EndMatchLAN(server_scene.name);
+
+                //if(Players.Count == 0)
+                //{
+                //    var server_scene = SceneManager.GetActiveScene();
+                //    EndMatchLAN(server_scene.name);
+                //} 
+                #endregion
             }
 
             _endofrace = "RACE COMPLETE \n";
@@ -132,11 +143,14 @@ namespace UGP
 
             //LIST ALL PLAYERS SORTED BY DISTANCE TO GOAL
             int place = 1;
-            Players.ForEach(player =>
+            var sorted_players = Players.OrderBy(x => Vector3.Distance(x.transform.position, Finish.transform.position)).ToList();
+            sorted_players.ForEach(player =>
             {
-                _endofrace += string.Format("{0}.{1}", place, player.playerName);
+                _endofrace += string.Format("<color=#{1}>{0}.{2}</color>\n", place, ColorUtility.ToHtmlStringRGB(player.vehicleColor), player.playerName);
                 place += 1;
             });
+
+            return false;
 
             #region OLD
             //var _i = 1;
@@ -150,8 +164,8 @@ namespace UGP
 
         private float GetStormProgression()
         {
-            var currentDistance = Vector3.Distance(StormPosition, Finish.position);
-            //currentStormDistFromFinish = currentDistance;
+            var currentDistance = Vector3.Distance(Storm.position, Finish.position);
+            currentStormDistFromFinish = currentDistance;
             //var progression_displacement = currentDistance / TotalStormDistance;
             //var calc = new Vector3(progression_displacement, 0, 0);
             //return calc.normalized.x;
@@ -165,6 +179,20 @@ namespace UGP
             {
                 return;
             }
+
+            var connected_players = FindObjectsOfType<PlayerBehaviour>().ToList();
+            connected_players.ForEach(player =>
+            {
+                if (!Players.Contains(player))
+                {
+                    Players.Add(player);
+                }
+            });
+
+
+            OriginalPreStormTimer = PreStormTimer;
+            OriginalStormPosition = Storm.position;
+            OriginalStormRotation = Storm.rotation;
 
             StormPosition = Storm.position;
             StormRotation = Storm.rotation;
@@ -298,18 +326,24 @@ namespace UGP
 
         public override void OnWinCondition()
         {
-            EndOfRace();
-            TogglePlayerControl(false);
-            ToggleEndOfRaceUI(true);
-            RpcToggleEndOfRaceUI(true);
+            var match_restarted = EndOfRace();
+            if (!match_restarted)
+            {
+                TogglePlayerControl(false);
+                ToggleEndOfRaceUI(true);
+                RpcToggleEndOfRaceUI(true);
+            }
         }
 
         public override void OnLoseCondition()
         {
-            EndOfRace();
-            TogglePlayerControl(false);
-            ToggleEndOfRaceUI(true);
-            RpcToggleEndOfRaceUI(true);
+            var match_restarted = EndOfRace();
+            if(!match_restarted)
+            {
+                TogglePlayerControl(false);
+                ToggleEndOfRaceUI(true);
+                RpcToggleEndOfRaceUI(true);
+            }
         }
 
         public override void GameLoop()
@@ -383,6 +417,35 @@ namespace UGP
             {
                 PreRaceTimer = PreMatchTimer;
             }
+        }
+
+        public override void RestartMatch()
+        {
+            RaceTimer = MatchTimer;
+            PreRaceTimer = PreMatchTimer;
+            PostRaceTimer = PostMatchTimer;
+            PreStormTimer = OriginalPreStormTimer;
+            WinCondition = false;
+            LoseCondition = false;
+
+            StormPosition = OriginalStormPosition;
+            StormRotation = OriginalStormRotation;
+
+            Players.ForEach(player =>
+            {
+                player.playerName = RandomUserNames.GetUsername();
+                player.vehicleColor = RandomUserNames.GetColor();
+            });
+
+            RespawnAll();
+            ClearAllVehicles();
+            ClearAllItems();
+            SpawnEverything();
+            MatchBegun = false;
+            SetMatchBegun(false);
+            
+            ToggleEndOfRaceUI(false);
+            RpcToggleEndOfRaceUI(false);
         }
     }
 }

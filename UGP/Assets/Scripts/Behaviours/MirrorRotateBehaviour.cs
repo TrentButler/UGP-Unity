@@ -23,11 +23,7 @@ namespace UGP
 
         void OnTriggerEnter(Collider other)
         {
-            if(other.tag == "DoorStopper")
-            {
-
-            }
-
+ 
         }
         public void RotateLeft()
         {
@@ -38,8 +34,6 @@ namespace UGP
               
                     var left = new Vector3(0.0f, -1 * turnspeed, 0.0f);
                     model.Rotate(left * Time.deltaTime);
-                
-
 
             }
 

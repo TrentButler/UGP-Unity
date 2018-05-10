@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 95855858467728454}
   - component: {fileID: 114289714125874340}
   - component: {fileID: 114263548370555802}
+  - component: {fileID: 114831385432849610}
   m_Layer: 0
   m_Name: M6000Prefab
   m_TagString: Untagged
@@ -1091,6 +1092,28 @@ MonoBehaviour:
     i15: 215
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
+--- !u!114 &114831385432849610
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1234980606368964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18118d22e7569ed4db1e8c123a78a90e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  bulletPrefab: {fileID: 1537869310021538, guid: be405b0ceb96d894aa9e47b8e818eb35,
+    type: 2}
+  GunBarrel: {fileID: 0}
+  AutomaticFireRate: 0.75
+  SemiAutoFireRate: 1
+  ShotStrength: 950
+  AimCooldown: 0
+  roundsFired: 0
+  weaponAnimator: {fileID: 114263548370555802}
+  Spread: 0.1
 --- !u!137 &137005258193810886
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

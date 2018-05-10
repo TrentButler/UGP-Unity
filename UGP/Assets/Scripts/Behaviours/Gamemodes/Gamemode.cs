@@ -20,7 +20,7 @@ namespace UGP
         [SyncVar(hook = "OnLoseConditionChange")] public bool LoseCondition;
         [SyncVar(hook = "OnMatchBegunChange")] public bool MatchBegun;
         public InGameNetworkBehaviour netCompanion;        
-        public bool destroyUI, stopServer, restartServer, destroyNetManager, localSceneSwitch;
+        public bool destroyUI, stopServer, restartServer, respawnAll, destroyNetManager, localSceneSwitch;
         public List<PlayerBehaviour> Players = new List<PlayerBehaviour>();
 
         private void OnWinConditionChange(bool winChange)
@@ -52,7 +52,18 @@ namespace UGP
         public abstract void GameLoop();
         public abstract void Initialize();
         public abstract void RestartPreMatchTimer();
+        public abstract void RestartMatch();
 
+        protected void ClearAllVehicles()
+        {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.ClearAllVehicles();
+        }
+        protected void ClearAllItems()
+        {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.ClearAllItems();
+        }
         protected void SetMatchBegun(bool begun)
         {
             MatchBegun = begun;
@@ -63,6 +74,17 @@ namespace UGP
             {
                 player.RpcSetUserControl(control);
             });
+        }
+        protected void RespawnAll()
+        {
+            var netManager = GameObject.FindGameObjectWithTag("NetworkManager");
+            var directConnect = netManager.GetComponent<LANDirectConnect>();
+            directConnect.RespawnAllPlayers();
+        }
+        protected void SpawnEverything()
+        {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.SpawnBuildings();
         }
         protected void EndMatchLAN(string scene)
         {
@@ -88,6 +110,11 @@ namespace UGP
                 //RESTART THE SERVER
                 directConnect.RestartServer();
                 directConnect.StopServer();
+            }
+
+            if (respawnAll)
+            {
+                directConnect.RespawnAllPlayers();
             }
             
             if (destroyNetManager)
@@ -128,6 +155,11 @@ namespace UGP
                 //RESTART THE SERVER
                 directConnect.RestartServer();
                 directConnect.StopServer();
+            }
+
+            if (respawnAll)
+            {
+                //directConnect.RespawnAllPlayers();
             }
 
             if (destroyNetManager)

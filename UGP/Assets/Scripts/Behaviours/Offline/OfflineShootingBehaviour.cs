@@ -7,7 +7,7 @@ namespace UGP
 {
     public class OfflineShootingBehaviour : MonoBehaviour
     {
-        public Weapon w;
+        public WeaponType w;
 
         public GameObject bulletModel;
         public Transform GunBarrel;
