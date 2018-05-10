@@ -39,6 +39,8 @@ namespace UGP
                 playerIndex = message_stream.value;
             }
 
+            //playerIndex = Random.Range(0, PlayerPrefabs.Count);
+
             short controller_id = 0;
 
             var spawn = GetStartPosition();
@@ -46,6 +48,11 @@ namespace UGP
             var spawn_player = Instantiate(PlayerPrefabs[playerIndex], spawn.position, spawn.rotation);
 
             var playerBehaviour = spawn_player.GetComponent<PlayerBehaviour>();
+            var playerDress = spawn_player.GetComponent<PlayerDressBehaviour>();
+            playerDress.SkinColor = RandomUserNames.GetColor();
+            playerDress.ShirtColor = RandomUserNames.GetColor();
+            playerDress.PantsColor = RandomUserNames.GetColor();
+
             playerBehaviour.playerName = RandomUserNames.GetUsername();
             playerBehaviour.vehicleColor = RandomUserNames.GetColor();
 

@@ -162,6 +162,7 @@ namespace UGP
 
                 //vehicle.CmdRemovePlayer();
                 playerBrain.vehicle.seatedPlayer = null;
+                playerBrain.vehicle.owner = null;
                 playerBrain.CmdRemoveVehicleAuthority(vehicleIdentity);
 
                 exitTimer = 0.0f; //RESET THE TIMER
@@ -216,6 +217,8 @@ namespace UGP
                         CmdAssignVehicleAuthority(vehicleIdentity);
 
                         vehicleBrain.seatedPlayer = playerBrain;
+                        var player_netIdentity = playerBrain.GetComponent<NetworkIdentity>();
+                        vehicleBrain.owner = player_netIdentity;
 
                         exitTimer = 0.0f;
                         enterTimer = 0.0f;
