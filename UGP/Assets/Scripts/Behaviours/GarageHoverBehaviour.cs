@@ -84,7 +84,39 @@ namespace UGP
             Truck.SetActive(true);
             HoverBike.SetActive(false);
         }
+        public void OnApply()
+        {
+            var vehicle_dress = FindObjectOfType<VehicleDress>();
+            if(vehicle_dress != null)
+            {
+                //OVERWRITE THIS ONE
+                vehicle_dress.Part0Color = Part0Color;
+                vehicle_dress.Part1Color = Part1Color;
+                vehicle_dress.Part2Color = Part2Color;
+                vehicle_dress.Part3Color = Part3Color;
+                vehicle_dress.Part4Color = Part4Color;
+                vehicle_dress.Part5Color = Part5Color;
+                vehicle_dress.Part6Color = Part6Color;
+                vehicle_dress.Part7Color = Part7Color;
+            }
+            else
+            {
+                var vehicleDress = Instantiate(new GameObject());
+                vehicleDress.name = "VEHICLEDRESS";
+                var vehicleDressBehaviour = vehicleDress.AddComponent<VehicleDress>();
 
+                vehicleDressBehaviour.Part0Color = Part0Color;
+                vehicleDressBehaviour.Part1Color = Part1Color;
+                vehicleDressBehaviour.Part2Color = Part2Color;
+                vehicleDressBehaviour.Part3Color = Part3Color;
+                vehicleDressBehaviour.Part4Color = Part4Color;
+                vehicleDressBehaviour.Part5Color = Part5Color;
+                vehicleDressBehaviour.Part6Color = Part6Color;
+                vehicleDressBehaviour.Part7Color = Part7Color;
+
+                DontDestroyOnLoad(vehicleDress);
+            }
+        }
 
         public void ToggleHoverBikePartChange00()
         {

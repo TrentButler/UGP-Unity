@@ -132,7 +132,30 @@ namespace UGP
 
         public void OnApply()
         {
+            var player_dress = FindObjectOfType<PlayerDress>();
+            if (player_dress != null)
+            {
 
+                //OVERWRITE THIS ONE
+                player_dress.ShirtColor = ShirtColor;
+                player_dress.PantsColor = PantsColor;
+                player_dress.SkinColor = SkinColor;
+                player_dress.PlayerIndex = PlayerIndex;   
+            }
+            else
+            {
+                var playerDress = Instantiate(new GameObject());
+                playerDress.name = "PLAYERDRESS";
+                var PlayerDressBehaviour = playerDress.AddComponent<PlayerDress>();
+
+                PlayerDressBehaviour.ShirtColor = ShirtColor;
+                PlayerDressBehaviour.PantsColor = PantsColor;
+                PlayerDressBehaviour.SkinColor = SkinColor;
+                PlayerDressBehaviour.PlayerIndex = PlayerIndex;
+        
+
+                DontDestroyOnLoad(playerDress);
+            }
         }
 
         public void OnShannon()
