@@ -3284,7 +3284,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1960156177973378
 GameObject:
   m_ObjectHideFlags: 1
@@ -3515,7 +3515,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1998014965847580
 GameObject:
   m_ObjectHideFlags: 0
@@ -3658,7 +3658,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1993851119444900}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.0000104904175, y: -0.000000059604645, z: 0.0000014305115}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5806,7 +5806,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1874260136059704}
-  m_LocalRotation: {x: 0.616071, y: 0.0000000045411634, z: 0.00000048524936, w: -0.7876906}
+  m_LocalRotation: {x: 0.616071, y: 0.0000000045662603, z: 0.0000004852574, w: -0.7876907}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -6115,7 +6115,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1684264040469666}
-  m_LocalRotation: {x: 0.65014815, y: -0.0000016615217, z: 0.0000015030096, w: -0.7598075}
+  m_LocalRotation: {x: 0.65014803, y: -0.0000016615218, z: 0.0000015030095, w: -0.75980765}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1.0000002, z: 1.0000002}
   m_Children:
@@ -8224,7 +8224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd76411106794b4479c609040631d4d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 1000046406194624, guid: 9fdd13addaf7a8e4f8e1545e7cdaf480,
+  bulletPrefab: {fileID: 1176641668309360, guid: be97fb7b246481940b5f29f41b25a2fc,
     type: 2}
   GunBarrel: {fileID: 4928340570877592}
   AutomaticFireRate: 0.15
@@ -8249,7 +8249,6 @@ MonoBehaviour:
   EngineAudioSource: {fileID: 82325136806305872}
   MinThrottlePitch: 0.4
   MaxThrottlePitch: 2
-  ForwardSpeedMultiplier: 0.001
   MinEngineSoundDistance: 50
   MaxEngineSoundDistance: 1000
   EngineDopplerLevel: 1
@@ -8427,15 +8426,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapons: []
-  weapon: {fileID: 114169472590023258}
-  GunTransform: {fileID: 4193943800091648}
+  weapon: {fileID: 114034555355608146}
+  GunTransform: {fileID: 4202021331724188}
   audio: {fileID: 0}
   particle: {fileID: 0}
   crosshair: {fileID: 114940436528704698}
   crosshairXOffset: 0
   crosshairYOffset: 0
-  crosshairSpeed: 0
-  crosshairWorldOffset: {x: 0, y: 0, z: 50}
+  crosshairSpeed: 0.5
+  AimCooldown: 4
+  crosshairWorldOffset: {x: 0, y: 0.5, z: 0}
+  MaxGunXRot: -37.657
+  MinGunXRot: 2.741
 --- !u!114 &114158199922729048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10286,6 +10288,7 @@ MonoBehaviour:
   currentFuelConsumption: 0
   FuelBurnRate: 0.5
   BoostingFuelBurnRate: 1
+  currentVehiclePower: 0
 --- !u!114 &114997955502906444
 MonoBehaviour:
   m_ObjectHideFlags: 1
