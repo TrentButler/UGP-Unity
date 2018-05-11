@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace UGP
 {
-    public class RailGun : OfflineWeaponBehaviour
+    public class RailGun : Weapon
     {
         [Range(0.0001f, 10.0f)] public float ChargeTime = 2.0f;
         [Range(0.0001f, 10.0f)] public float ChargeRate = 1.5f;
@@ -25,10 +26,16 @@ namespace UGP
 
         public Transform RailTransform;
         OfflineWeaponBehaviour shootBehaviour;
-        public OfflineUserControl ic;
+        public NetworkUserControl ic;
 
-        private float shot_timer = 0.0f;
+        [SyncVar(hook = "OnShootTimerChange")] public float shot_timer = 0.0f;
+        public bool can_shoot = true;
         public bool needs_recharge = false;
+
+        private void OnShootTimerChange(float timerChange)
+        {
+            shot_timer = timerChange;
+        }
         
         private void Discharge()
         {
@@ -106,7 +113,7 @@ namespace UGP
 
         }
 
-        public override void Shoot()
+        public override void Shoot(VehicleShootBehaviour shootBehaviour)
         {
             return;
         }

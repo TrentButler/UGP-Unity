@@ -47,6 +47,117 @@ namespace UGP
                 return;
             }
 
+            if (collision.collider.tag == "Vehicle")
+            {
+                var impact_point = collision.contacts[0];
+
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
+
+                var vehicle_behaviour = collision.collider.GetComponentInParent<VehicleBehaviour>();
+                vehicle_behaviour.RpcTakeDamage(DamageDealt);
+
+                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
+                //particles.ForEach(particle =>
+                //{
+                //    particle.Play();
+                //});
+
+                net_companion.Server_Destroy(gameObject);
+            }
+
+            if (collision.collider.tag == "Player")
+            {
+                var impact_point = collision.contacts[0];
+
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
+
+                if (owner != null)
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                    if (owner != net_identity)
+                    {
+                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt);
+                        net_companion.Server_Destroy(gameObject);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+                    if (owner != net_identity)
+                    {
+                        player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt);
+                        net_companion.Server_Destroy(gameObject);
+                    }
+                    else
+                    {
+                        return;
+                    };
+                }
+
+                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
+                //particles.ForEach(particle =>
+                //{
+                //    particle.Play();
+                //});
+
+                net_companion.Server_Destroy(gameObject);
+            }
+
+            if (collision.collider.tag == "Head")
+            {
+                var impact_point = collision.contacts[0];
+
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
+
+                if (owner != null)
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                    if (owner != net_identity)
+                    {
+                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt * 9999);
+                        net_companion.Server_Destroy(gameObject);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+                    if (owner != net_identity)
+                    {
+                        player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt * 9999);
+                        net_companion.Server_Destroy(gameObject);
+                    }
+                    else
+                    {
+                        return;
+                    };
+                }
+
+                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
+                //particles.ForEach(particle =>
+                //{
+                //    particle.Play();
+                //});
+
+                net_companion.Server_Destroy(gameObject);
+            }
+
             if (collision.collider.tag == "Ammo" || collision.collider.name == "Sphere")
             {
                 return;
@@ -66,50 +177,8 @@ namespace UGP
                 //    particle.Play();
                 //});
 
-                Destroy(gameObject);
-
-
-                //if (collision.collider.tag == "Vehicle")
-                //{
-                //    var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
-                //    //var network_identity = vehicle_behaviour.GetComponent<NetworkIdentity>();
-                //    //if(network_identity.hasAuthority)
-                //    //{
-                //    //    return;
-                //    //}
-
-                //    vehicle_behaviour.RpcTakeDamage(DamageDealt);
-                //    Destroy(gameObject);
-                //}
-
-                //if (collision.collider.tag == "Player")
-                //{
-                //    var contact_point = collision.contacts[0].point;
-                //    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
-
-                //    //var player_rb = collision.collider.GetComponentInParent<Rigidbody>(); // GET THE RAGDOLL RIGIDBODY
-                //    //player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point); //ADD THIS FORCE TO THE RAGDOLL
-
-                //    //var controller = player_behaviour.GetComponent<CharacterController>();
-                //    //controller.Move(collision.relativeVelocity);
-
-                //    //if (owner != null)
-                //    //{
-                //    //    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
-                //    //    player_behaviour.CmdTakeDamage(owner, DamageDealt * 999999);
-
-                //    //    var server = FindObjectOfType<InGameNetworkBehaviour>();
-                //    //    server.PlayerShot(owner, player_networkIdentity, "DEBUG WEAPON");
-                //    //}
-
-                //    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
-                //    var controller = player_behaviour.GetComponent<CharacterController>();
-                //    controller.Move(transform.forward.normalized * 1.5f);
-
-                //    player_behaviour.RpcTakeDamage_Other(player_networkIdentity, s_owner, DamageDealt * 999999);
-
-                //    Destroy(gameObject);
-                //}
+                //Destroy(gameObject);
+                net_companion.Server_Destroy(gameObject);
             }
         }
     }
