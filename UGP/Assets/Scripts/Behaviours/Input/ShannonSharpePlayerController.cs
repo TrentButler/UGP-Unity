@@ -10,6 +10,7 @@ namespace UGP
     {
         #region MemberVariables
         public float MovementSpeed = 1.0f;
+        public float StrafeSpeed = 1.0f;
         public float RunSpeed = 1.0f;
         public float TurnSpeed = 1.0f;
         public float JumpStrength = 2.0f;
@@ -86,28 +87,17 @@ namespace UGP
             Melee();
             KeepPlayerUpright();
 
-            var accelerationVector = new Vector3(0, 0, y);
+            var accelerationVector = new Vector3(0, 0, y * MovementSpeed);
+            var strafeVector = new Vector3(x * StrafeSpeed, 0, 0);
+            var moveVector = accelerationVector + strafeVector;
 
-            if (accelerationVector.magnitude > 0)
+            if (moveVector.magnitude > 0)
             {
-                //rb.isKinematic = false;
-                //DO NOT WALK BACKWARDS
-                if (y < 0.0f)
-                {
-                    //sy = y / 2;
-                    var move_vector = new Vector3(0, 0, y);
-                    var move = transform.TransformDirection(move_vector);
-                    controller.SimpleMove(move * 1);
-                    //rb.AddForce(move * 1);
-                }
-                else
-                {
-                    Ani.SetFloat("Move", Mathf.Abs(y));
-                    var move_vector = new Vector3(0, 0, y);
-                    var move = transform.TransformDirection(move_vector);
-                    controller.SimpleMove(move * MovementSpeed);
-                    //rb.AddForce(move * MovementSpeed, ForceMode.Impulse);
-                }
+                Ani.SetFloat("Move", Mathf.Abs(y));
+                var move_vector = moveVector;
+                var move = transform.TransformDirection(move_vector);
+                controller.SimpleMove(move);
+                //rb.AddForce(move * MovementSpeed, ForceMode.Impulse);
             }
             else
             {
@@ -126,13 +116,6 @@ namespace UGP
             if(rotate_vector.magnitude > 0.0f)
             {
                 controller.transform.Rotate(rotate_vector * TurnSpeed);
-                //rb.constraints = RigidbodyConstraints.None;
-                //rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-                //rb.MoveRotation(rb.rotation * Quaternion.Euler(rotate_vector));
-            }
-            else
-            {
-                //rb.constraints = RigidbodyConstraints.FreezeRotation;
             }
         }
 

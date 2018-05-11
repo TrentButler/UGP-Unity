@@ -41,7 +41,7 @@ namespace UGP
         public bool useDownforce = true;
         public Vector3 Downforce;
 
-        private Rigidbody rb;
+        public Rigidbody rb;
 
         [HideInInspector] public float currentVehicleThrottle;
         [HideInInspector] public float currentVehicleStrafe;
@@ -50,6 +50,7 @@ namespace UGP
         [Range(0.001f, 2.0f)] public float BoostingFuelBurnRate = 1.0f;
 
         private float originalFuelBurnRate;
+        public float currentVehiclePower;
 
         Vector3 rotate_force = Vector3.zero;
 
@@ -188,6 +189,8 @@ namespace UGP
 
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
+
+            currentVehiclePower = (throttle * MaxSpeed);
 
             currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * FuelBurnRate;
             vehicleBrain.CmdUseFuel(currentFuelConsumption);

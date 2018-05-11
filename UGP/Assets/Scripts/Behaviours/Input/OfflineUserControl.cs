@@ -18,6 +18,15 @@ namespace UGP
 
         public InputController ic;
 
+        public float GetCurrentForwardInput()
+        {
+            return Input.GetAxis(InputVertical);
+        }
+        public float GetCurrentHorizontalInput()
+        {
+            return Input.GetAxis(InputHorizontal);
+        }
+
         void FixedUpdate()
         {
             var _h = Input.GetAxis(InputHorizontal);
