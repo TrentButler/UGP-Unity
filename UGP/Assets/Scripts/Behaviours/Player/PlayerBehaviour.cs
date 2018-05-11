@@ -437,30 +437,34 @@ namespace UGP
                     //Destroy(character_controller);
                 }
 
+                rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
                 rb.constraints = RigidbodyConstraints.FreezeAll;
                 rb.useGravity = false;
                 //rb.isKinematic = true;
                 return;
             }
 
-            var free_look = VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>();
-            var virtual_camera = VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
 
-            if(free_look != null)
-            {
-                //ASSIGN THE CAMERA THE INPUT AXIS FROM THE INPUT CONTROLLER
-                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_XAxis.m_InputAxisName = ic.CameraInputHorizontal;
-                VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_YAxis.m_InputAxisName = ic.CameraInputVertical;
-            }
-            if(virtual_camera != null)
-            {
-                var pov_camera = virtual_camera.GetCinemachineComponent<Cinemachine.CinemachinePOV>();
+            #region ASSIGN_CAMERA_AXIS
+            //var free_look = VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>();
+            //var virtual_camera = VirtualCamera.GetComponent<Cinemachine.CinemachineVirtualCamera>();
 
-                pov_camera.m_HorizontalAxis.m_InputAxisName = ic.CameraInputHorizontal;
-                pov_camera.m_VerticalAxis.m_InputAxisName = ic.CameraInputVertical;
-                pov_camera.m_HorizontalAxis.m_InvertAxis = ic.InvertCameraHorizontal;
-                pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
-            }
+            //if(free_look != null)
+            //{
+            //    //ASSIGN THE CAMERA THE INPUT AXIS FROM THE INPUT CONTROLLER
+            //    VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_XAxis.m_InputAxisName = ic.CameraInputHorizontal;
+            //    VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().m_YAxis.m_InputAxisName = ic.CameraInputVertical;
+            //}
+            //if(virtual_camera != null)
+            //{
+            //    var pov_camera = virtual_camera.GetCinemachineComponent<Cinemachine.CinemachinePOV>();
+
+            //    pov_camera.m_HorizontalAxis.m_InputAxisName = ic.CameraInputHorizontal;
+            //    pov_camera.m_VerticalAxis.m_InputAxisName = ic.CameraInputVertical;
+            //    pov_camera.m_HorizontalAxis.m_InvertAxis = ic.InvertCameraHorizontal;
+            //    pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
+            //} 
+            #endregion
 
             if (PlayerConfig == null)
             {
