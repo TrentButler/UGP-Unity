@@ -10,6 +10,7 @@ namespace UGP
     public class DefaultRoundBehaviour : NetworkBehaviour
     {
         [Range(1, 999)] public float DamageDealt;
+        [Range(1, 999)] public float PlayerDamageMultiplier = 10.0f;
         public NetworkIdentity owner;
         public string s_owner;
         [Range(1, 999)] public float delete_timer = 6.0f;
@@ -80,7 +81,7 @@ namespace UGP
 
                     if (owner != net_identity)
                     {
-                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt);
+                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt * PlayerDamageMultiplier);
                         net_companion.Server_Destroy(gameObject);
                     }
                     else
@@ -94,7 +95,7 @@ namespace UGP
                     var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
                     if (owner != net_identity)
                     {
-                        player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt);
+                        player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt * PlayerDamageMultiplier);
                         net_companion.Server_Destroy(gameObject);
                     }
                     else

@@ -2069,6 +2069,7 @@ GameObject:
   - component: {fileID: 4561264776425004}
   - component: {fileID: 95232651421987060}
   - component: {fileID: 114789250655933006}
+  - component: {fileID: 114669992439475046}
   m_Layer: 0
   m_Name: RailGunPrefab
   m_TagString: Untagged
@@ -8331,11 +8332,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapons:
-  - {fileID: 1844655507063362}
-  weapon: {fileID: 114073019920382304}
+  - {fileID: 1792300164026902}
+  weapon: {fileID: 0}
   GunTransform: {fileID: 4880110268558276}
   audio: {fileID: 82985718184988850}
   particle: {fileID: 0}
+  bullet_prefab: {fileID: 1243539395845052, guid: fdf21963df053a040b1cc36bd29fc23b,
+    type: 2}
   DrivingCamera: {fileID: 1780798452233642}
   AimCamera: {fileID: 1124622222196354}
   crosshair: {fileID: 114732203051916564}
@@ -8348,9 +8351,18 @@ MonoBehaviour:
   MaxGunXRot: 10
   vehicleUI: {fileID: 223246870182139034}
   v: {fileID: 114621438497986390}
-  activeWeapon: {fileID: 1844655507063362}
-  s_weapon: M6000Prefab
+  activeWeapon: {fileID: 0}
+  s_weapon: 
   weaponActive: 1
+  ChargeTime: 2
+  ChargeRate: 0.75
+  DischargeRate: 0.5
+  MaxRailRotateSpeed: 7.5
+  RailRotateAccelerationModifier: 2.5
+  shot_timer: 0
+  can_shoot: 1
+  needs_recharge: 0
+  rail_gun: {fileID: 0}
 --- !u!114 &114550004447594048
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8685,6 +8697,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114669992439475046
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1792300164026902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 151
+    i1: 226
+    i2: 16
+    i3: 55
+    i4: 200
+    i5: 46
+    i6: 106
+    i7: 148
+    i8: 251
+    i9: 226
+    i10: 112
+    i11: 195
+    i12: 10
+    i13: 57
+    i14: 0
+    i15: 135
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
 --- !u!114 &114687014584662196
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -9001,24 +9045,17 @@ MonoBehaviour:
   OnVehicleShootSound: {fileID: 0}
   AutomaticFireRate: 0
   SemiAutoFireRate: 0.1
-  ShotStrength: 0
+  ShotStrength: 2000
   AimCooldown: 0
   roundsFired: 0
   weaponAnimator: {fileID: 0}
-  ChargeTime: 6
-  ChargeRate: 0.75
-  DischargeRate: 0.75
-  MaxRailRotateSpeed: 10
-  RailRotateAccelerationModifier: 2.25
   ChargeParticles:
   - {fileID: 198132133428063070}
   - {fileID: 198673137403038248}
   ChargeParticle: {fileID: 198039008975060648}
   RailTransform: {fileID: 4301539449499024}
-  ic: {fileID: 0}
-  shot_timer: 0
-  can_shoot: 1
-  needs_recharge: 0
+  vehicleBehaviour: {fileID: 114621438497986390}
+  vehicleShoot: {fileID: 114545911744651014}
 --- !u!114 &114803785312964806
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -9412,6 +9449,7 @@ MonoBehaviour:
   - {fileID: 198637177131071502}
   DustTrail: {fileID: 198622409195869710}
   ic: {fileID: 114938932069401264}
+  vehicleBehaviour: {fileID: 114621438497986390}
   current_vertical_throttle: 0
   current_horizontal_throttle: 0
 --- !u!114 &114973573328185836

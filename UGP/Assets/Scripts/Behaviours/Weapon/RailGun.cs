@@ -7,11 +7,11 @@ namespace UGP
 {
     public class RailGun : Weapon
     {
-        [Range(0.0001f, 10.0f)] public float ChargeTime = 2.0f;
-        [Range(0.0001f, 10.0f)] public float ChargeRate = 1.5f;
-        [Range(0.0001f, 10.0f)] public float DischargeRate = 0.5f;
-        [Range(0.0001f, 10.0f)] public float MaxRailRotateSpeed = 1.0f;
-        [Range(0.0001f, 10.0f)] public float RailRotateAccelerationModifier = 1.0f;
+        //[Range(0.0001f, 10.0f)] public float ChargeTime = 2.0f;
+        //[Range(0.0001f, 10.0f)] public float ChargeRate = 1.5f;
+        //[Range(0.0001f, 10.0f)] public float DischargeRate = 0.5f;
+        //[Range(0.0001f, 10.0f)] public float MaxRailRotateSpeed = 1.0f;
+        //[Range(0.0001f, 10.0f)] public float RailRotateAccelerationModifier = 1.0f;
 
         #region ParticleSystem
         public List<ParticleSystem> ChargeParticles = new List<ParticleSystem>();
@@ -25,27 +25,28 @@ namespace UGP
         #endregion
 
         public Transform RailTransform;
-        OfflineWeaponBehaviour shootBehaviour;
-        public NetworkUserControl ic;
-
-        [SyncVar(hook = "OnShootTimerChange")] public float shot_timer = 0.0f;
-        public bool can_shoot = true;
-        public bool needs_recharge = false;
-
-        private void OnShootTimerChange(float timerChange)
-        {
-            shot_timer = timerChange;
-        }
+        public VehicleBehaviour vehicleBehaviour;
+        public VehicleShootBehaviour vehicleShoot;
         
-        private void Discharge()
+        public void Discharge()
         {
-            if (MuzzleFlash != null)
+            var sniper = vehicleBehaviour.Sniper;
+            if (sniper > 0)
             {
-                MuzzleFlash.Stop();
-                MuzzleFlash.Play();
-            }
+                if (MuzzleFlash != null)
+                {
+                    MuzzleFlash.Stop();
+                    MuzzleFlash.Play();
+                }
 
-            CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
+                vehicleBehaviour.CmdUseAmmunition(0, 0, 1, 0);
+                vehicleShoot.CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
+            }
+            else
+            {
+                vehicleShoot.needs_recharge = true;
+                Debug.Log("OUT OF SNIPER ROUNDS");
+            }
         }
 
         private void Start()
@@ -59,58 +60,48 @@ namespace UGP
             originalChargeParticlesStartColor = ChargeParticles[0].startColor;
         }
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
-            if (Input.GetMouseButton(0))
+            if(!vehicleBehaviour.vehicleActive)
             {
-                if(!needs_recharge)
+                ChargeParticles.ForEach(particle =>
                 {
-                    shot_timer += (Time.deltaTime * ChargeRate);
-                    if (shot_timer >= ChargeTime)
+                    if (particle.isPlaying)
                     {
-                        Discharge();
-                        needs_recharge = true;
+                        particle.Stop();
                     }
-                }
-                else
+                });
+
+                if (ChargeParticle.isPlaying)
                 {
-                    shot_timer -= (Time.deltaTime * DischargeRate);
-                    shot_timer = Mathf.Clamp(shot_timer, 0, ChargeTime);
-                    if (shot_timer <= 0.0f)
-                    {
-                        shot_timer = 0.0f;
-                        needs_recharge = false;
-                    }
+                    ChargeParticle.Stop();
                 }
             }
             else
             {
-                shot_timer -= (Time.deltaTime * DischargeRate);
-                shot_timer = Mathf.Clamp(shot_timer, 0, ChargeTime);
-                if(needs_recharge)
+                var rail_rotate_vector = Vector3.forward * ((vehicleShoot.shot_timer * vehicleShoot.MaxRailRotateSpeed) * vehicleShoot.RailRotateAccelerationModifier);
+                RailTransform.Rotate(-rail_rotate_vector);
+
+                ChargeParticles.ForEach(particle =>
                 {
-                    if(shot_timer <= 0.0f)
+                    if (particle.isStopped)
                     {
-                        shot_timer = 0.0f;
-                        needs_recharge = false;
-                    }
+                        particle.Play();
+                    }   
+
+                    particle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticlesLifetime, vehicleShoot.shot_timer);
+                    particle.startSize = Mathf.Lerp(originalChargeParticlesStartSize * .3f, originalChargeParticleStartSize, vehicleShoot.shot_timer);
+                    particle.startColor = Color.Lerp(Vector4.zero, originalChargeParticlesStartColor, vehicleShoot.shot_timer);
+                });
+
+                if(ChargeParticle.isStopped)
+                {
+                    ChargeParticle.Play();
                 }
+                ChargeParticle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticleLifetime, vehicleShoot.shot_timer);
+                ChargeParticle.startSize = Mathf.Lerp(originalChargeParticleStartSize * .3f, originalChargeParticleStartSize, vehicleShoot.shot_timer);
+                ChargeParticle.startColor = Color.Lerp(Vector4.zero, originalChargeParticleStartColor, vehicleShoot.shot_timer);
             }
-
-            var rail_rotate_vector = Vector3.forward * ((shot_timer * MaxRailRotateSpeed) * RailRotateAccelerationModifier);
-            RailTransform.Rotate(-rail_rotate_vector);
-
-            ChargeParticles.ForEach(particle =>
-            {
-                particle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticlesLifetime, shot_timer);
-                particle.startSize = Mathf.Lerp(originalChargeParticlesStartSize * .3f, originalChargeParticleStartSize, shot_timer);
-                particle.startColor = Color.Lerp(Vector4.zero, originalChargeParticlesStartColor, shot_timer);
-            });
-
-            ChargeParticle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticleLifetime, shot_timer);
-            ChargeParticle.startSize = Mathf.Lerp(originalChargeParticleStartSize * .3f, originalChargeParticleStartSize, shot_timer);
-            ChargeParticle.startColor = Color.Lerp(Vector4.zero, originalChargeParticleStartColor, shot_timer);
-
         }
 
         public override void Shoot(VehicleShootBehaviour shootBehaviour)

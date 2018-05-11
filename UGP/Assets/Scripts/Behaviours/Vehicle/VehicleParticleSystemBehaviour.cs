@@ -17,6 +17,7 @@ namespace UGP
         private Color originalDustStartColor;
 
         public NetworkUserControl ic;
+        public VehicleBehaviour vehicleBehaviour;
 
         [SyncVar(hook = "OnCurrentVerticalThrottleChange")] public float current_vertical_throttle = 0.0f;
         [SyncVar(hook = "OnCurrentHorizontalThrottleChange")] public float current_horizontal_throttle = 0.0f;
@@ -67,17 +68,42 @@ namespace UGP
 
         private void LateUpdate()
         {
-            Thrusters.ForEach(thruster =>
+            if(!vehicleBehaviour.vehicleActive)
             {
-                thruster.startLifetime = Mathf.Lerp(0.0f, originalThrusterLifetime, current_vertical_throttle);
-                thruster.startSize = Mathf.Lerp(originalThrusterStartSize * .3f, originalThrusterStartSize, current_vertical_throttle);
-                thruster.startColor = Color.Lerp(Vector4.zero, originalThrusterStartColor, current_vertical_throttle);
-            });
+                Thrusters.ForEach(thruster =>
+                {
+                    if(thruster.isPlaying)
+                    {
+                        thruster.Stop();
+                    }
+                });
 
-            DustTrail.startLifetime = Mathf.Lerp(0.0f, originalDustLifetime, current_vertical_throttle + current_horizontal_throttle);
-            DustTrail.startSize = Mathf.Lerp(originalDustStartSize * .3f, originalDustStartSize, current_vertical_throttle + current_horizontal_throttle);
-            DustTrail.startColor = Color.Lerp(Vector4.zero, originalDustStartColor, current_vertical_throttle + current_horizontal_throttle);
+                if(DustTrail.isPlaying)
+                {
+                    DustTrail.Stop();
+                }
+            }
+            else
+            {
+                Thrusters.ForEach(thruster =>
+                {
+                    if(thruster.isStopped)
+                    {
+                        thruster.Play();
+                    }
+                    thruster.startLifetime = Mathf.Lerp(0.0f, originalThrusterLifetime, current_vertical_throttle);
+                    thruster.startSize = Mathf.Lerp(originalThrusterStartSize * .3f, originalThrusterStartSize, current_vertical_throttle);
+                    thruster.startColor = Color.Lerp(Vector4.zero, originalThrusterStartColor, current_vertical_throttle);
+                });
+
+                if(DustTrail.isStopped)
+                {
+                    DustTrail.Play();
+                }
+                DustTrail.startLifetime = Mathf.Lerp(0.0f, originalDustLifetime, current_vertical_throttle + current_horizontal_throttle);
+                DustTrail.startSize = Mathf.Lerp(originalDustStartSize * .3f, originalDustStartSize, current_vertical_throttle + current_horizontal_throttle);
+                DustTrail.startColor = Color.Lerp(Vector4.zero, originalDustStartColor, current_vertical_throttle + current_horizontal_throttle);
+            }
         }
     }
-
 }

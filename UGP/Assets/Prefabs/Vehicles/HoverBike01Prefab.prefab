@@ -2033,6 +2033,7 @@ GameObject:
   - component: {fileID: 4345831168467238}
   - component: {fileID: 95614614777843950}
   - component: {fileID: 114201877776880704}
+  - component: {fileID: 114509951915953040}
   m_Layer: 0
   m_Name: RailGunPrefab
   m_TagString: Untagged
@@ -5197,11 +5198,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weapons:
-  - {fileID: 1908460453691344}
-  weapon: {fileID: 114193534591976542}
+  - {fileID: 1883592755915442}
+  weapon: {fileID: 0}
   GunTransform: {fileID: 4095808105028870}
   audio: {fileID: 82122886142946106}
   particle: {fileID: 0}
+  bullet_prefab: {fileID: 1243539395845052, guid: fdf21963df053a040b1cc36bd29fc23b,
+    type: 2}
   DrivingCamera: {fileID: 1359310779917062}
   AimCamera: {fileID: 1760309988496954}
   crosshair: {fileID: 114479852015241510}
@@ -5214,9 +5217,18 @@ MonoBehaviour:
   MaxGunXRot: 10
   vehicleUI: {fileID: 223509678768400036}
   v: {fileID: 114666082431993730}
-  activeWeapon: {fileID: 1908460453691344}
-  s_weapon: M6000Prefab
+  activeWeapon: {fileID: 0}
+  s_weapon: 
   weaponActive: 1
+  ChargeTime: 2
+  ChargeRate: 0.75
+  DischargeRate: 0.5
+  MaxRailRotateSpeed: 7.5
+  RailRotateAccelerationModifier: 2.5
+  shot_timer: 0
+  can_shoot: 1
+  needs_recharge: 0
+  rail_gun: {fileID: 0}
 --- !u!114 &114054221588749096
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5453,24 +5465,17 @@ MonoBehaviour:
   OnVehicleShootSound: {fileID: 0}
   AutomaticFireRate: 0
   SemiAutoFireRate: 0.1
-  ShotStrength: 0
+  ShotStrength: 2000
   AimCooldown: 0
   roundsFired: 0
   weaponAnimator: {fileID: 0}
-  ChargeTime: 6
-  ChargeRate: 0.75
-  DischargeRate: 0.75
-  MaxRailRotateSpeed: 10
-  RailRotateAccelerationModifier: 2.25
   ChargeParticles:
   - {fileID: 198503756848867576}
   - {fileID: 198363522358465970}
   ChargeParticle: {fileID: 198383201550832168}
   RailTransform: {fileID: 4237995759172772}
-  ic: {fileID: 0}
-  shot_timer: 0
-  can_shoot: 1
-  needs_recharge: 0
+  vehicleBehaviour: {fileID: 114666082431993730}
+  vehicleShoot: {fileID: 114051701901382772}
 --- !u!114 &114202126764678892
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6273,6 +6278,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0b09e7857660247b1477e93731de29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114509951915953040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1883592755915442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 102
+    i1: 148
+    i2: 110
+    i3: 96
+    i4: 201
+    i5: 158
+    i6: 239
+    i7: 132
+    i8: 123
+    i9: 197
+    i10: 166
+    i11: 48
+    i12: 4
+    i13: 33
+    i14: 34
+    i15: 173
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 1
 --- !u!114 &114512880781502608
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6737,6 +6774,7 @@ MonoBehaviour:
   - {fileID: 198297706085313672}
   DustTrail: {fileID: 198519205041841140}
   ic: {fileID: 114560575436760050}
+  vehicleBehaviour: {fileID: 114666082431993730}
   current_vertical_throttle: 0
   current_horizontal_throttle: 0
 --- !u!114 &114647634093161568
