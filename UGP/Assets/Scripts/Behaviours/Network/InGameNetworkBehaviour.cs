@@ -389,6 +389,12 @@ namespace UGP
         {
             NetworkServer.Spawn(go);
         }
+        public void SpawnParticle(GameObject go, Vector3 pos)
+        {
+            var particle = Instantiate(go);
+            particle.transform.position = pos;
+            NetworkServer.Spawn(particle);
+        }
 
         public void Server_Destroy(GameObject go)
         {
