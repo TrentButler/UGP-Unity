@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -12,6 +13,7 @@ namespace UGP
         public NetworkIdentity owner;
         public string s_owner;
         [Range(1, 999)] public float delete_timer = 6.0f;
+        public GameObject BulletHitParticle;
 
         void Start()
         {
@@ -32,7 +34,7 @@ namespace UGP
         private void LateUpdate()
         {
             delete_timer -= Time.deltaTime;
-            if(delete_timer <= 0.0f)
+            if (delete_timer <= 0.0f)
             {
                 DestroyBullet();
             }
@@ -40,52 +42,75 @@ namespace UGP
 
         private void OnCollisionEnter(Collision collision)
         {
-            if(!isServer)
+            if (!isServer)
             {
                 return;
             }
 
-            //if (collision.collider.tag == "Vehicle")
-            //{
-            //    var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
-            //    //var network_identity = vehicle_behaviour.GetComponent<NetworkIdentity>();
-            //    //if(network_identity.hasAuthority)
-            //    //{
-            //    //    return;
-            //    //}
+            if (collision.collider.tag == "Ammo" || collision.collider.name == "Sphere")
+            {
+                return;
+            }
+            else
+            {
+                var impact_point = collision.contacts[0];
+                //var impact_particle = Instantiate(BulletHitParticle);
+                //impact_particle.transform.position = impact_point.point;
 
-            //    vehicle_behaviour.RpcTakeDamage(DamageDealt);
-            //    Destroy(gameObject);
-            //}
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
 
-            //if (collision.collider.tag == "Player")
-            //{
-            //    var contact_point = collision.contacts[0].point;
-            //    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
+                //particles.ForEach(particle =>
+                //{
+                //    particle.Play();
+                //});
 
-            //    //var player_rb = collision.collider.GetComponentInParent<Rigidbody>(); // GET THE RAGDOLL RIGIDBODY
-            //    //player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point); //ADD THIS FORCE TO THE RAGDOLL
+                Destroy(gameObject);
 
-            //    //var controller = player_behaviour.GetComponent<CharacterController>();
-            //    //controller.Move(collision.relativeVelocity);
 
-            //    //if (owner != null)
-            //    //{
-            //    //    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
-            //    //    player_behaviour.CmdTakeDamage(owner, DamageDealt * 999999);
+                //if (collision.collider.tag == "Vehicle")
+                //{
+                //    var vehicle_behaviour = collision.gameObject.GetComponentInParent<VehicleBehaviour>();
+                //    //var network_identity = vehicle_behaviour.GetComponent<NetworkIdentity>();
+                //    //if(network_identity.hasAuthority)
+                //    //{
+                //    //    return;
+                //    //}
 
-            //    //    var server = FindObjectOfType<InGameNetworkBehaviour>();
-            //    //    server.PlayerShot(owner, player_networkIdentity, "DEBUG WEAPON");
-            //    //}
+                //    vehicle_behaviour.RpcTakeDamage(DamageDealt);
+                //    Destroy(gameObject);
+                //}
 
-            //    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
-            //    var controller = player_behaviour.GetComponent<CharacterController>();
-            //    controller.Move(transform.forward.normalized * 1.5f);
+                //if (collision.collider.tag == "Player")
+                //{
+                //    var contact_point = collision.contacts[0].point;
+                //    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
 
-            //    player_behaviour.RpcTakeDamage_Other(player_networkIdentity, s_owner, DamageDealt * 999999);
+                //    //var player_rb = collision.collider.GetComponentInParent<Rigidbody>(); // GET THE RAGDOLL RIGIDBODY
+                //    //player_rb.AddForceAtPosition(collision.relativeVelocity * 100, contact_point); //ADD THIS FORCE TO THE RAGDOLL
 
-            //    Destroy(gameObject);
-            //}
+                //    //var controller = player_behaviour.GetComponent<CharacterController>();
+                //    //controller.Move(collision.relativeVelocity);
+
+                //    //if (owner != null)
+                //    //{
+                //    //    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
+                //    //    player_behaviour.CmdTakeDamage(owner, DamageDealt * 999999);
+
+                //    //    var server = FindObjectOfType<InGameNetworkBehaviour>();
+                //    //    server.PlayerShot(owner, player_networkIdentity, "DEBUG WEAPON");
+                //    //}
+
+                //    var player_networkIdentity = player_behaviour.GetComponent<NetworkIdentity>();
+                //    var controller = player_behaviour.GetComponent<CharacterController>();
+                //    controller.Move(transform.forward.normalized * 1.5f);
+
+                //    player_behaviour.RpcTakeDamage_Other(player_networkIdentity, s_owner, DamageDealt * 999999);
+
+                //    Destroy(gameObject);
+                //}
+            }
         }
     }
 }

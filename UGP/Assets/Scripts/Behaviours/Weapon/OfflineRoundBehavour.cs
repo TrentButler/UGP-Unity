@@ -9,8 +9,6 @@ namespace UGP
     {
         [Range(1, 999)] public float delete_timer = 6.0f;
         public GameObject BulletHitParticle;
-        public Vector3 lastPosition;
-        public float raycast_size = 2.0f;
 
         void Start()
         {

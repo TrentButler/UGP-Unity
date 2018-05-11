@@ -83,7 +83,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4440221886797980}
   - component: {fileID: 95036000925234454}
-  - component: {fileID: 114819509070593876}
+  - component: {fileID: 114631791781839704}
   m_Layer: 0
   m_Name: OfflineRailGun
   m_TagString: Untagged
@@ -436,7 +436,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114819509070593876
+--- !u!114 &114631791781839704
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -444,29 +444,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 1341116556749554}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e4c43d78373a0d46a113591b3b38340, type: 3}
+  m_Script: {fileID: 11500000, guid: 193cec770e9e5b14fa73e97ecd22d0e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 1404652998837934, guid: 3f2577513ef323a408e03d5b790d2741,
     type: 2}
   GunBarrel: {fileID: 0}
-  MuzzleFlash: {fileID: 198347791093665734}
+  MuzzleFlash: {fileID: 0}
   CartridgeEjectPosition: {fileID: 0}
   CartridgeEject: {fileID: 0}
   AutomaticFireRate: 0
-  SemiAutoFireRate: 0.1
-  ShotStrength: 1600
+  SemiAutoFireRate: 0.5
+  ShotStrength: 500
   roundsFired: 0
   weaponAnimator: {fileID: 0}
-  ChargeTime: 3
-  ChargeRate: 1
-  DischargeRate: 1
-  MaxRailRotateSpeed: 4
-  RailRotateAccelerationModifier: 2
-  ChargeParticles:
-  - {fileID: 198413949914869346}
-  - {fileID: 198539502824626166}
-  ChargeParticle: {fileID: 198617347615703550}
+  ChargeTime: 6
+  ChargeRate: 1.5
+  DischargeRate: 0.5
+  MaxRailRotateSpeed: 1
+  RailRotateAccelerationModifier: 1
+  ChargeParticles: []
+  ChargeParticle: {fileID: 0}
   RailTransform: {fileID: 4457329702574612}
   ic: {fileID: 0}
   needs_recharge: 0
