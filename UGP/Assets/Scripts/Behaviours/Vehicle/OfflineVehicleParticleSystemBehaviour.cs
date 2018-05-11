@@ -16,8 +16,6 @@ namespace UGP
         private Color originalDustStartColor;
 
         public OfflineUserControl ic;
-
-        // Use this for initialization
         void Start()
         {
             if (ic == null)
@@ -33,9 +31,8 @@ namespace UGP
             originalDustStartSize = DustTrail.startSize;
             originalDustStartColor = DustTrail.startColor;
         }
-
-        // Update is called once per frame
-        void Update()
+        
+        void FixedUpdate()
         {
             Thrusters.ForEach(thruster =>
             {

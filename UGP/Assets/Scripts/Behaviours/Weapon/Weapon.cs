@@ -29,7 +29,6 @@ namespace UGP
         public float AimCooldown;
         public int roundsFired = 0;
         public NetworkAnimator weaponAnimator;
-
         
         public bool Fire(VehicleShootBehaviour shootBehaviour)
         {
