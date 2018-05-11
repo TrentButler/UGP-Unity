@@ -6,25 +6,18 @@ using UnityEngine.UI;
 
 namespace UGP
 {
-    public enum Weapon
-    {
-        ASSAULT = 0,
-        SHOTGUN = 1,
-        SNIPER = 2,
-        ROCKET = 3,
-    }
-
     public class VehicleShootBehaviour : NetworkBehaviour
     {
-        public Weapon w;
         public List<GameObject> weapons = new List<GameObject>();
-
-        public GameObject bulletPrefab;
+        public Weapon weapon;
         public Transform GunTransform;
-        public Transform GunBarrel;
         public AudioSource audio;
 
         public ParticleSystem particle;
+        private GameObject bullet_prefab;
+
+        public GameObject DrivingCamera;
+        public GameObject AimCamera;
 
         #region CROSSHAIR_UI
         public Image crosshair;
@@ -32,23 +25,15 @@ namespace UGP
         public float crosshairYOffset;
         public float crosshairSpeed;
         public Vector3 crosshairWorldOffset;
-        private Canvas c;
+        public float AimCooldown = 4.0f;
+        public float MinGunXRot = 10;
+        public float MaxGunXRot = 10;
+        public Canvas vehicleUI;
         #endregion
 
-        [Range(0.1f, 2.0f)] public float AutomaticFireRate; //ROUNDS FIRED PER MINUTE
-        [Range(0.1f, 2.0f)] public float SemiAutoFireRate = 0.5f; //ROUNDS FIRED PER MINUTE
-        private float automatic_timer = 0;
-        private float semiauto_timer = 0;
-        private bool hasFired = false;
-
-        [Range(0.0f, 999999.0f)] public float ShotStrength = 500.0f;
-        public float WeaponRange;
-        public float AimCooldown;
-        public int roundsFired = 0;
         private Vector3 barrelLookAt;
         public VehicleBehaviour v;
 
-        public NetworkAnimator weaponAnimator;
         public GameObject activeWeapon;
         [SyncVar(hook = "OnSWeaponChange")] public string s_weapon;
         [SyncVar(hook = "OnWeaponActiveChange")] public bool weaponActive;
@@ -64,131 +49,65 @@ namespace UGP
 
         public void OnSpawn(InGameNetworkBehaviour netCompanion)
         {
-            if(weapons.Count > 0)
+            if (weapons.Count > 0)
             {
                 var randomWeapon = Random.Range(0, weapons.Count);
                 activeWeapon = weapons[randomWeapon];
                 s_weapon = activeWeapon.name;
-                
-                weaponAnimator = activeWeapon.GetComponent<NetworkAnimator>();
+                weapon = activeWeapon.GetComponent<Weapon>();
+                bullet_prefab = weapon.bulletPrefab;
 
                 weaponActive = true;
                 RpcSetWeaponActive(true);
             }
         }
 
-        [ClientRpc] public void RpcSetWeaponActive(bool active)
+        [ClientRpc]
+        public void RpcSetWeaponActive(bool active)
         {
             weaponActive = active;
             CmdSetWeaponActive(active);
         }
-        [Command] public void CmdSetWeaponActive(bool active)
+        [Command]
+        public void CmdSetWeaponActive(bool active)
         {
             weaponActive = active;
         }
 
-        [Command] private void CmdFireRound(NetworkIdentity owner, Vector3 position, Quaternion rotation, float strength)
+        [Command] public void CmdFireRound(Vector3 position, Quaternion rotation, float strength)
         {
-            var b = Instantiate(bulletPrefab, position, rotation);
-            var bulletBehaviour = b.GetComponent<DefaultRoundBehaviour>();
-            bulletBehaviour.owner = owner;
+            var b = Instantiate(bullet_prefab, position, rotation);
 
             var b_rb = b.GetComponent<Rigidbody>();
 
-            var force = b_rb.transform.forward.normalized * strength;
-            //b_rb.rotation = GunBarrel.rotation;
+            var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
             b_rb.velocity = force;
 
-            NetworkServer.Spawn(b);
-            Destroy(b, 4);
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.Spawn(b);
+            //NetworkServer.Spawn(b);
+            //Destroy(b, 4);
         }
 
-        private void Shoot()
+        private bool ClampGunRotation()
         {
-            var networkIdentity = v.owner;
+            var currentRot = GunTransform.localRotation.eulerAngles;
+            var currentX = currentRot[0];
 
-            switch (w)
+            if (currentX < MinGunXRot)
             {
-                case Weapon.ASSAULT:
-                    {
-                        var assault = v.Assault;
-                        if (assault > 0)
-                        {
-                            //v._v.ammunition.Assault -= 1;
-                            v.CmdUseAmmunition(1, 0, 0, 0);
-                            //audio.Play();
-                            weaponAnimator.SetTrigger("Fire");
-                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
-                        }
-                        else
-                        {
-                            Debug.Log("OUT OF ASSAULT ROUNDS");
-                        }
-                        break;
-                    }
-
-                case Weapon.SHOTGUN:
-                    {
-                        var shotgun = v.Shotgun;
-                        if (shotgun > 0)
-                        {
-                            v.CmdUseAmmunition(0, 1, 0, 0);
-                            //audio.Play();
-                            weaponAnimator.SetTrigger("Fire");
-                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
-                        }
-                        else
-                        {
-                            Debug.Log("OUT OF SHOTGUN ROUNDS");
-                        }
-                        break;
-                    }
-
-                case Weapon.SNIPER:
-                    {
-                        var sniper = v.Sniper;
-                        if (sniper > 0)
-                        {
-                            v.CmdUseAmmunition(0, 0, 1, 0);
-                            weaponAnimator.SetTrigger("Fire");
-                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
-                            //audio.Play();
-                        }
-                        else
-                        {
-                            Debug.Log("OUT OF SNIPER ROUNDS");
-                        }
-                        break;
-                    }
-
-                case Weapon.ROCKET:
-                    {
-                        var rocket = v.Rocket;
-                        if (rocket > 0)
-                        {
-                            v.CmdUseAmmunition(0, 0, 0, 1);
-                            //audio.Play();
-                            weaponAnimator.SetTrigger("Fire");
-                            CmdFireRound(networkIdentity, GunBarrel.position, GunBarrel.rotation, ShotStrength);
-                        }
-                        else
-                        {
-                            Debug.Log("OUT OF ROCKETS");
-                        }
-                        break;
-                    }
-
-                default:
-                    {
-                        break;
-                    }
+                return false;
             }
+            if (currentX > MaxGunXRot)
+            {
+                return false;
+            }
+            return true;
         }
 
-        //NEEDS WORK
         private void ClampCrosshairUI()
         {
-            var rectTrans = c.GetComponent<RectTransform>();
+            var rectTrans = vehicleUI.GetComponent<RectTransform>();
 
             //GET BOUNDS OF THE CANVAS
             var _w = rectTrans.rect.width;
@@ -228,119 +147,72 @@ namespace UGP
             crosshair.rectTransform.position = clampedPos;
         }
 
-        //NEEDS WORK
         private float aimTimer = 0;
         private void Aim()
         {
-            //var h = Input.GetAxis("Mouse X");
-            var v = Input.GetAxis("Mouse Y");
+            //CREATE A LOOK AT VECTOR FOR THE GUNBARREL
+            var cam = Camera.main;
+            var mouseY = Input.GetAxis("Mouse Y");
+            //var aim_input = (-mouseY * crosshairSpeed);
+            var aim_input = (-mouseY);
 
-            var aimVector = new Vector3(0, v, 0);
+            var aimVector = new Vector3(aim_input, 0, 0);
 
-            var vehicleThrottle = GetComponent<DefaultVehicleController>().currentVehicleThrottle;
-            var vehicleStrafe = GetComponent<DefaultVehicleController>().currentVehicleStrafe;
-            Vector3 moveVector = new Vector3(0, 0, vehicleThrottle);
-            
-            if(moveVector.magnitude <= 0)
+            if (Input.GetMouseButton(1))
             {
-                //crosshairWorldOffset.z = 58.0f;
-                //crosshairYOffset = 82.0f;
-
+                //CAMERA SWITCH HERE, NO (WEAPON LERP BACK TO CENTER)
+                ToggleAimCamera(true);
+            }
+            else
+            {
+                ToggleAimCamera(false);
+                //NORMAL CAMERA HERE
                 if (aimVector.magnitude <= 0)
                 {
                     aimTimer += Time.deltaTime;
 
                     if (aimTimer >= AimCooldown)
                     {
-                        #region UI_CROSSHAIR
-                        var rectTrans = c.GetComponent<RectTransform>();
+                        //RE-CENTER THE GUN IF NO INPUT
+                        var currentRot = GunTransform.rotation;
+                        var currentXRot = currentRot[0];
 
-                        var _w = rectTrans.rect.width;
-                        var _h = rectTrans.rect.height;
-
-                        var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
-                        var p = crosshair.rectTransform.position;
-
-                        var lerpX = Mathf.Lerp(p.x, center.x, Time.deltaTime);
-                        var lerpY = Mathf.Lerp(p.y, center.y, Time.deltaTime);
-
-                        var lerpPos = new Vector3(lerpX, lerpY, 0);
-
-                        //RETURN CROSSHAIR TO CENTER OVER TIME
-                        crosshair.rectTransform.position = lerpPos;
-                        #endregion
+                        var lerpX = Mathf.Lerp(currentXRot, 0, Time.deltaTime);
+                        currentRot[0] = lerpX;
+                        GunTransform.rotation = currentRot;
                     }
                 }
-                else
-                {
-                    //MOVE THE UI CROSSHAIR BASED ON MOUSE INPUT
-                    crosshair.rectTransform.position += (aimVector * crosshairSpeed);
-                    ClampCrosshairUI();
-
-                    aimTimer = 0;
-                }
             }
-            else
+
+            if (aimVector.magnitude > 0.0f)
             {
-                //CENTER THE CROSSHAIR WHEN VEHICLE IS MOVING
-                //crosshairWorldOffset.z = 11.8f;
-                //crosshairYOffset = 91.0f;
-
-
-                var rectTrans = c.GetComponent<RectTransform>();
-
-                var _w = rectTrans.rect.width;
-                var _h = rectTrans.rect.height;
-
-                var center = new Vector3((_w / 2) + crosshairXOffset, (_h / 2) + crosshairYOffset, 0);
-
-                crosshair.rectTransform.position = center;
+                //aim_input = Mathf.Clamp(aim_input, MinGunXRot, MaxGunXRot);
+                GunTransform.Rotate(aimVector);
+                aimTimer = 0;
             }
 
-            //CREATE A LOOK AT VECTOR FOR THE GUNBARREL
-            var cam = Camera.main;
-            var uiCrosshair = crosshair.rectTransform.position;
-            barrelLookAt = cam.ScreenToWorldPoint(uiCrosshair + crosshairWorldOffset);
-            GunBarrel.LookAt(barrelLookAt);
+            var crosshairLookAt = weapon.GunBarrel.TransformPoint(Vector3.forward * weapon.ShotStrength);
+            crosshair.rectTransform.position = cam.WorldToScreenPoint(crosshairLookAt + crosshairWorldOffset);
+            ClampCrosshairUI();
         }
-        
-        private void Fire()
-        {
-            //SINGLE-FIRE
-            if (Input.GetMouseButtonDown(0))
-            {
-                if(!hasFired)
-                {
-                    Shoot();
-                    hasFired = true;
-                }
-            }
-            else
-            {
-                semiauto_timer += Time.deltaTime;
-                if(semiauto_timer >= SemiAutoFireRate)
-                {
-                    hasFired = false;
-                    semiauto_timer = 0.0f; //RESET THE TIMER
-                }
-            }
 
-            //AUTOMATIC FIRE
-            //LIMIT THE RATE OF FIRE
-            if (Input.GetMouseButton(0))
+        private void ToggleAimCamera(bool toggle)
+        {
+            if (toggle)
             {
-                automatic_timer += Time.deltaTime;
-                if (automatic_timer > AutomaticFireRate)
-                {
-                    Debug.Log("SHOT FIRED");
-                    Shoot();
-                    automatic_timer = 0.0f;
-                }
+                DrivingCamera.SetActive(false);
+                AimCamera.SetActive(true);
             }
             else
             {
-                automatic_timer = 0.0f;
+                DrivingCamera.SetActive(true);
+                AimCamera.SetActive(false);
             }
+        }
+
+        private void Start()
+        {
+            ToggleAimCamera(false);
         }
 
         public override void OnStartClient()
@@ -349,34 +221,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
-            }
-        }
-
-        private void Start()
-        {
-            if (!isLocalPlayer)
-            {
-                if(hasAuthority)
-                {
-                    v = GetComponent<VehicleBehaviour>();
-                    var vactive = v.vehicleActive;
-
-                    if (vactive)
-                    {
-                        c = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
-                    }
-                    return;
-                }
-
-                return;
-            }
-
-            v = GetComponent<VehicleBehaviour>();
-            var vActive = v.vehicleActive;
-            if (vActive)
-            {
-                c = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
+                vehicleUI = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
             }
         }
 
@@ -384,12 +229,97 @@ namespace UGP
         {
             if (!isLocalPlayer)
             {
-                if(hasAuthority && !isServer)
+                if (hasAuthority && !isServer)
                 {
-                    //Aim();
-                    Fire();
+                    Aim();
 
-                    Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+                    if (weapon != null)
+                    {
+                        switch (weapon.type)
+                        {
+                            case WeaponType.ASSAULT:
+                                {
+                                    var assault = v.Assault;
+                                    if (assault > 0)
+                                    {
+                                        //v._v.ammunition.Assault -= 1;
+                                        
+                                        //audio.Play();
+                                        if(weapon.Fire(this))
+                                        {
+                                            v.CmdUseAmmunition(1, 0, 0, 0);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("OUT OF ASSAULT ROUNDS");
+                                    }
+                                    break;
+                                }
+
+                            case WeaponType.SHOTGUN:
+                                {
+                                    var shotgun = v.Shotgun;
+                                    if (shotgun > 0)
+                                    {
+                                        if(weapon.Fire(this))
+                                        {
+                                            v.CmdUseAmmunition(0, 1, 0, 0);
+                                        }
+                                        //audio.Play();
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("OUT OF SHOTGUN ROUNDS");
+                                    }
+                                    break;
+                                }
+
+                            case WeaponType.SNIPER:
+                                {
+                                    var sniper = v.Sniper;
+                                    if (sniper > 0)
+                                    {
+                                        if(weapon.Fire(this))
+                                        {
+                                            v.CmdUseAmmunition(0, 0, 1, 0);
+                                        }
+                                        //audio.Play();
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("OUT OF SNIPER ROUNDS");
+                                    }
+                                    break;
+                                }
+
+                            case WeaponType.ROCKET:
+                                {
+                                    var rocket = v.Rocket;
+                                    if (rocket > 0)
+                                    {
+                                        if(weapon.Fire(this))
+                                        {
+                                            v.CmdUseAmmunition(0, 0, 0, 1);
+                                        }   
+                                        //audio.Play();
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("OUT OF ROCKETS");
+                                    }
+                                    break;
+                                }
+
+                            default:
+                                {
+                                    break;
+                                }
+                        }
+
+                        Debug.DrawRay(weapon.GunBarrel.position, weapon.GunBarrel.forward.normalized * weapon.ShotStrength, Color.red);
+                    }
+
                     return;
                 }
 
@@ -397,13 +327,35 @@ namespace UGP
             }
 
             //Aim();
-            //Fire();
 
-            //Debug.DrawRay(GunBarrel.position, GunBarrel.forward.normalized * WeaponRange, Color.red);
+            //if (weapon != null)
+            //{
+            //    weapon.Fire();
+            //    Debug.DrawRay(weapon.GunBarrel.position, weapon.GunBarrel.forward.normalized * weapon.WeaponRange, Color.red);
+            //}
         }
 
         private void LateUpdate()
         {
+            if (bullet_prefab == null)
+            {
+                if(activeWeapon == null)
+                {
+                    weapons.ForEach(w =>
+                    {
+                        if (w.name == s_weapon)
+                        {
+                            activeWeapon = w;
+                            weapon = w.GetComponent<Weapon>();
+                            bullet_prefab = weapon.bulletPrefab;
+                        }
+                    });
+                }
+                else
+                {
+                    bullet_prefab = weapon.bulletPrefab;
+                }
+            }
             if (activeWeapon == null)
             {
                 weapons.ForEach(w =>
@@ -411,10 +363,8 @@ namespace UGP
                     if (w.name == s_weapon)
                     {
                         activeWeapon = w;
-                    }
-                    if (weaponAnimator == null)
-                    {
-                        weaponAnimator = activeWeapon.GetComponent<NetworkAnimator>();
+                        weapon = w.GetComponent<Weapon>();
+                        bullet_prefab = weapon.bulletPrefab;
                     }
                 });
             }
@@ -423,12 +373,12 @@ namespace UGP
 
             if (!isLocalPlayer)
             {
-                if(hasAuthority)
+                if (hasAuthority)
                 {
                     var vactive = v.vehicleActive;
                     if (vactive)
                     {
-                        c = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
+                        vehicleUI = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
                     }
                     return;
                 }
@@ -439,7 +389,7 @@ namespace UGP
             var vActive = v.vehicleActive;
             if (vActive)
             {
-                c = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
+                vehicleUI = v.vehicleUIBehaviour.vehicleUI.GetComponent<Canvas>();
             }
         }
     }

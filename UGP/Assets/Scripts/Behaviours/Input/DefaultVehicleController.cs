@@ -1,12 +1,13 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 
 namespace UGP
 {
     public class DefaultVehicleController : InputController
     {
+        public VehicleBehaviour vehicleBrain;
         #region VehicleHover
         public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
@@ -21,6 +22,10 @@ namespace UGP
         public Vector3 maxVehicleRotation;
         public Vector3 minVehicleRotation;
         public float vehicleRotateSpeed = 1.5f;
+        [Range(1.0f, 999.0f)] public float AutoRotateThreshold = 10.0f;
+        [Range(0.0001f, 999.0f)] public float AutoRotateSpeed = 0.5f;
+        [Range(0.0001f, 999.0f)] public float AutoRotateRaycastRadius = 1.5f;
+
         private bool isRotating = false;
         #endregion
 
@@ -36,7 +41,7 @@ namespace UGP
         public bool useDownforce = true;
         public Vector3 Downforce;
 
-        private Rigidbody rb;
+        public Rigidbody rb;
 
         [HideInInspector] public float currentVehicleThrottle;
         [HideInInspector] public float currentVehicleStrafe;
@@ -45,8 +50,9 @@ namespace UGP
         [Range(0.001f, 2.0f)] public float BoostingFuelBurnRate = 1.0f;
 
         private float originalFuelBurnRate;
+        public float currentVehiclePower;
 
-        public VehicleBehaviour vehicleBrain;
+        Vector3 rotate_force = Vector3.zero;
 
         #region VehicleMovement
         public void ResetVehicleRotation()
@@ -184,44 +190,54 @@ namespace UGP
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
             Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
 
-            if(vehicleBrain.vehicleActive)
+            currentVehiclePower = (throttle * MaxSpeed);
+
+            currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * FuelBurnRate;
+            vehicleBrain.CmdUseFuel(currentFuelConsumption);
+
+            var force = Vector3.zero;
+            var strafe_force = Vector3.zero;
+
+            #region HOVERVECTORCALCULATION
+            //PERFORM A RAYCAST DOWNWARD, 
+            //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
+            //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
+            RaycastHit hit;
+            //var world_point = transform.TransformPoint(point.position);
+            if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
             {
-                currentFuelConsumption = Mathf.Abs(throttle + strafeVehicle) * FuelBurnRate;
-                vehicleBrain.CmdUseFuel(currentFuelConsumption);
+                var vertForce = (TargetHeight - hit.distance) / TargetHeight;
+                Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
 
-                #region HOVERVECTORCALCULATION
-                //PERFORM A RAYCAST DOWNWARD, 
-                //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
-                //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
-                RaycastHit hit;
-                //var world_point = transform.TransformPoint(point.position);
-                if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
-                {
-                    var vertForce = (TargetHeight - hit.distance) / TargetHeight;
-                    Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
+                //Debug.Log(hoverVector); //DELETE THIS
+                CurrentHoverVector = hoverVector;
 
-                    //Debug.Log(hoverVector); //DELETE THIS
-                    CurrentHoverVector = hoverVector;
+                //rb.AddForce(hoverVector);
+                //rb.AddForceAtPosition(hoverVector, point.position);
+                force += hoverVector;
+            }
+            #endregion
 
-                    rb.AddForce(hoverVector);
-                    //rb.AddForceAtPosition(hoverVector, point.position);
-                }
-                #endregion
+            if (rb.centerOfMass.y > TargetHeight)
+            {
+                var displacement_y = TargetHeight - rb.transform.position.y;
+                var force_vector = (new Vector3(0.0f, displacement_y, 0.0f) + (-Vector3.up)) * EvasionHoverStrength;
+                Downforce = force_vector;
+                //rb.AddForce(force_vector);
+                force += force_vector;
+            }
 
-                if (rb.centerOfMass.y > TargetHeight)
-                {
-                    var displacement_y = TargetHeight - rb.transform.position.y;
-                    var force_vector = (new Vector3(0.0f, displacement_y, 0.0f) + (-Vector3.up)) * EvasionHoverStrength;
-                    Downforce = force_vector;
-                    rb.AddForce(force_vector);
-                }
-
+            if (vehicleBrain.vehicleActive)
+            {
                 if (accelerationVector.magnitude > 0 || strafeVector.magnitude > 0)
                 {
-                    var move_direction = transform.TransformDirection((accelerationVector + strafeVector));
+                    var accel_direction = transform.TransformDirection((accelerationVector));
+                    var strafe_direction = transform.TransformDirection((strafeVector));
                     //APPLY FORCES
                     rb.isKinematic = false;
-                    rb.AddForce(move_direction, ForceMode.Impulse);
+                    //rb.AddForce(move_direction, ForceMode.Impulse);
+                    force += accel_direction;
+                    strafe_force += strafe_direction;
                 }
                 else
                 {
@@ -231,15 +247,11 @@ namespace UGP
             else
             {
                 rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO USER CONTROL
-                rb.isKinematic = true;
             }
 
+            rb.AddForce(strafe_force, ForceMode.Impulse);
+            rb.AddForce(force, ForceMode.Acceleration);
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
-
-            if (!isRotating)
-            {
-                CheckVehicleRotation();
-            }
         }
 
         public override void Rotate(float xRot, float yRot, float zRot)
@@ -248,6 +260,14 @@ namespace UGP
             var y_rot = new Vector3(0, xRot, 0);
             var z_rot = new Vector3(0, 0, -xRot);
 
+            rotate_force = Vector3.zero;
+
+            if (!isRotating)
+            {
+                CheckVehicleRotation();
+            }
+
+            rotate_force += new Vector3(0, xRot * vehicleRotateSpeed, 0);
 
             if (Input.GetKey(KeyCode.LeftAlt))
             {
@@ -270,13 +290,15 @@ namespace UGP
 
             if (y_rot.magnitude > 0.0f)
             {
+
+                //rb.AddTorque(rotate_force);
                 rb.constraints = RigidbodyConstraints.None; //REMOVE ALL CONSTRAINTS FROM THE RIGIDBODY
                 var new_rotation = Quaternion.Euler(y_rot * VehicleSteerSpeed);
                 rb.MoveRotation(rb.rotation * new_rotation);
             }
             else
             {
-                rb.constraints = RigidbodyConstraints.FreezeRotation; //FREEZE THE Y-AXIS ROTATION    
+                rb.constraints = RigidbodyConstraints.FreezeRotationY; //FREEZE THE Y-AXIS ROTATION    
             }
         }
 
@@ -292,6 +314,15 @@ namespace UGP
             originalTargetHeight = TargetHeight;
             originalHoverStrength = HoverStrength;
             originalFuelBurnRate = FuelBurnRate;
+        }
+
+        private void LateUpdate()
+        {
+            //var end_pos = transform.position;
+            //end_pos.z = end_pos.z * AutoRotateThreshold;
+            //var end_pos = transform.TransformPoint(new Vector3(0, 0, AutoRotateThreshold));
+            //var random_color = Random.ColorHSV();
+            //Debug.DrawLine(transform.position, end_pos, Color.HSVToRGB(random_color.r, random_color.g, random_color.b));
         }
     }
 }

@@ -59,5 +59,10 @@ namespace UGP
         {
             throw new System.NotImplementedException();
         }
+
+        public override void RestartMatch()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

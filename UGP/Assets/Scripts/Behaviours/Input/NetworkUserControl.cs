@@ -22,6 +22,15 @@ namespace UGP
 
         public InputController ic;
 
+        public float GetCurrentVerticalInput()
+        {
+            return Input.GetAxis(InputVertical);
+        }
+        public float GetCurrentHorizontalInput()
+        {
+            return Input.GetAxis(InputHorizontal);
+        }
+
         void FixedUpdate()
         {
             if(!isLocalPlayer)
@@ -41,8 +50,9 @@ namespace UGP
 
             var h = Input.GetAxis(InputHorizontal);
             var v = Input.GetAxis(InputVertical);
+            var alt_hori = Input.GetAxis(AltInputHorizontal);
             ic.Move(h, v);
-            ic.Rotate(h, v, 0.0f);
+            ic.Rotate(alt_hori, v, 0.0f);
         }
     }
 }

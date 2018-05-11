@@ -17,49 +17,53 @@ namespace UGP
 
         public float GetVehicleHealth()
         {
-            var health_displacement = VehicleBrain.vehicleHealth / VehicleBrain.max_health;
-            var calc = new Vector3(health_displacement, 0, 0);
-            return calc.normalized.x;
+            //var health_displacement = VehicleBrain.vehicleHealth / VehicleBrain.max_health;
+            //var calc = new Vector3(health_displacement, 0, 0);
+            //return calc.normalized.x;
+
+            return (1 / VehicleBrain.max_health) * VehicleBrain.vehicleHealth;
         }
         public float GetVehicleFuel()
         {
-            var fuel_displacement = VehicleBrain.vehicleFuel / VehicleBrain.max_fuel;
-            var calc = new Vector3(fuel_displacement, 0, 0);
-            return calc.normalized.x;
+            //var fuel_displacement = VehicleBrain.vehicleFuel / VehicleBrain.max_fuel;
+            //var calc = new Vector3(fuel_displacement, 0, 0);
+            //return calc.normalized.x;
+
+            return (1 / VehicleBrain.max_fuel) * VehicleBrain.vehicleFuel;
         }
 
         public void UpdateVehicleUI()
         {
             HealthSlider.fillAmount = GetVehicleHealth();
-            //FuelSlider.fillAmount = GetVehicleFuel();
+            FuelSlider.fillAmount = GetVehicleFuel();
 
             var text = vehicleUI.GetComponentInChildren<Text>();
             var shoot_behaviour = VehicleBrain.shootBehaviour;
 
-            switch(shoot_behaviour.w)
+            switch(shoot_behaviour.weapon.type)
             {
-                case Weapon.ASSAULT:
+                case WeaponType.ASSAULT:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Assault.ToString();
                         break;
                     }
 
-                case Weapon.SHOTGUN:
+                case WeaponType.SHOTGUN:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Shotgun.ToString();
                         break;
                     }
 
-                case Weapon.SNIPER:
+                case WeaponType.SNIPER:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Sniper.ToString();
                         break;
                     }
 
-                case Weapon.ROCKET:
+                case WeaponType.ROCKET:
                     {
                         text.text = "";
                         text.text = VehicleBrain.Rocket.ToString();
@@ -78,10 +82,9 @@ namespace UGP
         public override void OnStartClient()
         {
             HealthSlider.fillAmount = GetVehicleHealth();
-            //FuelSlider.fillAmount = GetVehicleFuel();
+            FuelSlider.fillAmount = GetVehicleFuel();
         }
-
-        // Update is called once per frame
+        
         private void FixedUpdate()
         {
             if (!isLocalPlayer)

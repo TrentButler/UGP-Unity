@@ -116,10 +116,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4705154588075990}
   - component: {fileID: 54780582902589716}
-  - component: {fileID: 136282688389147822}
   - component: {fileID: 114589166589270550}
   - component: {fileID: 114369282552840680}
   - component: {fileID: 114408863108715076}
+  - component: {fileID: 136773784081132474}
   m_Layer: 0
   m_Name: DebugBulletPrefab
   m_TagString: Ammo
@@ -224,7 +224,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1275591104114932}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 2}
   m_LocalScale: {x: 0.1, y: 2, z: 0.1}
   m_Children: []
   m_Father: {fileID: 4705154588075990}
@@ -347,7 +347,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1537869310021538}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.9, y: 1.66, z: 0}
+  m_LocalPosition: {x: -0.18906593, y: 2.63, z: 59.59375}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4865153143659032}
@@ -541,7 +541,7 @@ MonoBehaviour:
   m_SendInterval: 0
   m_SyncRotationAxis: 7
   m_RotationSyncCompression: 0
-  m_SyncSpin: 0
+  m_SyncSpin: 1
   m_MovementTheshold: 0.001
   m_VelocityThreshold: 0.0001
   m_SnapThreshold: 5
@@ -558,8 +558,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a578761fb74d0fb499aeda251e6de7a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DamageDealt: 999
+  DamageDealt: 25
   owner: {fileID: 0}
+  s_owner: 
+  delete_timer: 999
 --- !u!114 &114589166589270550
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -605,7 +607,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!136 &136282688389147822
+--- !u!136 &136773784081132474
 CapsuleCollider:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -614,7 +616,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.3
-  m_Height: 1.55
+  m_Radius: 0.1
+  m_Height: 4.1
   m_Direction: 2
   m_Center: {x: 0, y: 0, z: 0}

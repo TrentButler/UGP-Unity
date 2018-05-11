@@ -139,7 +139,7 @@ namespace UGP
         }
         public void VehicleHitPlayer(NetworkIdentity vehicle, NetworkIdentity player)
         {
-            if(!isServer)
+            if (!isServer)
             {
                 return;
             }
@@ -149,10 +149,10 @@ namespace UGP
 
             scoreboardText += playerName + " HIT BY A " + vehicleName + "\n";
         }
-        
+
         public void PlayerShotByPlayer(NetworkIdentity attacker, NetworkIdentity player, string weapon)
         {
-            if(!isServer)
+            if (!isServer)
             {
                 return;
             }
@@ -168,14 +168,14 @@ namespace UGP
             {
                 return;
             }
-            
+
             var playerName = player.GetComponent<PlayerBehaviour>().playerName;
             scoreboardText += attacker + " SHOT " + playerName + "\n";
         }
 
         public void PlayerKilledByPlayer(NetworkIdentity attacker, NetworkIdentity player)
         {
-            if(!isServer)
+            if (!isServer)
             {
                 return;
             }
@@ -191,7 +191,7 @@ namespace UGP
             {
                 return;
             }
-            
+
             var playerName = player.GetComponent<PlayerBehaviour>().playerName;
             scoreboardText += attacker + " KILLED " + playerName + "\n";
         }
@@ -207,16 +207,18 @@ namespace UGP
             scoreboardText += playerName + Results;
         }
 
-        [ClientRpc] public void RpcAssignObjectAuthority(NetworkIdentity objectIdentity)
+        [ClientRpc]
+        public void RpcAssignObjectAuthority(NetworkIdentity objectIdentity)
         {
             var server_network_identity = GetComponent<NetworkIdentity>();
             var server_connection = server_network_identity.connectionToClient;
 
             var objectNetworkIdentity = objectIdentity;
-            
+
             objectNetworkIdentity.AssignClientAuthority(server_connection);
         }
-        [ClientRpc] public void RpcRemoveObjectAuthority(NetworkIdentity objectIdentity)
+        [ClientRpc]
+        public void RpcRemoveObjectAuthority(NetworkIdentity objectIdentity)
         {
             var server_network_identity = GetComponent<NetworkIdentity>();
             var server_connection = server_network_identity.connectionToClient;
@@ -250,7 +252,7 @@ namespace UGP
         }
         public Transform GetPlayerSpawn()
         {
-            if(StartPositionIndex > PlayerStartPositions.Count - 1)
+            if (StartPositionIndex > PlayerStartPositions.Count - 1)
             {
                 StartPositionIndex = 0;
             }
@@ -261,7 +263,8 @@ namespace UGP
             return spawn;
         }
 
-        [Command] public void CmdRestartPreMatchTimer()
+        [Command]
+        public void CmdRestartPreMatchTimer()
         {
             Debug.Log("RESTART PRE-MATCH TIMER");
             PreMatchTimer = original_prematchtimer;
@@ -323,7 +326,7 @@ namespace UGP
                 var v = Instantiate(VehiclePrefabs[i], spawn_position, OriginVehicleSpawn.rotation);
                 NetworkServer.Spawn(v);
 
-                for(int j = 0; j < ItemPrefabs.Count; j++)
+                for (int j = 0; j < ItemPrefabs.Count; j++)
                 {
                     var item_spawn = spawn_position;
                     item_spawn.x = item_spawn.x - ((j + 1) * ItemPositionOffset);
@@ -349,7 +352,7 @@ namespace UGP
         public void ClearRagdolls()
         {
             var allragdoll = GameObject.FindGameObjectsWithTag("Ragdoll").ToList();
-            for(int i = 0; i < allragdoll.Count; i++)
+            for (int i = 0; i < allragdoll.Count; i++)
             {
                 NetworkServer.Destroy(allragdoll[i]);
             }
@@ -386,6 +389,12 @@ namespace UGP
         {
             NetworkServer.Spawn(go);
         }
+        public void SpawnParticle(GameObject go, Vector3 pos)
+        {
+            var particle = Instantiate(go);
+            particle.transform.position = pos;
+            NetworkServer.Spawn(particle);
+        }
 
         public void Server_Destroy(GameObject go)
         {
@@ -410,7 +419,7 @@ namespace UGP
 
         [ClientRpc] public void RpcServer_Disconnect(NetworkIdentity player, string scene)
         {
-            if(player.isLocalPlayer)
+            if (player.isLocalPlayer)
             {
                 //NetworkManager.singleton.StopClient();
                 var playerUIBehaviour = player.GetComponent<PlayerUIBehaviour>();
@@ -418,16 +427,27 @@ namespace UGP
             }
         }
 
+        public void ClearAllItems()
+        {
+            var allItems = FindObjectsOfType<ItemBehaviour>().ToList();
+            allItems.ForEach(item => { Server_Destroy(item.gameObject); });
+        }
+        public void ClearAllVehicles()
+        {
+            var allVehicles = FindObjectsOfType<VehicleBehaviour>().ToList();
+            allVehicles.ForEach(vehicle => { Server_Destroy(vehicle.gameObject); });
+        }
+
         private void Start()
         {
-            if(!isServer)
+            if (!isServer)
             {
                 return;
             }
 
             original_prematchtimer = PreMatchTimer;
             spawnOnPlayerCount = false;
-            
+
             server_camera = Camera.main.gameObject;
             SpawnBuildings();
 
@@ -436,7 +456,7 @@ namespace UGP
 
         private void FixedUpdate()
         {
-            if(isServer)
+            if (isServer)
             {
                 //PreMatchTimer -= Time.deltaTime;
 
@@ -468,7 +488,7 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if(networkUI == null)
+            if (networkUI == null)
             {
                 networkUI = FindObjectOfType<NetworkUIBehaviour>();
             }
@@ -485,6 +505,7 @@ namespace UGP
                 networkUI.clientUIActive = false;
             }
 
+            scoreboard.text = "";
             scoreboard.text = scoreboardText;
         }
     }
