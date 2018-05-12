@@ -5,7 +5,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 namespace UGP
 {
-
     public class PlayerClosetBehaviour : MonoBehaviour
     {
         #region Players
@@ -248,11 +247,12 @@ namespace UGP
         }
         public void OnJoin()
         {
-            SceneManager.LoadScene("03.CORERace");
+            SceneManager.LoadScene("53.COREdemo");
         }
         // Use this for initialization
         void Start()
         {
+            playerNameText.text = "";
             //Sandra.SetActive(false);
             UsernamesList = RandomUserNames.UserNames;
             OnShannon();
