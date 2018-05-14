@@ -15,6 +15,7 @@ namespace UGP
         public string s_owner;
         [Range(1, 999)] public float delete_timer = 6.0f;
         public GameObject BulletHitParticle;
+        public GameObject BulletHitPlayerParticle;
 
         void Start()
         {
@@ -72,7 +73,7 @@ namespace UGP
                 var impact_point = collision.contacts[0];
 
                 var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
+                net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
 
                 if (owner != null)
                 {
@@ -118,7 +119,7 @@ namespace UGP
                 var impact_point = collision.contacts[0];
 
                 var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
+                net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
 
                 if (owner != null)
                 {
@@ -149,12 +150,6 @@ namespace UGP
                         return;
                     };
                 }
-
-                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
-                //particles.ForEach(particle =>
-                //{
-                //    particle.Play();
-                //});
 
                 net_companion.Server_Destroy(gameObject);
             }

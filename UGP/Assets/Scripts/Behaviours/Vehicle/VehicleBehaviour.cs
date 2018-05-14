@@ -19,6 +19,7 @@ namespace UGP
         public NetworkUserControl ic;
         public VehicleShootBehaviour shootBehaviour;
         public VehicleUIBehaviour vehicleUIBehaviour;
+        public VehicleAudioBehaviour audioBehaviour;
 
         public Vehicle VehicleConfig;
         [HideInInspector] public Vehicle _v;
@@ -122,9 +123,11 @@ namespace UGP
         }
         [Command] public void CmdVehicleDestroyed()
         {
-            VehicleDestroyedParticle.Play();
-            //BurningVehicleParticle.Play();
-            RpcVehicleDestroyed();
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.Server_Destroy(gameObject);
+            //VehicleDestroyedParticle.Play();
+            ////BurningVehicleParticle.Play();
+            //RpcVehicleDestroyed();
         }
         [Command] private void CmdSpawnRagdoll()
         {
@@ -179,19 +182,23 @@ namespace UGP
                 //KILL THE PLAYER
                 //PLAY EXPLOSION
                 //DESTROY THE VEHICLE
-                vehicleActive = false;
-
-                VehicleDestroyedParticle.Play();
-                //BurningVehicleParticle.Play();
-                shootBehaviour.CmdSetWeaponActive(false);
-                CmdVehicleDestroyed();
-                CmdSpawnRagdoll();
+                
+                var rb = GetComponent<Rigidbody>();
+                rb.AddExplosionForce(2.5f, transform.position, 2.0f, 1.5f);
 
                 if (seatedPlayer != null)
                 {
                     seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999); //APPLY ENOUGH DAMAGE TO KILL THE PLAYER
                     //seatedPlayer.RemovePlayerFromVehicle();
                 }
+
+                vehicleActive = false;
+
+                VehicleDestroyedParticle.Play();
+                //BurningVehicleParticle.Play();
+                shootBehaviour.CmdSetWeaponActive(false);
+                CmdSpawnRagdoll();
+                CmdVehicleDestroyed();
             }
         }
         public void OnVehicleHealthChange(float healthChange)

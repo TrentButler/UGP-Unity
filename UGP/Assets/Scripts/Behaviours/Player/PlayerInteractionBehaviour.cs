@@ -141,6 +141,16 @@ namespace UGP
         }
         #endregion
 
+        [Command] public void CmdStartVehicle(NetworkIdentity vehicle)
+        {
+            RpcStartVehicle(vehicle);
+        }
+        [ClientRpc] private void RpcStartVehicle(NetworkIdentity vehicle)
+        {
+            var vehicle_audio = vehicle.GetComponent<VehicleAudioBehaviour>();
+            vehicle_audio.StartVehicle();
+        }
+
         private void ExitVehicleWithTimer()
         {
             if (Input.GetKey(KeyCode.F))
@@ -159,6 +169,9 @@ namespace UGP
                 var vehicleIdentity = playerBrain.vehicle.GetComponent<NetworkIdentity>();
                 CmdSetVehicleActive(false, vehicleIdentity);
                 CmdSetPlayerInSeat(false, vehicleIdentity);
+
+                var vehicle_audio_behaivour = playerBrain.vehicle.audioBehaviour;
+                vehicle_audio_behaivour.CmdStopVehicle();
 
                 //vehicle.CmdRemovePlayer();
                 playerBrain.vehicle.seatedPlayer = null;
@@ -219,6 +232,8 @@ namespace UGP
                         vehicleBrain.seatedPlayer = playerBrain;
                         var player_netIdentity = playerBrain.GetComponent<NetworkIdentity>();
                         vehicleBrain.owner = player_netIdentity;
+
+                        CmdStartVehicle(vehicleIdentity);
 
                         exitTimer = 0.0f;
                         enterTimer = 0.0f;

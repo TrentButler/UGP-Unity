@@ -11,9 +11,8 @@ namespace UGP
         public List<GameObject> weapons = new List<GameObject>();
         public Weapon weapon;
         public Transform GunTransform;
-        public AudioSource audio;
-
-        public ParticleSystem particle;
+        public AudioSource OnWeaponFiredSource;
+        
         public GameObject bullet_prefab;
 
         public GameObject DrivingCamera;
@@ -55,9 +54,13 @@ namespace UGP
                 activeWeapon = weapons[randomWeapon];
                 s_weapon = activeWeapon.name;
                 weapon = activeWeapon.GetComponent<Weapon>();
-                if(weapon.type == WeaponType.SNIPER)
+                if (weapon.type == WeaponType.SNIPER)
                 {
                     rail_gun = activeWeapon.GetComponent<RailGun>();
+                }
+                else
+                {
+                    OnWeaponFiredSource.clip = weapon.OnVehicleShootSound;
                 }
                 bullet_prefab = weapon.bulletPrefab;
 
@@ -66,31 +69,61 @@ namespace UGP
             }
         }
 
-        [ClientRpc]
-        public void RpcSetWeaponActive(bool active)
+        [ClientRpc] public void RpcSetWeaponActive(bool active)
         {
             weaponActive = active;
             CmdSetWeaponActive(active);
         }
-        [Command]
-        public void CmdSetWeaponActive(bool active)
+        [Command] public void CmdSetWeaponActive(bool active)
         {
             weaponActive = active;
         }
 
         [Command] public void CmdFireRound(Vector3 position, Quaternion rotation, float strength)
         {
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+
+            if (weapon.MuzzleFlash != null)
+            {
+                weapon.MuzzleFlash.Stop();
+                weapon.MuzzleFlash.Play();
+            }
+
+            if (weapon.CartridgeEject != null)
+            {
+                net_companion.Spawn(weapon.CartridgeEject, weapon.CartridgeEjectPosition.position, weapon.CartridgeEjectPosition.rotation);
+            }
+
+            if (weapon.OnVehicleShootSound != null)
+            {
+                OnWeaponFiredSource.Stop();
+                OnWeaponFiredSource.Play();
+            }
+
+            RpcRoundFired();
+
             var b = Instantiate(bullet_prefab, position, rotation);
 
             var b_rb = b.GetComponent<Rigidbody>();
 
             var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
-            b_rb.velocity = force;
+            b_rb.AddForce(force, ForceMode.VelocityChange);
 
-            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
             net_companion.Spawn(b);
-            //NetworkServer.Spawn(b);
-            //Destroy(b, 4);
+        }
+
+        [ClientRpc] private void RpcRoundFired()
+        {
+            if (weapon.MuzzleFlash != null)
+            {
+                weapon.MuzzleFlash.Stop();
+                weapon.MuzzleFlash.Play();
+            }
+            if (weapon.OnVehicleShootSound != null)
+            {
+                OnWeaponFiredSource.Stop();
+                OnWeaponFiredSource.Play();
+            }
         }
 
         private bool ClampGunRotation()
@@ -216,7 +249,8 @@ namespace UGP
 
         #region RailGun
         [Header("RAILGUN")]
-        [Range(0.0001f, 10.0f)] public float ChargeTime = 2.0f;
+        [Range(0.0001f, 10.0f)]
+        public float ChargeTime = 2.0f;
         [Range(0.0001f, 10.0f)] public float ChargeRate = 1.5f;
         [Range(0.0001f, 10.0f)] public float DischargeRate = 0.5f;
         [Range(0.0001f, 10.0f)] public float MaxRailRotateSpeed = 1.0f;
@@ -233,6 +267,81 @@ namespace UGP
         [Command] private void CmdCurrentShotTimer(float currentTimer)
         {
             shot_timer = currentTimer;
+        }
+        private void Fire_RailGun()
+        {
+            if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+            {
+                if (!needs_recharge)
+                {
+                    shot_timer += (Time.deltaTime * ChargeRate);
+                    if (shot_timer >= ChargeTime)
+                    {
+                        if (rail_gun == null)
+                        {
+                            rail_gun = activeWeapon.GetComponent<RailGun>();
+                        }
+
+                        rail_gun.Discharge();
+                        needs_recharge = true;
+                    }
+                }
+                else
+                {
+                    shot_timer -= (Time.deltaTime * DischargeRate);
+                    shot_timer = Mathf.Clamp(shot_timer, 0, ChargeTime);
+                    if (shot_timer <= 0.0f)
+                    {
+                        shot_timer = 0.0f;
+                        needs_recharge = false;
+                    }
+                }
+            }
+            if (Input.GetMouseButton(1) && !Input.GetMouseButton(0))
+            {
+                if (!needs_recharge)
+                {
+                    shot_timer += (Time.deltaTime * ChargeRate);
+                    if (shot_timer >= ChargeTime)
+                    {
+                        if (rail_gun == null)
+                        {
+                            rail_gun = activeWeapon.GetComponent<RailGun>();
+                        }
+
+                        if(Input.GetMouseButtonDown(0))
+                        {
+                            rail_gun.Discharge();
+                            needs_recharge = true;
+                        }
+                    }
+                }
+                else
+                {
+                    shot_timer -= (Time.deltaTime * DischargeRate);
+                    shot_timer = Mathf.Clamp(shot_timer, 0, ChargeTime);
+                    if (shot_timer <= 0.0f)
+                    {
+                        shot_timer = 0.0f;
+                        needs_recharge = false;
+                    }
+                }
+            }
+            else
+            {
+                shot_timer -= (Time.deltaTime * DischargeRate);
+                shot_timer = Mathf.Clamp(shot_timer, 0, ChargeTime);
+                if (needs_recharge)
+                {
+                    if (shot_timer <= 0.0f)
+                    {
+                        shot_timer = 0.0f;
+                        needs_recharge = false;
+                    }
+                }
+            }
+
+            CmdCurrentShotTimer(shot_timer);
         }
         #endregion
 
@@ -269,9 +378,9 @@ namespace UGP
                                     if (assault > 0)
                                     {
                                         //v._v.ammunition.Assault -= 1;
-                                        
+
                                         //audio.Play();
-                                        if(weapon.Fire(this))
+                                        if (weapon.Fire(this))
                                         {
                                             v.CmdUseAmmunition(1, 0, 0, 0);
                                         }
@@ -288,7 +397,7 @@ namespace UGP
                                     var shotgun = v.Shotgun;
                                     if (shotgun > 0)
                                     {
-                                        if(weapon.Fire(this))
+                                        if (weapon.Fire(this))
                                         {
                                             v.CmdUseAmmunition(0, 1, 0, 0);
                                         }
@@ -303,48 +412,7 @@ namespace UGP
 
                             case WeaponType.SNIPER:
                                 {
-                                    if (Input.GetMouseButton(0))
-                                    {
-                                        if (!needs_recharge)
-                                        {
-                                            shot_timer += (Time.deltaTime * ChargeRate);
-                                            if (shot_timer >= ChargeTime)
-                                            {
-                                                if(rail_gun == null)
-                                                {
-                                                    rail_gun = activeWeapon.GetComponent<RailGun>();
-                                                }
-
-                                                rail_gun.Discharge();
-                                                needs_recharge = true;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            shot_timer -= (Time.deltaTime * DischargeRate);
-                                            shot_timer = Mathf.Clamp(shot_timer, 0, ChargeTime);
-                                            if (shot_timer <= 0.0f)
-                                            {
-                                                shot_timer = 0.0f;
-                                                needs_recharge = false;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        shot_timer -= (Time.deltaTime * DischargeRate);
-                                        shot_timer = Mathf.Clamp(shot_timer, 0, ChargeTime);
-                                        if (needs_recharge)
-                                        {
-                                            if (shot_timer <= 0.0f)
-                                            {
-                                                shot_timer = 0.0f;
-                                                needs_recharge = false;
-                                            }
-                                        }
-                                    }
-
-                                    CmdCurrentShotTimer(shot_timer);
+                                    Fire_RailGun();
                                     break;
                                 }
 
@@ -353,10 +421,10 @@ namespace UGP
                                     var rocket = v.Rocket;
                                     if (rocket > 0)
                                     {
-                                        if(weapon.Fire(this))
+                                        if (weapon.Fire(this))
                                         {
                                             v.CmdUseAmmunition(0, 0, 0, 1);
-                                        }   
+                                        }
                                         //audio.Play();
                                     }
                                     else
@@ -394,7 +462,7 @@ namespace UGP
         {
             if (bullet_prefab == null)
             {
-                if(activeWeapon == null)
+                if (activeWeapon == null)
                 {
                     weapons.ForEach(w =>
                     {
@@ -422,6 +490,10 @@ namespace UGP
                         if (weapon.type == WeaponType.SNIPER)
                         {
                             rail_gun = activeWeapon.GetComponent<RailGun>();
+                        }
+                        else
+                        {
+                            OnWeaponFiredSource.clip = weapon.OnVehicleShootSound;
                         }
                         bullet_prefab = weapon.bulletPrefab;
                     }

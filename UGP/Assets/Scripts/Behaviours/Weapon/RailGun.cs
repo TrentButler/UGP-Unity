@@ -33,11 +33,11 @@ namespace UGP
             var sniper = vehicleBehaviour.Sniper;
             if (sniper > 0)
             {
-                if (MuzzleFlash != null)
-                {
-                    MuzzleFlash.Stop();
-                    MuzzleFlash.Play();
-                }
+                //if (MuzzleFlash != null)
+                //{
+                //    MuzzleFlash.Stop();
+                //    MuzzleFlash.Play();
+                //}
 
                 vehicleBehaviour.CmdUseAmmunition(0, 0, 1, 0);
                 vehicleShoot.CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
