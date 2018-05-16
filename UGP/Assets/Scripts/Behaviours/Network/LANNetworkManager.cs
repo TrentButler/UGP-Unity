@@ -94,7 +94,7 @@ namespace UGP
             //playerDress.PantsColor = RandomUserNames.GetColor();
 
             playerBehaviour.playerName = player_Dress.player_name;
-            playerBehaviour.vehicleColor = RandomUserNames.GetColor();
+            playerBehaviour.vehicleColor = player_Dress.shirt_color;
 
             NetworkServer.AddPlayerForConnection(conn, spawn_player, controller_id);
             gamemode_manager.gamemode.Players.Add(playerBehaviour);
@@ -125,17 +125,18 @@ namespace UGP
             base.OnServerRemovePlayer(conn, player);
 
             var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
-            allPlayers.ForEach(p =>
+            for(int i = 0; i < allPlayers.Count; i++)
             {
+                var p = allPlayers[i];
                 var playerNetIdentity = p.GetComponent<NetworkIdentity>();
                 var playerConnection = playerNetIdentity.connectionToClient.connectionId;
                 if (playerConnection == conn.connectionId)
                 {
-                    //ADD THIS PLAYER TO THE GAMEMODES LIST OF PLAYERS
+                    //REMOVE THIS PLAYER
                     gamemode_manager.gamemode.Players.Remove(p);
+                    net_companion.Server_Destroy(p.gameObject);
                 }
-
-            });
+            }
         }
 
         public override void OnServerDisconnect(NetworkConnection conn)
@@ -143,16 +144,18 @@ namespace UGP
             base.OnClientDisconnect(conn);
 
             var allPlayers = FindObjectsOfType<PlayerBehaviour>().ToList();
-            allPlayers.ForEach(p =>
+            for (int i = 0; i < allPlayers.Count; i++)
             {
+                var p = allPlayers[i];
                 var playerNetIdentity = p.GetComponent<NetworkIdentity>();
                 var playerConnection = playerNetIdentity.connectionToClient.connectionId;
                 if (playerConnection == conn.connectionId)
                 {
-                    //ADD THIS PLAYER TO THE GAMEMODES LIST OF PLAYERS
+                    //REMOVE THIS PLAYER
                     gamemode_manager.gamemode.Players.Remove(p);
+                    net_companion.Server_Destroy(p.gameObject);
                 }
-            });
+            }
         }
 
         public void DisconnectAll()

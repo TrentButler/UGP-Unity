@@ -149,6 +149,10 @@ namespace UGP
         {
             CmdTakeHealth(healthTaken);
         }
+        [ClientRpc] public void RpcTakeFuel(float fuelTaken)
+        {
+            CmdRefuel(fuelTaken);
+        }
         [ClientRpc] public void RpcTakeAmmunition(int assault, int shotgun, int sniper, int rocket)
         {
             CmdTakeAmmunition(assault, shotgun, sniper, rocket);
@@ -309,15 +313,24 @@ namespace UGP
             }
 
             var col = collision.collider;
-            if (col.CompareTag("Ammo"))
+            var impact_velocity = collision.relativeVelocity;
+
+            //if (col.CompareTag("Player"))
+            //{
+            //    var player_behaviour = col.GetComponentInParent<PlayerBehaviour>();
+            //    var player_identity = player_behaviour.GetComponent<NetworkIdentity>();
+                
+            //    var player_rb = player_behaviour.GetComponent<Rigidbody>();
+            //    player_rb.AddForce(impact_velocity, ForceMode.Impulse);
+            //    player_behaviour.RpcTakeDamage_Other(player_identity, "VEHICLE_IMPACT", impact_velocity.magnitude * 2);
+            //}
+
+            if (col.CompareTag("Vehicle"))
             {
-                var ammo_behaviour = col.GetComponent<DefaultRoundBehaviour>();
-                if (ammo_behaviour.owner == owner)
-                {
-                    return;
-                }
-                RpcTakeDamage(ammo_behaviour.DamageDealt);
-                ammo_behaviour.DestroyBullet();
+                var vehicle_behaviour = col.GetComponentInParent<VehicleBehaviour>();
+                var player_rb = vehicle_behaviour.GetComponent<Rigidbody>();
+                player_rb.AddForce(impact_velocity, ForceMode.Impulse);
+                vehicle_behaviour.RpcTakeDamage(impact_velocity.magnitude);
             }
         }
 

@@ -344,29 +344,29 @@ namespace UGP
                 return;
             }
 
-            //NEEDS WORK
-            //ONLY CHECK FOR COLLISIONS ON THE SERVER
-            if (other.CompareTag("Ammo"))
-            {
-                var impact_directon = other.transform.forward.normalized;
-                var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
+            ////NEEDS WORK
+            ////ONLY CHECK FOR COLLISIONS ON THE SERVER
+            //if (other.CompareTag("Ammo"))
+            //{
+            //    var impact_directon = other.transform.forward.normalized;
+            //    var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
 
-                if (ammo_behaviour.owner != null)
-                {
-                    var player_networkIdentity = GetComponent<NetworkIdentity>();
-                    if (ammo_behaviour.owner == player_networkIdentity)
-                    {
-                        return;
-                    }
+            //    if (ammo_behaviour.owner != null)
+            //    {
+            //        var player_networkIdentity = GetComponent<NetworkIdentity>();
+            //        if (ammo_behaviour.owner == player_networkIdentity)
+            //        {
+            //            return;
+            //        }
 
-                    playerBrain.RpcTakeDamage(player_networkIdentity, ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
+            //        playerBrain.RpcTakeDamage(player_networkIdentity, ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
 
-                    var server = FindObjectOfType<InGameNetworkBehaviour>();
-                    server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
-                }
+            //        var server = FindObjectOfType<InGameNetworkBehaviour>();
+            //        server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
+            //    }
 
-                Destroy(other.gameObject);
-            }
+            //    Destroy(other.gameObject);
+            //}
         }
         
         private void FixedUpdate()

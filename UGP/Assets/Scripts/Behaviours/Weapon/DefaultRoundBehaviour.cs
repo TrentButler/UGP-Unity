@@ -154,6 +154,46 @@ namespace UGP
                 net_companion.Server_Destroy(gameObject);
             }
 
+            if (collision.collider.tag == "Hand")
+            {
+                var impact_point = collision.contacts[0];
+
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+
+                if (owner != null)
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                    if (owner != net_identity)
+                    {
+                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt);
+                        net_companion.Server_Destroy(gameObject);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+                    if (owner != net_identity)
+                    {
+                        player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt);
+                        net_companion.Server_Destroy(gameObject);
+                    }
+                    else
+                    {
+                        return;
+                    };
+                }
+
+                net_companion.Server_Destroy(gameObject);
+            }
+
             if (collision.collider.tag == "Ammo" || collision.collider.name == "Sphere")
             {
                 return;

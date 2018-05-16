@@ -324,16 +324,11 @@ namespace UGP
                 spawn_position.z = spawn_position.z + (i * vehiclePositionOffset);
 
                 var v = Instantiate(VehiclePrefabs[i], spawn_position, OriginVehicleSpawn.rotation);
+                var vehicleBehaviour = v.GetComponent<VehicleBehaviour>();
+                vehicleBehaviour.RpcTakeAmmunition(999, 999, 999, 999);
+                vehicleBehaviour.RpcTakeHealth(9999);
+                vehicleBehaviour.RpcTakeFuel(999);
                 NetworkServer.Spawn(v);
-
-                for (int j = 0; j < ItemPrefabs.Count; j++)
-                {
-                    var item_spawn = spawn_position;
-                    item_spawn.x = item_spawn.x - ((j + 1) * ItemPositionOffset);
-
-                    var item = Instantiate(ItemPrefabs[j], item_spawn, OriginVehicleSpawn.rotation);
-                    NetworkServer.Spawn(item);
-                }
             }
         }
 

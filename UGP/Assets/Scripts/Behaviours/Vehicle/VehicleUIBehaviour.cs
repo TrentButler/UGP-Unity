@@ -94,12 +94,14 @@ namespace UGP
                     if (VehicleBrain.vehicleActive)
                     {
                         Cursor.visible = false;
+                        Cursor.lockState = CursorLockMode.Locked;
                         vehicleUI.SetActive(true);
                         UpdateVehicleUI();
                     }
                     else
                     {
                         Cursor.visible = true;
+                        Cursor.lockState = CursorLockMode.None;
                     }
                     return;
                 }
