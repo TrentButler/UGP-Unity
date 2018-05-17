@@ -79,7 +79,7 @@ namespace UGP
             weaponActive = active;
         }
 
-        [Command] public void CmdFireRound(Vector3 position, Quaternion rotation, float strength)
+        [Command] public void CmdFireRound(NetworkIdentity shooter, Vector3 position, Quaternion rotation, float strength)
         {
             var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
 
@@ -103,6 +103,9 @@ namespace UGP
             RpcRoundFired();
 
             var b = Instantiate(bullet_prefab, position, rotation);
+
+            var round_behaviour = b.GetComponent<DefaultRoundBehaviour>();
+            round_behaviour.owner = shooter;
 
             var b_rb = b.GetComponent<Rigidbody>();
 
@@ -297,7 +300,7 @@ namespace UGP
                     }
                 }
             }
-            if (Input.GetMouseButton(1) && !Input.GetMouseButton(0))
+            if (Input.GetMouseButton(1))
             {
                 if (!needs_recharge)
                 {

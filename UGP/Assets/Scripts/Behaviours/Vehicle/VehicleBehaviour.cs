@@ -138,6 +138,10 @@ namespace UGP
                 ragdollSpawned = true;
             }
         }
+        [Command] public void CmdRemoveOwner()
+        {
+            owner = null;
+        }
         #endregion
 
         #region CLIENTRPC_FUNCTIONS
@@ -304,7 +308,7 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
-
+        
         private void OnCollisionEnter(Collision collision)
         {
             if(!isServer)
@@ -315,15 +319,19 @@ namespace UGP
             var col = collision.collider;
             var impact_velocity = collision.relativeVelocity;
 
-            //if (col.CompareTag("Player"))
-            //{
-            //    var player_behaviour = col.GetComponentInParent<PlayerBehaviour>();
-            //    var player_identity = player_behaviour.GetComponent<NetworkIdentity>();
-                
-            //    var player_rb = player_behaviour.GetComponent<Rigidbody>();
-            //    player_rb.AddForce(impact_velocity, ForceMode.Impulse);
-            //    player_behaviour.RpcTakeDamage_Other(player_identity, "VEHICLE_IMPACT", impact_velocity.magnitude * 2);
-            //}
+            if (col.CompareTag("Player"))
+            {
+                var player_behaviour = col.GetComponentInParent<PlayerBehaviour>();
+                var player_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                if (player_identity != owner)
+                {
+                    Debug.Log("PLAYER HIT PLAYER: " + impact_velocity);
+                    var player_rb = player_behaviour.GetComponent<Rigidbody>();
+                    player_rb.AddForce(impact_velocity, ForceMode.Impulse);
+                    player_behaviour.RpcTakeDamage_Other(player_identity, "VEHICLE_IMPACT", impact_velocity.magnitude * 2);
+                }
+            }
 
             if (col.CompareTag("Vehicle"))
             {

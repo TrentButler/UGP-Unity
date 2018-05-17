@@ -33,59 +33,7 @@ namespace UGP
         public float AimCooldown;
         public int roundsFired = 0;
         public NetworkAnimator weaponAnimator;
-
-        //[Command] protected void CmdFireRound(Vector3 position, Quaternion rotation, float strength)
-        //{
-        //    var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-
-        //    if (MuzzleFlash != null)
-        //    {
-        //        MuzzleFlash.Stop();
-        //        MuzzleFlash.Play();
-        //    }
-
-        //    if (CartridgeEject != null)
-        //    {
-        //        //var cartridge = Instantiate(CartridgeEject);
-        //        //var cartridgePartice = cartridge.GetComponent<ParticleSystem>();
-        //        //cartridge.transform.position = CartridgeEjectPosition.position;
-        //        //cartridge.transform.rotation = CartridgeEjectPosition.rotation;
-        //        //cartridge.Play();
-        //        net_companion.Spawn(CartridgeEject, CartridgeEjectPosition.position, CartridgeEjectPosition.rotation);
-        //    }
-
-        //    if (OnVehicleShootSound != null)
-        //    {
-        //        OnVehicleShootSound.Stop();
-        //        OnVehicleShootSound.Play();
-        //    }
-
-        //    RpcRoundFired();
-
-        //    var b = Instantiate(bulletPrefab, position, rotation);
-
-        //    var b_rb = b.GetComponent<Rigidbody>();
-
-        //    var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
-        //    b_rb.AddForce(force, ForceMode.VelocityChange);
-            
-        //    net_companion.Spawn(b);
-        //}
-
-        //[ClientRpc] private void RpcRoundFired()
-        //{
-        //    if (MuzzleFlash != null)
-        //    {
-        //        MuzzleFlash.Stop();
-        //        MuzzleFlash.Play();
-        //    }
-        //    if (OnVehicleShootSound != null)
-        //    {
-        //        OnVehicleShootSound.Stop();
-        //        OnVehicleShootSound.Play();
-        //    }
-        //}
-
+        
         public bool Fire(VehicleShootBehaviour shootBehaviour)
         {
             //SINGLE-FIRE

@@ -141,14 +141,23 @@ namespace UGP
         }
         #endregion
 
-        [Command] public void CmdStartVehicle(NetworkIdentity vehicle)
+        [Command]
+        public void CmdStartVehicle(NetworkIdentity vehicle)
         {
             RpcStartVehicle(vehicle);
         }
-        [ClientRpc] private void RpcStartVehicle(NetworkIdentity vehicle)
+        [ClientRpc]
+        private void RpcStartVehicle(NetworkIdentity vehicle)
         {
             var vehicle_audio = vehicle.GetComponent<VehicleAudioBehaviour>();
             vehicle_audio.StartVehicle();
+        }
+
+        [Command]
+        public void CmdAssignVehicleOwner(NetworkIdentity vehicle, NetworkIdentity localPlayer)
+        {
+            var vehicle_behaviour = vehicle.GetComponent<VehicleBehaviour>();
+            vehicle_behaviour.owner = localPlayer;
         }
 
         private void ExitVehicleWithTimer()
@@ -176,6 +185,7 @@ namespace UGP
                 //vehicle.CmdRemovePlayer();
                 playerBrain.vehicle.seatedPlayer = null;
                 playerBrain.vehicle.owner = null;
+                playerBrain.vehicle.CmdRemoveOwner();
                 playerBrain.CmdRemoveVehicleAuthority(vehicleIdentity);
 
                 exitTimer = 0.0f; //RESET THE TIMER
@@ -185,7 +195,7 @@ namespace UGP
                 var allColliders = GetComponents<Collider>().ToList();
                 allColliders.ForEach(col =>
                 {
-                    if(col.isTrigger)
+                    if (col.isTrigger)
                     {
                         exit_x_offset = col.bounds.size.x;
                     }
@@ -232,6 +242,7 @@ namespace UGP
                         vehicleBrain.seatedPlayer = playerBrain;
                         var player_netIdentity = playerBrain.GetComponent<NetworkIdentity>();
                         vehicleBrain.owner = player_netIdentity;
+                        CmdAssignVehicleOwner(vehicleIdentity, player_netIdentity);
 
                         CmdStartVehicle(vehicleIdentity);
 
@@ -244,7 +255,7 @@ namespace UGP
 
         public void PickUpItem()
         {
-            if(!isHolding)
+            if (!isHolding)
             {
                 NetworkAni.SetTrigger("PickUpItem");
             }
@@ -252,7 +263,7 @@ namespace UGP
 
         public void DropItem()
         {
-            if(isHolding)
+            if (isHolding)
             {
                 NetworkAni.SetTrigger("DropItem");
                 item.Drop();
@@ -260,7 +271,7 @@ namespace UGP
         }
         public void _DropItem()
         {
-            if(isHolding)
+            if (isHolding)
             {
                 NetworkAni.SetTrigger("DropItem");
             }
@@ -276,7 +287,7 @@ namespace UGP
                         var ammo_item = itemIdentity.GetComponent<ItemBehaviour>()._I as AmmoBox;
 
                         var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
-                        if(!vehicle_destroyed)
+                        if (!vehicle_destroyed)
                         {
                             vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeAmmunition(ammo_item.Assault, ammo_item.Shotgun, ammo_item.Sniper, ammo_item.Rocket);
                             Debug.Log("VEHICLE TAKE AMMO");
@@ -291,7 +302,7 @@ namespace UGP
                         var refuel_item = itemIdentity.GetComponent<ItemBehaviour>()._I as Fuel;
 
                         var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
-                        if(!vehicle_destroyed)
+                        if (!vehicle_destroyed)
                         {
                             vehicleIdentity.GetComponent<VehicleBehaviour>().CmdRefuel(refuel_item.RefuelFactor);
                             Debug.Log("VEHICLE TAKE FUEL");
@@ -306,7 +317,7 @@ namespace UGP
                         var repair_item = itemIdentity.GetComponent<ItemBehaviour>()._I as RepairKit;
 
                         var vehicle_destroyed = vehicleIdentity.GetComponent<VehicleBehaviour>().isDestroyed;
-                        if(!vehicle_destroyed)
+                        if (!vehicle_destroyed)
                         {
                             vehicleIdentity.GetComponent<VehicleBehaviour>().CmdTakeHealth(repair_item.RepairFactor);
                             Debug.Log("VEHICLE TAKE REPAIR");
@@ -337,38 +348,6 @@ namespace UGP
             }
         }
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if(!isServer)
-            {
-                return;
-            }
-
-            ////NEEDS WORK
-            ////ONLY CHECK FOR COLLISIONS ON THE SERVER
-            //if (other.CompareTag("Ammo"))
-            //{
-            //    var impact_directon = other.transform.forward.normalized;
-            //    var ammo_behaviour = other.GetComponent<DefaultRoundBehaviour>();
-
-            //    if (ammo_behaviour.owner != null)
-            //    {
-            //        var player_networkIdentity = GetComponent<NetworkIdentity>();
-            //        if (ammo_behaviour.owner == player_networkIdentity)
-            //        {
-            //            return;
-            //        }
-
-            //        playerBrain.RpcTakeDamage(player_networkIdentity, ammo_behaviour.owner, ammo_behaviour.DamageDealt * 999999);
-
-            //        var server = FindObjectOfType<InGameNetworkBehaviour>();
-            //        server.PlayerShotByPlayer(ammo_behaviour.owner, player_networkIdentity, "DEBUG WEAPON");
-            //    }
-
-            //    Destroy(other.gameObject);
-            //}
-        }
-        
         private void FixedUpdate()
         {
             if (!isLocalPlayer)
@@ -398,9 +377,9 @@ namespace UGP
 
         private void LateUpdate()
         {
-            if(isLocalPlayer)
+            if (isLocalPlayer)
             {
-                if(item == null)
+                if (item == null)
                 {
                     isHolding = false;
                     current_item = "";

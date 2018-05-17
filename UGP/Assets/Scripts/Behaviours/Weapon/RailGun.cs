@@ -40,7 +40,7 @@ namespace UGP
                 //}
 
                 vehicleBehaviour.CmdUseAmmunition(0, 0, 1, 0);
-                vehicleShoot.CmdFireRound(GunBarrel.position, GunBarrel.rotation, ShotStrength);
+                vehicleShoot.CmdFireRound(vehicleBehaviour.owner, GunBarrel.position, GunBarrel.rotation, ShotStrength);
             }
             else
             {
