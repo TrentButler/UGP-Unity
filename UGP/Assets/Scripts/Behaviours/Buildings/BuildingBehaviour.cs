@@ -43,6 +43,27 @@ namespace UGP
                         });
                     }
 
+                    var fuelSpawns = FindObjectsOfType<FuelSpawn>().ToList();
+                    fuelSpawns.ForEach(fuel =>
+                    {
+                        var fuel_index = 0;
+                        server.Spawn(ItemPrefabs[fuel_index], fuel.transform.position, fuel.transform.rotation);
+                    });
+
+                    var ammoSpawns = FindObjectsOfType<AmmoSpawn>().ToList();
+                    ammoSpawns.ForEach(ammo =>
+                    {
+                        var ammo_index = 1;
+                        server.Spawn(ItemPrefabs[ammo_index], ammo.transform.position, ammo.transform.rotation);
+                    });
+
+                    var medSpawns = FindObjectsOfType<MedSpawn>().ToList();
+                    fuelSpawns.ForEach(med =>
+                    {
+                        var med_index = 2;
+                        server.Spawn(ItemPrefabs[med_index], med.transform.position, med.transform.rotation);
+                    });
+
                     var doors = FindObjectsOfType<DoorSpawn>().ToList();
                     doors.ForEach(door =>
                     {
@@ -78,6 +99,27 @@ namespace UGP
                     var item_index = Random.Range(0, ItemPrefabs.Count);
                     server.Spawn(ItemPrefabs[item_index], spawn.transform.position, spawn.transform.rotation);
 
+                });
+
+                var fuelSpawns = FindObjectsOfType<FuelSpawn>().ToList();
+                fuelSpawns.ForEach(fuel =>
+                {
+                    var fuel_index = 0;
+                    server.Spawn(ItemPrefabs[fuel_index], fuel.transform.position, fuel.transform.rotation);
+                });
+
+                var ammoSpawns = FindObjectsOfType<AmmoSpawn>().ToList();
+                ammoSpawns.ForEach(ammo =>
+                {
+                    var ammo_index = 1;
+                    server.Spawn(ItemPrefabs[ammo_index], ammo.transform.position, ammo.transform.rotation);
+                });
+
+                var medSpawns = FindObjectsOfType<MedSpawn>().ToList();
+                medSpawns.ForEach(med =>
+                {
+                    var med_index = 2;
+                    server.Spawn(ItemPrefabs[med_index], med.transform.position, med.transform.rotation);
                 });
             }
 

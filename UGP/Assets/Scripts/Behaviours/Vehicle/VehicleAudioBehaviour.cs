@@ -8,7 +8,10 @@ namespace UGP
     public class VehicleAudioBehaviour : NetworkBehaviour
     {
         public AudioClip EngineSound;
+        public AudioClip StartEngineSound;
+        public AudioClip StopEngineSound;
         public AudioSource EngineAudioSource;
+        public AudioSource SecondaryEngineAudioSource;
         public float MinThrottlePitch = 0.4f;
         public float MaxThrottlePitch = 2f;
         public float ForwardSpeedMultiplier = 0.001f;
@@ -47,6 +50,29 @@ namespace UGP
         [Command] public void CmdVehicleMaxSpeed(float maxSpeed)
         {
             vehicle_max_speed = maxSpeed;
+        }
+        
+        [Command] public void CmdStopVehicle()
+        {
+            RpcStopVehicle();
+        }
+        
+        [ClientRpc] private void RpcStopVehicle()
+        {
+            StopVehicle();
+        }
+
+        public void StartVehicle()
+        {
+            SecondaryEngineAudioSource.Stop();
+            SecondaryEngineAudioSource.clip = StartEngineSound;
+            SecondaryEngineAudioSource.Play();
+        }
+        private void StopVehicle()
+        {
+            SecondaryEngineAudioSource.Stop();
+            SecondaryEngineAudioSource.clip = StopEngineSound;
+            SecondaryEngineAudioSource.Play();
         }
 
         private void Awake()
@@ -91,5 +117,4 @@ namespace UGP
             EngineAudioSource.volume = Mathf.InverseLerp(0, vehicle_max_speed * EngineMasterVolume, current_vertical_throttle);
         }
     }
-
 }

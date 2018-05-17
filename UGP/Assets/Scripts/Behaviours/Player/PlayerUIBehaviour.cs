@@ -17,6 +17,7 @@ namespace UGP
         public Image HealthSlider;
         public GameObject PlayerNameTag;
         public Text PlayerNameText;
+        public Text LocalPlayerText;
         public string GotoSceneString;
         public Button MainMenuButton;
         public Button RespawnButton;
@@ -119,6 +120,7 @@ namespace UGP
         private void LateUpdate()
         {
             PlayerNameText.text = PlayerBrain.playerName;
+            LocalPlayerText.text = PlayerBrain.playerName;
 
             if (isServer)
             {
@@ -162,6 +164,9 @@ namespace UGP
                 else
                 {
                     PlayerUI.SetActive(true);
+
+                    Cursor.visible = false;
+                    Cursor.lockState = CursorLockMode.Locked;
                 }
             }
         }

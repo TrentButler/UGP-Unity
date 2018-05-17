@@ -86,6 +86,8 @@ namespace UGP
                     }
 
                     //interaction.item.Drop();
+                    interaction.isHolding = false;
+                    interaction.current_item = "";
                     interaction.CmdSetHolding(false, "");
                     ic.enabled = false;
                     interaction.enabled = false;

@@ -318,6 +318,10 @@ namespace UGP
             {
                 return true;
             }
+            if (GetStormProgression() == 1)
+            {
+                return true;
+            }
             else
             {
                 return false;
@@ -352,7 +356,8 @@ namespace UGP
 
             if(Players.Count <= 0)
             {
-                RestartPreMatchTimer();
+                RestartMatch();
+                //RestartPreMatchTimer();
             }
 
             if(PreRaceTimer > 0.0f)
@@ -430,11 +435,12 @@ namespace UGP
 
             StormPosition = OriginalStormPosition;
             StormRotation = OriginalStormRotation;
+            StormProgression = GetStormProgression();
 
             Players.ForEach(player =>
             {
-                player.playerName = RandomUserNames.GetUsername();
-                player.vehicleColor = RandomUserNames.GetColor();
+                //player.playerName = RandomUserNames.GetUsername();
+                //player.vehicleColor = RandomUserNames.GetColor();
             });
 
             RespawnAll();

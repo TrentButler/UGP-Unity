@@ -752,7 +752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1247402317494944
 GameObject:
   m_ObjectHideFlags: 1
@@ -4549,7 +4549,7 @@ MonoBehaviour:
     FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
-    FarClipPlane: 10000
+    FarClipPlane: 5000
     Dutch: 0
   m_YAxis:
     Value: 0.32
@@ -5232,9 +5232,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae0883b3bcea4d14f8705724044be732, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MovementSpeed: 1.5
-  StrafeSpeed: 1
-  RunSpeed: 3
+  MovementSpeed: 2
+  StrafeSpeed: 1.5
+  RunSpeed: 6
   TurnSpeed: 1.2
   JumpStrength: 1.5
   Ani: {fileID: 95045242029785290}

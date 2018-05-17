@@ -10,9 +10,10 @@ namespace UGP
 
         public override void Shoot(VehicleShootBehaviour shootBehaviour)
         {
+            var vehicle_behaviour = shootBehaviour.GetComponent<VehicleBehaviour>();
             var randomOffset = new Vector3(Random.Range(-Spread, Spread), Random.Range(0, Spread), 0);
             var point = GunBarrel.TransformPoint(randomOffset);
-            shootBehaviour.CmdFireRound(point, GunBarrel.rotation, ShotStrength);
+            shootBehaviour.CmdFireRound(vehicle_behaviour.owner, point, GunBarrel.rotation, ShotStrength);
         }
     }
 }

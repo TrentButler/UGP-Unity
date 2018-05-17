@@ -19,6 +19,7 @@ namespace UGP
         public NetworkUserControl ic;
         public VehicleShootBehaviour shootBehaviour;
         public VehicleUIBehaviour vehicleUIBehaviour;
+        public VehicleAudioBehaviour audioBehaviour;
 
         public Vehicle VehicleConfig;
         [HideInInspector] public Vehicle _v;
@@ -122,9 +123,11 @@ namespace UGP
         }
         [Command] public void CmdVehicleDestroyed()
         {
-            VehicleDestroyedParticle.Play();
-            //BurningVehicleParticle.Play();
-            RpcVehicleDestroyed();
+            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+            net_companion.Server_Destroy(gameObject);
+            //VehicleDestroyedParticle.Play();
+            ////BurningVehicleParticle.Play();
+            //RpcVehicleDestroyed();
         }
         [Command] private void CmdSpawnRagdoll()
         {
@@ -134,6 +137,10 @@ namespace UGP
                 net_companion.Spawn(RagDoll, transform.position, transform.rotation);
                 ragdollSpawned = true;
             }
+        }
+        [Command] public void CmdRemoveOwner()
+        {
+            owner = null;
         }
         #endregion
 
@@ -145,6 +152,10 @@ namespace UGP
         [ClientRpc] public void RpcTakeHealth(float healthTaken)
         {
             CmdTakeHealth(healthTaken);
+        }
+        [ClientRpc] public void RpcTakeFuel(float fuelTaken)
+        {
+            CmdRefuel(fuelTaken);
         }
         [ClientRpc] public void RpcTakeAmmunition(int assault, int shotgun, int sniper, int rocket)
         {
@@ -179,19 +190,23 @@ namespace UGP
                 //KILL THE PLAYER
                 //PLAY EXPLOSION
                 //DESTROY THE VEHICLE
-                vehicleActive = false;
-
-                VehicleDestroyedParticle.Play();
-                //BurningVehicleParticle.Play();
-                shootBehaviour.CmdSetWeaponActive(false);
-                CmdVehicleDestroyed();
-                CmdSpawnRagdoll();
+                
+                var rb = GetComponent<Rigidbody>();
+                rb.AddExplosionForce(2.5f, transform.position, 2.0f, 1.5f);
 
                 if (seatedPlayer != null)
                 {
                     seatedPlayer.CmdTakeDamage_Other(gameObject.name + " EXPLOSION", 999999); //APPLY ENOUGH DAMAGE TO KILL THE PLAYER
                     //seatedPlayer.RemovePlayerFromVehicle();
                 }
+
+                vehicleActive = false;
+
+                VehicleDestroyedParticle.Play();
+                //BurningVehicleParticle.Play();
+                shootBehaviour.CmdSetWeaponActive(false);
+                CmdSpawnRagdoll();
+                CmdVehicleDestroyed();
             }
         }
         public void OnVehicleHealthChange(float healthChange)
@@ -293,7 +308,7 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
-
+        
         private void OnCollisionEnter(Collision collision)
         {
             if(!isServer)
@@ -302,15 +317,28 @@ namespace UGP
             }
 
             var col = collision.collider;
-            if (col.CompareTag("Ammo"))
+            var impact_velocity = collision.relativeVelocity;
+
+            if (col.CompareTag("Player"))
             {
-                var ammo_behaviour = col.GetComponent<DefaultRoundBehaviour>();
-                if (ammo_behaviour.owner == owner)
+                var player_behaviour = col.GetComponentInParent<PlayerBehaviour>();
+                var player_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                if (player_identity != owner)
                 {
-                    return;
+                    Debug.Log("PLAYER HIT PLAYER: " + impact_velocity);
+                    var player_rb = player_behaviour.GetComponent<Rigidbody>();
+                    player_rb.AddForce(impact_velocity, ForceMode.Impulse);
+                    player_behaviour.RpcTakeDamage_Other(player_identity, "VEHICLE_IMPACT", impact_velocity.magnitude * 2);
                 }
-                RpcTakeDamage(ammo_behaviour.DamageDealt);
-                ammo_behaviour.DestroyBullet();
+            }
+
+            if (col.CompareTag("Vehicle"))
+            {
+                var vehicle_behaviour = col.GetComponentInParent<VehicleBehaviour>();
+                var player_rb = vehicle_behaviour.GetComponent<Rigidbody>();
+                player_rb.AddForce(impact_velocity, ForceMode.Impulse);
+                vehicle_behaviour.RpcTakeDamage(impact_velocity.magnitude);
             }
         }
 

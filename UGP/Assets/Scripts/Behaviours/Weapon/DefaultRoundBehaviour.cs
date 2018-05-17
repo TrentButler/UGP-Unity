@@ -10,10 +10,12 @@ namespace UGP
     public class DefaultRoundBehaviour : NetworkBehaviour
     {
         [Range(1, 999)] public float DamageDealt;
+        [Range(1, 999)] public float PlayerDamageMultiplier = 10.0f;
         public NetworkIdentity owner;
         public string s_owner;
         [Range(1, 999)] public float delete_timer = 6.0f;
         public GameObject BulletHitParticle;
+        public GameObject BulletHitPlayerParticle;
 
         void Start()
         {
@@ -50,20 +52,17 @@ namespace UGP
             if (collision.collider.tag == "Vehicle")
             {
                 var impact_point = collision.contacts[0];
-
-                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
-
                 var vehicle_behaviour = collision.collider.GetComponentInParent<VehicleBehaviour>();
-                vehicle_behaviour.RpcTakeDamage(DamageDealt);
 
-                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
-                //particles.ForEach(particle =>
-                //{
-                //    particle.Play();
-                //});
+                if (owner != vehicle_behaviour.owner)
+                {
+                    var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                    net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
 
-                net_companion.Server_Destroy(gameObject);
+                    vehicle_behaviour.RpcTakeDamage(DamageDealt);
+                    net_companion.Server_Destroy(gameObject);
+                    return;
+                }
             }
 
             if (collision.collider.tag == "Player")
@@ -71,7 +70,6 @@ namespace UGP
                 var impact_point = collision.contacts[0];
 
                 var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
 
                 if (owner != null)
                 {
@@ -80,8 +78,10 @@ namespace UGP
 
                     if (owner != net_identity)
                     {
-                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt);
+                        net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt * PlayerDamageMultiplier);
                         net_companion.Server_Destroy(gameObject);
+                        return;
                     }
                     else
                     {
@@ -92,24 +92,12 @@ namespace UGP
                 {
                     var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
                     var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
-                    if (owner != net_identity)
-                    {
-                        player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt);
-                        net_companion.Server_Destroy(gameObject);
-                    }
-                    else
-                    {
-                        return;
-                    };
+
+                    net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+                    player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt * PlayerDamageMultiplier);
+                    net_companion.Server_Destroy(gameObject);
+                    return;
                 }
-
-                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
-                //particles.ForEach(particle =>
-                //{
-                //    particle.Play();
-                //});
-
-                net_companion.Server_Destroy(gameObject);
             }
 
             if (collision.collider.tag == "Head")
@@ -117,7 +105,6 @@ namespace UGP
                 var impact_point = collision.contacts[0];
 
                 var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-                net_companion.SpawnParticle(BulletHitParticle, impact_point.point);
 
                 if (owner != null)
                 {
@@ -126,8 +113,10 @@ namespace UGP
 
                     if (owner != net_identity)
                     {
+                        net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
                         player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt * 9999);
                         net_companion.Server_Destroy(gameObject);
+                        return;
                     }
                     else
                     {
@@ -138,24 +127,47 @@ namespace UGP
                 {
                     var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
                     var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                    net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+                    player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt * 9999);
+                    net_companion.Server_Destroy(gameObject);
+                    return;
+                }
+            }
+
+            if (collision.collider.tag == "Hand")
+            {
+                var impact_point = collision.contacts[0];
+
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+
+                if (owner != null)
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
                     if (owner != net_identity)
                     {
-                        player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt * 9999);
+                        net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt);
                         net_companion.Server_Destroy(gameObject);
+                        return;
                     }
                     else
                     {
                         return;
-                    };
+                    }
                 }
+                else
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
 
-                //var particles = impact_particle.GetComponents<ParticleSystem>().ToList();
-                //particles.ForEach(particle =>
-                //{
-                //    particle.Play();
-                //});
-
-                net_companion.Server_Destroy(gameObject);
+                    net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+                    player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt);
+                    net_companion.Server_Destroy(gameObject);
+                    return;
+                }
             }
 
             if (collision.collider.tag == "Ammo" || collision.collider.name == "Sphere")

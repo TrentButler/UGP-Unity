@@ -272,6 +272,7 @@ namespace UGP
                 //CONSIDER THE 'THROW ITEM TO VEHICLE MECHANIC'
                 //MIGHT NEED TO DISABLE THIS/RE-ENABLE THE ITEM MODEL WHEN THE PLAYER THROWS IT, 
                 //VEHICLE CANNOT DRIVE OVER AN ITEM AND USE IT
+                //NEEDS WORK, ITEM LOSES REFRENCE TO PLAYER
                 rb.MovePosition(player.HoldingItemPosition.position);
                 rb.velocity = Vector3.zero;
                 rb.MoveRotation(player.HoldingItemPosition.rotation);
