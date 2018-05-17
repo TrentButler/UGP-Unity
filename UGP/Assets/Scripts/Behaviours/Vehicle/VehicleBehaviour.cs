@@ -311,10 +311,12 @@ namespace UGP
         
         private void OnCollisionEnter(Collision collision)
         {
-            if(!isServer)
+            if (!isServer)
             {
                 return;
             }
+
+            var first_impact_pos = collision.contacts[0].point;
 
             var col = collision.collider;
             var impact_velocity = collision.relativeVelocity;
@@ -328,7 +330,7 @@ namespace UGP
                 {
                     Debug.Log("PLAYER HIT PLAYER: " + impact_velocity);
                     var player_rb = player_behaviour.GetComponent<Rigidbody>();
-                    player_rb.AddForce(impact_velocity, ForceMode.Impulse);
+                    player_rb.AddForceAtPosition(impact_velocity, first_impact_pos, ForceMode.Impulse);
                     player_behaviour.RpcTakeDamage_Other(player_identity, "VEHICLE_IMPACT", impact_velocity.magnitude * 2);
                 }
             }
@@ -336,9 +338,9 @@ namespace UGP
             if (col.CompareTag("Vehicle"))
             {
                 var vehicle_behaviour = col.GetComponentInParent<VehicleBehaviour>();
-                var player_rb = vehicle_behaviour.GetComponent<Rigidbody>();
-                player_rb.AddForce(impact_velocity, ForceMode.Impulse);
-                vehicle_behaviour.RpcTakeDamage(impact_velocity.magnitude);
+                var vehicle_rb = vehicle_behaviour.GetComponent<Rigidbody>();
+                vehicle_rb.AddForceAtPosition(impact_velocity, first_impact_pos, ForceMode.Impulse);
+                vehicle_behaviour.RpcTakeDamage(impact_velocity.magnitude / 1.5f);
             }
         }
 
