@@ -82,6 +82,8 @@ namespace UGP
 
         [Command] public void CmdFireRound(NetworkIdentity shooter, Vector3 position, Quaternion rotation, float strength)
         {
+            var shooter_rb = shooter.GetComponentInParent<Rigidbody>();
+
             var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
 
             if (weapon.MuzzleFlash != null)
@@ -107,11 +109,18 @@ namespace UGP
 
             var round_behaviour = b.GetComponent<DefaultRoundBehaviour>();
             round_behaviour.owner = shooter;
-
+            
             var b_rb = b.GetComponent<Rigidbody>();
-
             var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
-            b_rb.AddForce(force, ForceMode.VelocityChange);
+            if (shooter_rb != null)
+            {
+                force += new Vector3(0, 0, Mathf.Abs(shooter_rb.velocity.z));
+                b_rb.AddForce(force, ForceMode.VelocityChange);
+            }
+            else
+            {
+                b_rb.AddForce(force, ForceMode.VelocityChange);
+            }
 
             net_companion.Spawn(b);
         }
@@ -195,7 +204,7 @@ namespace UGP
             var cam = Camera.main;
             var mouseY = Input.GetAxis("Mouse Y");
             //var aim_input = (-mouseY * crosshairSpeed);
-            var aim_input = (-mouseY);
+            var aim_input = (mouseY);
 
             var aimVector = new Vector3(aim_input, 0, 0);
 

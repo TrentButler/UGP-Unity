@@ -5,9 +5,10 @@ using UnityEngine;
 
 namespace UGP
 {
-    public class DefaultVehicleController : InputController
+    public class XBONEVehicleController : InputController
     {
         public VehicleBehaviour vehicleBrain;
+
         #region VehicleHover
         public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
@@ -111,11 +112,11 @@ namespace UGP
 
         public void Hover()
         {
-            if (Input.GetKey(KeyCode.Space))
+            if (Input.GetButton("xbone_a_button"))
             {
                 //INCREASE THE 'TargetHeight' AND THE 'HoverStrength'
                 //PREVENT VEHICLE ACCELERATION OR STRAFING
-                if(HoverTimer > 0.0f)
+                if (HoverTimer > 0.0f)
                 {
                     HoverTimer -= Time.deltaTime;
                     TargetHeight = EvasionHoverHeight;
@@ -139,7 +140,7 @@ namespace UGP
         public void UseBooster()
         {
             //DEPLETE THE VEHICLE'S 'FUEL' VALUE
-            if (Input.GetKey(KeyCode.LeftShift))
+            if (Input.GetButton("xbone_x_button"))
             {
                 //BOOST
                 MaxSpeed = BoostSpeed;
@@ -158,7 +159,9 @@ namespace UGP
 
         public void ApplyBreak()
         {
-            if (Input.GetKey(KeyCode.C))
+            var left_trigger = Input.GetAxis("xbone_left_trigger");
+
+            if (left_trigger > 0.0f)
             {
                 //SLOW DOWN TO A STOP, PREVENT VEHICLE FROM ACCELERATING OR STRAFING
                 MaxSpeed = 0.0f;
