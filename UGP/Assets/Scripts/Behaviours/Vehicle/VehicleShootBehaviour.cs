@@ -23,6 +23,7 @@ namespace UGP
         public float crosshairXOffset;
         public float crosshairYOffset;
         public float crosshairSpeed;
+        [Range(0.001f, 10.0f)] public float CrosshairLerpSpeed = 1.5f;
         public Vector3 crosshairWorldOffset;
         public float AimCooldown = 4.0f;
         public float MinGunXRot = 10;
@@ -232,7 +233,10 @@ namespace UGP
             }
 
             var crosshairLookAt = weapon.GunBarrel.TransformPoint(Vector3.forward * weapon.ShotStrength);
-            crosshair.rectTransform.position = cam.WorldToScreenPoint(crosshairLookAt + crosshairWorldOffset);
+            var previousCrosshairPos = crosshair.rectTransform.position;
+            var targetCrosshairPos = cam.WorldToScreenPoint(crosshairLookAt + crosshairWorldOffset);
+
+            crosshair.rectTransform.position = Vector3.Lerp(previousCrosshairPos, targetCrosshairPos, Time.smoothDeltaTime * CrosshairLerpSpeed);
             ClampCrosshairUI();
         }
 
