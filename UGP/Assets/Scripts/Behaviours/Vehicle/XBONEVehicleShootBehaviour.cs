@@ -6,13 +6,13 @@ using UnityEngine.UI;
 
 namespace UGP
 {
-    public class VehicleShootBehaviour : NetworkBehaviour
+    public class XBONEVehicleShootBehaviour : NetworkBehaviour
     {
         public List<GameObject> weapons = new List<GameObject>();
         public Weapon weapon;
         public Transform GunTransform;
         public AudioSource OnWeaponFiredSource;
-        
+
         public GameObject bullet_prefab;
 
         public GameObject DrivingCamera;
@@ -70,17 +70,20 @@ namespace UGP
             }
         }
 
-        [ClientRpc] public void RpcSetWeaponActive(bool active)
+        [ClientRpc]
+        public void RpcSetWeaponActive(bool active)
         {
             weaponActive = active;
             CmdSetWeaponActive(active);
         }
-        [Command] public void CmdSetWeaponActive(bool active)
+        [Command]
+        public void CmdSetWeaponActive(bool active)
         {
             weaponActive = active;
         }
 
-        [Command] public void CmdFireRound(NetworkIdentity shooter, Vector3 position, Quaternion rotation, float strength)
+        [Command]
+        public void CmdFireRound(NetworkIdentity shooter, Vector3 position, Quaternion rotation, float strength)
         {
             var shooter_rb = shooter.GetComponentInParent<Rigidbody>();
 
@@ -109,7 +112,7 @@ namespace UGP
 
             var round_behaviour = b.GetComponent<DefaultRoundBehaviour>();
             round_behaviour.owner = shooter;
-            
+
             var b_rb = b.GetComponent<Rigidbody>();
             var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
             if (shooter_rb != null)
@@ -125,7 +128,8 @@ namespace UGP
             net_companion.Spawn(b);
         }
 
-        [ClientRpc] private void RpcRoundFired()
+        [ClientRpc]
+        private void RpcRoundFired()
         {
             if (weapon.MuzzleFlash != null)
             {
@@ -202,13 +206,13 @@ namespace UGP
         {
             //CREATE A LOOK AT VECTOR FOR THE GUNBARREL
             var cam = Camera.main;
-            var mouseY = Input.GetAxis("Mouse Y");
+            var mouseY = Input.GetAxis("xbone_right_vert");
             //var aim_input = (-mouseY * crosshairSpeed);
             var aim_input = (mouseY);
 
             var aimVector = new Vector3(aim_input, 0, 0);
 
-            if (Input.GetMouseButton(1))
+            if (Input.GetButton("xbone_lstick_button"))
             {
                 //CAMERA SWITCH HERE, NO (WEAPON LERP BACK TO CENTER)
                 ToggleAimCamera(true);
@@ -280,13 +284,14 @@ namespace UGP
         {
             shot_timer = timerChange;
         }
-        [Command] private void CmdCurrentShotTimer(float currentTimer)
+        [Command]
+        private void CmdCurrentShotTimer(float currentTimer)
         {
             shot_timer = currentTimer;
         }
         private void Fire_RailGun()
         {
-            if (Input.GetMouseButton(0))
+            if (Input.GetButton("xbone_rb_button"))
             {
                 if (!needs_recharge)
                 {
@@ -313,7 +318,7 @@ namespace UGP
                     }
                 }
             }
-            if (Input.GetMouseButton(1))
+            if (Input.GetButton("xbone_lb_button"))
             {
                 if (!needs_recharge)
                 {
@@ -325,7 +330,7 @@ namespace UGP
                             rail_gun = activeWeapon.GetComponent<RailGun>();
                         }
 
-                        if(Input.GetMouseButtonDown(0))
+                        if (Input.GetButtonDown("xbone_rb_button"))
                         {
                             rail_gun.Discharge();
                             needs_recharge = true;
