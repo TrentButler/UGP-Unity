@@ -30,6 +30,7 @@ namespace UGP
         #endregion
 
         public float MaxSpeed = 50.0f;
+        [Range(0.001f, 10.0f)] public float VehicleAccelrationRate = 1.0f;
         public float VehicleDecelerateRate = 3.0f;
         public float StrafeSpeed = 5.0f;
         public float VehicleSteerSpeed = 1.0f;
@@ -187,7 +188,7 @@ namespace UGP
             UseBooster();
             ApplyBreak();
 
-            Vector3 accelerationVector = new Vector3(0.0f, 0.0f, throttle * MaxSpeed);
+            Vector3 accelerationVector = new Vector3(0.0f, 0.0f, (throttle * MaxSpeed) * VehicleAccelrationRate);
             Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
 
             currentVehiclePower = (throttle * MaxSpeed);
