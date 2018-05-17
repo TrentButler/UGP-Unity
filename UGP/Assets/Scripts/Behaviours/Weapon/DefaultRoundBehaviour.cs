@@ -79,7 +79,7 @@ namespace UGP
                     if (owner != net_identity)
                     {
                         net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
-                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt * PlayerDamageMultiplier);
+                        player_behaviour.RpcTakeDamage(net_identity, owner, DamageDealt * PlayerDamageMultiplier);
                         net_companion.Server_Destroy(gameObject);
                         return;
                     }
@@ -114,7 +114,7 @@ namespace UGP
                     if (owner != net_identity)
                     {
                         net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
-                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt * 9999);
+                        player_behaviour.RpcTakeDamage(net_identity, owner, DamageDealt * 9999);
                         net_companion.Server_Destroy(gameObject);
                         return;
                     }
@@ -149,7 +149,7 @@ namespace UGP
                     if (owner != net_identity)
                     {
                         net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
-                        player_behaviour.RpcTakeDamage(owner, net_identity, DamageDealt);
+                        player_behaviour.RpcTakeDamage(net_identity, owner, DamageDealt);
                         net_companion.Server_Destroy(gameObject);
                         return;
                     }
