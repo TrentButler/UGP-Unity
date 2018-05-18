@@ -8,7 +8,9 @@ namespace UGP
     public class DefaultVehicleController : InputController
     {
         public VehicleBehaviour vehicleBrain;
+
         #region VehicleHover
+        public List<Transform> HoverPoints = new List<Transform>();
         public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
         public float EvasionHoverHeight = 20.0f;
@@ -50,8 +52,8 @@ namespace UGP
         [HideInInspector] public float currentVehicleThrottle;
         [HideInInspector] public float currentVehicleStrafe;
         public float currentFuelConsumption;
-        [Range(0.001f, 1.0f)] public float FuelBurnRate = 0.5f;
-        [Range(0.001f, 2.0f)] public float BoostingFuelBurnRate = 1.0f;
+        [Range(0.001f, 100.0f)] public float FuelBurnRate = 0.5f;
+        [Range(0.001f, 100.0f)] public float BoostingFuelBurnRate = 1.0f;
 
         private float originalFuelBurnRate;
         public float currentVehiclePower;
@@ -196,25 +198,31 @@ namespace UGP
 
             var force = Vector3.zero;
             var strafe_force = Vector3.zero;
+            var hover_force = Vector3.zero;
 
             #region HOVERVECTORCALCULATION
             //PERFORM A RAYCAST DOWNWARD, 
             //CALCULATE THE DISTANCE FROM BOTTOM OF VEHICLE TO THE GROUND
             //GENERATE A 'hoverVector' BASED ON THIS CALCULATION
-            RaycastHit hit;
-            //var world_point = transform.TransformPoint(point.position);
-            if (Physics.Raycast(rb.worldCenterOfMass, -Vector3.up, out hit))
+            HoverPoints.ForEach(hover =>
             {
-                var vertForce = (TargetHeight - hit.distance) / TargetHeight;
-                Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
+                RaycastHit hit;
+                var world_point = transform.TransformPoint(hover.position);
+                if (Physics.Raycast(world_point, -Vector3.up, out hit))
+                {
+                    var vertForce = (TargetHeight - hit.distance) / TargetHeight;
+                    Vector3 hoverVector = Vector3.up * vertForce * HoverStrength;
 
-                //Debug.Log(hoverVector); //DELETE THIS
-                CurrentHoverVector = hoverVector;
+                    //Debug.Log(hoverVector); //DELETE THIS
+                    CurrentHoverVector = hoverVector;
 
-                //rb.AddForce(hoverVector);
-                //rb.AddForceAtPosition(hoverVector, point.position);
-                force += hoverVector;
-            }
+                    //rb.AddForce(hoverVector);
+                    //rb.AddForceAtPosition(hoverVector, point.position);
+                    hover_force += hoverVector;
+                    rb.AddForceAtPosition(hover_force, world_point);
+
+                }
+            });
             #endregion
 
             if (rb.centerOfMass.y > TargetHeight)
