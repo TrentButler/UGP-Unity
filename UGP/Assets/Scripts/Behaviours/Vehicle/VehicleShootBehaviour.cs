@@ -82,8 +82,6 @@ namespace UGP
 
         [Command] public void CmdFireRound(NetworkIdentity shooter, Vector3 position, Quaternion rotation, float strength)
         {
-            var shooter_rb = shooter.GetComponentInParent<Rigidbody>();
-
             var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
 
             if (weapon.MuzzleFlash != null)
@@ -197,7 +195,7 @@ namespace UGP
             var cam = Camera.main;
             var mouseY = Input.GetAxis("Mouse Y");
             //var aim_input = (-mouseY * crosshairSpeed);
-            var aim_input = (mouseY);
+            var aim_input = (-mouseY);
 
             var aimVector = new Vector3(aim_input, 0, 0);
 
@@ -306,7 +304,7 @@ namespace UGP
                     }
                 }
             }
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButton(1) && !Input.GetMouseButton(0))
             {
                 if (!needs_recharge)
                 {
