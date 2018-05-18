@@ -26,7 +26,7 @@ namespace UGP
 
         public Transform RailTransform;
         public VehicleBehaviour vehicleBehaviour;
-        public VehicleShootBehaviour vehicleShoot;
+        public VehicleShootBehaviour shootBehaviour;
         
         public void Discharge()
         {
@@ -39,12 +39,16 @@ namespace UGP
                 //    MuzzleFlash.Play();
                 //}
 
+                var vehicle_rb = vehicleBehaviour.GetComponent<Rigidbody>();
+
                 vehicleBehaviour.CmdUseAmmunition(0, 0, 1, 0);
-                vehicleShoot.CmdFireRound(vehicleBehaviour.owner, GunBarrel.position, GunBarrel.rotation, ShotStrength);
+                
+                var point = GunBarrel.TransformPoint(new Vector3(0, 0, Mathf.Abs(vehicle_rb.velocity.z)));
+                shootBehaviour.CmdFireRound(vehicleBehaviour.owner, point, GunBarrel.rotation, ShotStrength);
             }
             else
             {
-                vehicleShoot.needs_recharge = true;
+                shootBehaviour.needs_recharge = true;
                 Debug.Log("OUT OF SNIPER ROUNDS");
             }
         }
@@ -79,7 +83,7 @@ namespace UGP
             }
             else
             {
-                var rail_rotate_vector = Vector3.forward * ((vehicleShoot.shot_timer * vehicleShoot.MaxRailRotateSpeed) * vehicleShoot.RailRotateAccelerationModifier);
+                var rail_rotate_vector = Vector3.forward * ((shootBehaviour.shot_timer * shootBehaviour.MaxRailRotateSpeed) * shootBehaviour.RailRotateAccelerationModifier);
                 RailTransform.Rotate(-rail_rotate_vector);
 
                 ChargeParticles.ForEach(particle =>
@@ -89,18 +93,18 @@ namespace UGP
                         particle.Play();
                     }   
 
-                    particle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticlesLifetime, vehicleShoot.shot_timer);
-                    particle.startSize = Mathf.Lerp(originalChargeParticlesStartSize * .3f, originalChargeParticleStartSize, vehicleShoot.shot_timer);
-                    particle.startColor = Color.Lerp(Vector4.zero, originalChargeParticlesStartColor, vehicleShoot.shot_timer);
+                    particle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticlesLifetime, shootBehaviour.shot_timer);
+                    particle.startSize = Mathf.Lerp(originalChargeParticlesStartSize * .3f, originalChargeParticleStartSize, shootBehaviour.shot_timer);
+                    particle.startColor = Color.Lerp(Vector4.zero, originalChargeParticlesStartColor, shootBehaviour.shot_timer);
                 });
 
                 if(ChargeParticle.isStopped)
                 {
                     ChargeParticle.Play();
                 }
-                ChargeParticle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticleLifetime, vehicleShoot.shot_timer);
-                ChargeParticle.startSize = Mathf.Lerp(originalChargeParticleStartSize * .3f, originalChargeParticleStartSize, vehicleShoot.shot_timer);
-                ChargeParticle.startColor = Color.Lerp(Vector4.zero, originalChargeParticleStartColor, vehicleShoot.shot_timer);
+                ChargeParticle.startLifetime = Mathf.Lerp(0.0f, originalChargeParticleLifetime, shootBehaviour.shot_timer);
+                ChargeParticle.startSize = Mathf.Lerp(originalChargeParticleStartSize * .3f, originalChargeParticleStartSize, shootBehaviour.shot_timer);
+                ChargeParticle.startColor = Color.Lerp(Vector4.zero, originalChargeParticleStartColor, shootBehaviour.shot_timer);
             }
         }
 
