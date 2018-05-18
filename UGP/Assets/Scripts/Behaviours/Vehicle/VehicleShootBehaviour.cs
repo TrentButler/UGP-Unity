@@ -23,7 +23,7 @@ namespace UGP
         public float crosshairXOffset;
         public float crosshairYOffset;
         public float crosshairSpeed;
-        [Range(0.001f, 10.0f)] public float CrosshairLerpSpeed = 1.5f;
+        [Range(0.001f, 100.0f)] public float CrosshairLerpSpeed = 1.5f;
         public Vector3 crosshairWorldOffset;
         public float AimCooldown = 4.0f;
         public float MinGunXRot = 10;
@@ -112,15 +112,8 @@ namespace UGP
             
             var b_rb = b.GetComponent<Rigidbody>();
             var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
-            if (shooter_rb != null)
-            {
-                force += new Vector3(0, 0, Mathf.Abs(shooter_rb.velocity.z));
-                b_rb.AddForce(force, ForceMode.VelocityChange);
-            }
-            else
-            {
-                b_rb.AddForce(force, ForceMode.VelocityChange);
-            }
+            
+            b_rb.AddForce(force, ForceMode.VelocityChange);
 
             net_companion.Spawn(b);
         }

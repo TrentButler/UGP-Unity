@@ -14,7 +14,11 @@ namespace UGP
             for (int i = 0; i < PelletCount; i++)
             {
                 var vehicle_behaviour = shootBehaviour.GetComponent<VehicleBehaviour>();
-                var point = new Vector2(Random.Range(-Spread, Spread), Random.Range(-Spread, Spread));
+                var vehicle_rb = vehicle_behaviour.GetComponent<Rigidbody>();
+                var point = new Vector3(Random.Range(-Spread, Spread), Random.Range(-Spread, Spread), 0);
+
+                point += new Vector3(0, 0, Mathf.Abs(vehicle_rb.velocity.z));
+
                 var transformed_point = GunBarrel.TransformPoint(point);
 
                 shootBehaviour.CmdFireRound(vehicle_behaviour.owner, transformed_point, GunBarrel.rotation, ShotStrength);
