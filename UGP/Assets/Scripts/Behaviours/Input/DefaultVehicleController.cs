@@ -220,7 +220,6 @@ namespace UGP
                     //rb.AddForceAtPosition(hoverVector, point.position);
                     hover_force += hoverVector;
                     rb.AddForceAtPosition(hover_force, world_point);
-
                 }
             });
             #endregion
