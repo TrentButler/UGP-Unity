@@ -8,7 +8,9 @@ namespace UGP
     public class DefaultVehicleController : InputController
     {
         public VehicleBehaviour vehicleBrain;
+
         #region VehicleHover
+        public List<Transform> HoverPoints = new List<Transform>();
         public Vector3 CurrentHoverVector;
         public float TargetHeight = 4.0f;
         public float EvasionHoverHeight = 20.0f;
@@ -251,6 +253,7 @@ namespace UGP
             rb.AddForce(strafe_force, ForceMode.Impulse);
             rb.AddForce(force, ForceMode.Acceleration);
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
+            Debug.Log(rb.velocity);
         }
 
         public override void Rotate(float xRot, float yRot, float zRot)
