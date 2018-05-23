@@ -130,20 +130,32 @@ namespace UGP
             }
         }
 
-        private bool ClampGunRotation()
+        private void ClampGunRotation()
         {
-            var currentRot = GunTransform.localRotation.eulerAngles;
-            var currentX = currentRot[0];
+            var parent_rotation = GunTransform.parent.rotation;
+            var current_rotation = GunTransform.rotation;
+            var current_quaternion_x = current_rotation.x;
 
-            if (currentX < MinGunXRot)
+            var max_euler_rot = Vector3.right * MaxGunXRot;
+            var max_quaternion_rot = Quaternion.Euler(max_euler_rot);
+            var max_quaternion_x = max_quaternion_rot.x;
+
+            var min_euler_rot = Vector3.right * MinGunXRot;
+            var min_quaternion_rot = Quaternion.Euler(min_euler_rot);
+            var min_quaternion_x = min_quaternion_rot.x;
+
+            if (current_quaternion_x > max_quaternion_x)
             {
-                return false;
+                current_quaternion_x = max_quaternion_x;
             }
-            if (currentX > MaxGunXRot)
+            if (current_quaternion_x < min_quaternion_x)
             {
-                return false;
+                current_quaternion_x = min_quaternion_x;
             }
-            return true;
+
+            parent_rotation[0] = current_quaternion_x;
+            parent_rotation[2] = 0.0f;
+            GunTransform.rotation = parent_rotation;
         }
 
         private void ClampCrosshairUI()
@@ -231,6 +243,8 @@ namespace UGP
                 GunTransform.Rotate(aimVector);
                 aimTimer = 0;
             }
+
+            ClampGunRotation();
 
             var crosshairLookAt = weapon.GunBarrel.TransformPoint(Vector3.forward * weapon.ShotStrength);
             var previousCrosshairPos = crosshair.rectTransform.position;

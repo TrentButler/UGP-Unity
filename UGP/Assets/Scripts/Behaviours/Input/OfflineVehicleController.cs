@@ -244,7 +244,7 @@ namespace UGP
                 zSway_force += zswayVector;
             }
             else
-            {
+            {   
                 rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
             }
 

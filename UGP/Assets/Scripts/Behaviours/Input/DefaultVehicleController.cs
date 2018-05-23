@@ -24,10 +24,7 @@ namespace UGP
         public Vector3 maxVehicleRotation;
         public Vector3 minVehicleRotation;
         public float vehicleRotateSpeed = 1.5f;
-        [Range(1.0f, 999.0f)] public float AutoRotateThreshold = 10.0f;
-        [Range(0.0001f, 999.0f)] public float AutoRotateSpeed = 0.5f;
-        [Range(0.0001f, 999.0f)] public float AutoRotateRaycastRadius = 1.5f;
-
+        [Range(1.0f, 999.0f)] public float MaxZAxisSway = 25.0f;
         private bool isRotating = false;
         #endregion
 
@@ -190,6 +187,7 @@ namespace UGP
 
             Vector3 accelerationVector = new Vector3(0.0f, 0.0f, (throttle * MaxSpeed) * VehicleAccelrationRate);
             Vector3 strafeVector = new Vector3(strafeVehicle * StrafeSpeed, 0, 0.0f);
+            Vector3 zswayVector = Vector3.forward * (strafeVehicle * MaxZAxisSway);
 
             currentVehiclePower = (throttle * MaxSpeed);
 
@@ -199,6 +197,7 @@ namespace UGP
             var force = Vector3.zero;
             var strafe_force = Vector3.zero;
             var hover_force = Vector3.zero;
+            var zSway_force = Vector3.zero;
 
             #region HOVERVECTORCALCULATION
             //PERFORM A RAYCAST DOWNWARD, 
@@ -207,7 +206,8 @@ namespace UGP
             HoverPoints.ForEach(hover =>
             {
                 RaycastHit hit;
-                var world_point = transform.TransformPoint(hover.position);
+                //var world_point = transform.TransformPoint(hover.position);
+                var world_point = hover.position;
                 if (Physics.Raycast(world_point, -Vector3.up, out hit))
                 {
                     var vertForce = (TargetHeight - hit.distance) / TargetHeight;
@@ -217,9 +217,7 @@ namespace UGP
                     CurrentHoverVector = hoverVector;
 
                     //rb.AddForce(hoverVector);
-                    //rb.AddForceAtPosition(hoverVector, point.position);
-                    hover_force += hoverVector;
-                    rb.AddForceAtPosition(hover_force, world_point);
+                    rb.AddForceAtPosition(hoverVector, world_point);
                 }
             });
             #endregion
@@ -244,21 +242,24 @@ namespace UGP
                     //rb.AddForce(move_direction, ForceMode.Impulse);
                     force += accel_direction;
                     strafe_force += strafe_direction;
+                    zSway_force += zswayVector;
                 }
                 else
                 {
                     rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO MOVEMENT INPUT
+                    rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO USER CONTROL
                 }
             }
             else
             {
                 rb.velocity = Vector3.Lerp(rb.velocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO USER CONTROL
+                rb.angularVelocity = Vector3.Lerp(rb.angularVelocity, Vector3.zero, VehicleDecelerateRate * Time.smoothDeltaTime); //DECELERATE IF THERE IS NO USER CONTROL
             }
 
             rb.AddForce(strafe_force, ForceMode.Impulse);
-            rb.AddForce(force, ForceMode.Acceleration);
+            rb.AddForce(force);
+            rb.AddTorque(zSway_force);
             rb.velocity = Vector3.ClampMagnitude(rb.velocity, MaxSpeed);
-            Debug.Log(rb.velocity);
         }
 
         public override void Rotate(float xRot, float yRot, float zRot)

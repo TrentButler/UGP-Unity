@@ -47,7 +47,7 @@ namespace UGP
                 playerInfo.player_dress.shirt_color = playerDress.ShirtColor;
                 playerInfo.player_dress.skin_color = playerDress.SkinColor;
                 playerInfo.player_dress.pants_color = playerDress.PantsColor;
-                playerDress.OnUse();
+                //playerDress.OnUse();
             }
             else
             {

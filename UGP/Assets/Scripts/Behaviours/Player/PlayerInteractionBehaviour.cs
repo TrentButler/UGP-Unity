@@ -13,7 +13,7 @@ namespace UGP
         public PlayerBehaviour playerBrain;
         [Range(0.01f, 999.0f)] public float TimeToEnterVehicle;
         [Range(0.01f, 999.0f)] public float TimeToExitVehicle;
-        private float enterTimer = 0.0f;
+        public float enterTimer = 0.0f;
         private float exitTimer = 0.0f;
         public Transform HoldingItemPosition;
         [SyncVar(hook = "OnisHoldingChange")] public bool isHolding = false;
@@ -159,6 +159,23 @@ namespace UGP
             var vehicle_behaviour = vehicle.GetComponent<VehicleBehaviour>();
             vehicle_behaviour.owner = localPlayer;
         }
+        [Command] public void CmdRemoveVehicleOwner(NetworkIdentity vehicle)
+        {
+            var vehicle_behaviour = vehicle.GetComponent<VehicleBehaviour>();
+            vehicle_behaviour.owner = null;
+        }
+        [Command] public void CmdAssignVehicleSeatedPlayer(NetworkIdentity vehicle, NetworkIdentity localPlayer)
+        {
+            var vehicle_behaivour = vehicle.GetComponent<VehicleBehaviour>();
+            var player_behaviour = localPlayer.GetComponent<PlayerBehaviour>();
+
+            vehicle_behaivour.seatedPlayer = player_behaviour;
+        }
+        [Command] public void CmdRemoveVehicleSeatedPlayer(NetworkIdentity vehicle)
+        {
+            var vehicle_behaviour = vehicle.GetComponent<VehicleBehaviour>();
+            vehicle_behaviour.seatedPlayer = null;
+        }
 
         private void ExitVehicleWithTimer()
         {
@@ -178,6 +195,8 @@ namespace UGP
                 var vehicleIdentity = playerBrain.vehicle.GetComponent<NetworkIdentity>();
                 CmdSetVehicleActive(false, vehicleIdentity);
                 CmdSetPlayerInSeat(false, vehicleIdentity);
+                CmdRemoveVehicleOwner(vehicleIdentity);
+                CmdRemoveVehicleSeatedPlayer(vehicleIdentity);
 
                 var vehicle_audio_behaivour = playerBrain.vehicle.audioBehaviour;
                 vehicle_audio_behaivour.CmdStopVehicle();
@@ -243,6 +262,7 @@ namespace UGP
                         var player_netIdentity = playerBrain.GetComponent<NetworkIdentity>();
                         vehicleBrain.owner = player_netIdentity;
                         CmdAssignVehicleOwner(vehicleIdentity, player_netIdentity);
+                        CmdAssignVehicleSeatedPlayer(vehicleIdentity, player_netIdentity);
 
                         CmdStartVehicle(vehicleIdentity);
 
@@ -346,6 +366,23 @@ namespace UGP
                 var v = other.GetComponentInParent<VehicleBehaviour>();
                 EnterVehicleWithTimer(v);
             }
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if(!isServer)
+            {
+                return;
+            }
+
+            var contact_points = collision.contacts.ToList();
+            contact_points.ForEach(contact =>
+            {
+                if (contact.thisCollider.CompareTag("Foot"))
+                {
+                    playerBrain.audioBehaviour.RpcPlayerWalk();
+                }
+            });
         }
 
         private void FixedUpdate()

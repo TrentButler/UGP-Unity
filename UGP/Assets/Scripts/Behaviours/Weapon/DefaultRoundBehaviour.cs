@@ -210,6 +210,51 @@ namespace UGP
                 }
             }
 
+            if (collision.collider.tag == "Foot")
+            {
+                var impact_point = collision.contacts[0];
+
+                var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+
+                if (owner != null)
+                {
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                    if (owner != net_identity)
+                    {
+                        if (player_rb != null)
+                        {
+                            player_rb.AddForceAtPosition(impact_velocity, first_impact_pos, ForceMode.Impulse);
+                        }
+
+                        net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+                        player_behaviour.RpcTakeDamage(net_identity, owner, DamageDealt * PlayerDamageMultiplier);
+                        net_companion.Server_Destroy(gameObject);
+                        return;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    if (player_rb != null)
+                    {
+                        player_rb.AddForceAtPosition(impact_velocity, first_impact_pos, ForceMode.Impulse);
+                    }
+
+                    var player_behaviour = collision.collider.GetComponentInParent<PlayerBehaviour>();
+                    var net_identity = player_behaviour.GetComponent<NetworkIdentity>();
+
+                    net_companion.SpawnParticle(BulletHitPlayerParticle, impact_point.point);
+                    player_behaviour.RpcTakeDamage_Other(net_identity, "NULL", DamageDealt * PlayerDamageMultiplier);
+                    net_companion.Server_Destroy(gameObject);
+                    return;
+                }
+            }
+
             if (collision.collider.tag == "Ammo" || collision.collider.name == "Sphere")
             {
                 return;
