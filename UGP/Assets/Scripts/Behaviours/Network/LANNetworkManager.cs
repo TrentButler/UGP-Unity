@@ -61,6 +61,11 @@ namespace UGP
             ClientScene.AddPlayer(conn, controllerID, playerInfo);
         }
 
+        public override void OnServerConnect(NetworkConnection conn)
+        {
+            base.OnServerConnect(conn);
+        }
+
         public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId, NetworkReader reader)
         {
             base.OnServerAddPlayer(conn, playerControllerId);

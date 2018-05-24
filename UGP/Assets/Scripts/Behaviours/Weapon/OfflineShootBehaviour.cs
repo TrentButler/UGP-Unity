@@ -143,11 +143,13 @@ namespace UGP
             if (aimVector.magnitude > 0.0f)
             {
                 //aim_input = Mathf.Clamp(aim_input, MinGunXRot, MaxGunXRot);
+                
                 GunTransform.Rotate(aimVector);
                 aimTimer = 0;
             }
 
             ClampGunRotation();
+
             var crosshairLookAt = weapon.GunBarrel.TransformPoint(Vector3.forward * weapon.ShotStrength);
             crosshair.rectTransform.position = cam.WorldToScreenPoint(crosshairLookAt + crosshairWorldOffset);
             ClampCrosshairUI();

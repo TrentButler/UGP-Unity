@@ -37,6 +37,17 @@ public class MainMenuUIBehaviour : MonoBehaviour
         Application.Quit();
     }
 
+    public void ToggleNetworkUI()
+    {
+        if (NetworkUIActive)
+        {
+            NetworkUIActive = false;
+        }
+        else
+        {
+            NetworkUIActive = true;
+        }
+    }
     public void ToggleNetworkUI(bool active)
     {
         if (active)
