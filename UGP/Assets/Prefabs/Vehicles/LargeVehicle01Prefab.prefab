@@ -8124,19 +8124,19 @@ MonoBehaviour:
   - {fileID: 4021160215958098}
   CurrentHoverVector: {x: 0, y: 0, z: 0}
   TargetHeight: 2.5
-  EvasionHoverHeight: 14
+  EvasionHoverHeight: 8
   HoverStrength: 20
-  EvasionHoverStrength: 50
-  maxVehicleRotation: {x: 45, y: 360, z: 10}
-  minVehicleRotation: {x: -45, y: -360, z: -10}
+  EvasionHoverStrength: 15
+  maxVehicleRotation: {x: 360, y: 360, z: 10}
+  minVehicleRotation: {x: -360, y: -360, z: -10}
   vehicleRotateSpeed: 2
-  MaxZAxisSway: 5
-  MaxSpeed: 75
+  MaxZAxisSway: 15
+  MaxSpeed: 20
   VehicleAccelrationRate: 0.5
-  VehicleDecelerateRate: 3
+  VehicleDecelerateRate: 0.5
   StrafeSpeed: 0.5
   VehicleSteerSpeed: 2
-  BoostSpeed: 175
+  BoostSpeed: 115
   HoverTimer: 10
   isTesting: 0
   useDownforce: 1
@@ -8145,8 +8145,8 @@ MonoBehaviour:
   currentVehicleThrottle: 0
   currentVehicleStrafe: 0
   currentFuelConsumption: 0
-  FuelBurnRate: 0.05
-  BoostingFuelBurnRate: 1.5
+  FuelBurnRate: 0.25
+  BoostingFuelBurnRate: 5.2
   currentVehiclePower: 0
 --- !u!114 &114320371123046308
 MonoBehaviour:
