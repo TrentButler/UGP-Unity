@@ -198,19 +198,22 @@ namespace UGP
                 var vehicle_behaviour = other.GetComponentInParent<VehicleBehaviour>();
                 var vehicle_identity = other.GetComponentInParent<NetworkIdentity>();
 
-                if (isBeingHeld && player.isLocalPlayer && !vehicle_behaviour.isDestroyed)
+                if (player != null)
                 {
-                    var string_type = _I.GetType().ToString(); //GET THE TYPE OF ITEM
-                    player.CmdAssignVehicleAuthority(vehicle_identity); //ASSIGN THE VEHICLE 'AUTHORITY'
-
-                    if (vehicle_identity.hasAuthority)
+                    if (isBeingHeld && player.isLocalPlayer && !vehicle_behaviour.isDestroyed)
                     {
-                        player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity); //USE THE ITEM ON THE VEHICLE
-                        player.playerBrain.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
-                        player._DropItem(); //REMOVE THE ITEM FROM THE PLAYER
+                        var string_type = _I.GetType().ToString(); //GET THE TYPE OF ITEM
+                        player.CmdAssignVehicleAuthority(vehicle_identity); //ASSIGN THE VEHICLE 'AUTHORITY'
 
-                        var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
-                        net_companion.Server_Destroy(gameObject);
+                        if (vehicle_identity.hasAuthority)
+                        {
+                            player.UseItemOnVehicle(string_type, item_network_identity, vehicle_identity); //USE THE ITEM ON THE VEHICLE
+                            player.playerBrain.CmdRemoveVehicleAuthority(vehicle_identity); //REMOVE THE AUTHORITY FROM THE VEHICLE
+                            player._DropItem(); //REMOVE THE ITEM FROM THE PLAYER
+
+                            var net_companion = FindObjectOfType<InGameNetworkBehaviour>();
+                            net_companion.Server_Destroy(gameObject);
+                        }
                     }
                 }
             }

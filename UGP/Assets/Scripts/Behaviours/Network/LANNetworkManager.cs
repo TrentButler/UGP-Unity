@@ -15,6 +15,17 @@ namespace UGP
         public Color shirt_color;
         public Color pants_color;
     };
+    public struct Vehicle_Dress
+    {
+        public Color Part0Color;
+        public Color Part1Color;
+        public Color Part2Color;
+        public Color Part3Color;
+        public Color Part4Color;
+        public Color Part5Color;
+        public Color Part6Color;
+        public Color Part7Color;
+    }
 
     public class LANNetworkManager : NetworkManager
     {
@@ -25,11 +36,12 @@ namespace UGP
         public List<NetworkConnection> allConnections = new List<NetworkConnection>();
         public int player_Index = 0;
         public Player_Dress player_Dress;
-        //public VehicleDress vehicle_Dress;
+        public Vehicle_Dress vehicle_Dress;
         
         public class NetworkMessage : MessageBase
         {
-            public Player_Dress player_dress;    
+            public Player_Dress player_dress;
+            public Vehicle_Dress vehicle_dress;
         }
 
         public override void OnClientConnect(NetworkConnection conn)
@@ -40,6 +52,7 @@ namespace UGP
 
             NetworkMessage playerInfo = new NetworkMessage();
             var playerDress = FindObjectOfType<PlayerDress>();
+            var vehicleDress = FindObjectOfType<VehicleDress>();
             if(playerDress != null)
             {
                 playerInfo.player_dress.prefab_index = playerDress.PlayerIndex;
@@ -47,7 +60,7 @@ namespace UGP
                 playerInfo.player_dress.shirt_color = playerDress.ShirtColor;
                 playerInfo.player_dress.skin_color = playerDress.SkinColor;
                 playerInfo.player_dress.pants_color = playerDress.PantsColor;
-                playerDress.OnUse();
+                //playerDress.OnUse();
             }
             else
             {
@@ -56,6 +69,29 @@ namespace UGP
                 playerInfo.player_dress.shirt_color = RandomUserNames.GetColor();
                 playerInfo.player_dress.skin_color = RandomUserNames.GetColor();
                 playerInfo.player_dress.pants_color = RandomUserNames.GetColor();
+            }
+
+            if (vehicleDress != null)
+            {
+                playerInfo.vehicle_dress.Part0Color = vehicleDress.Part0Color;
+                playerInfo.vehicle_dress.Part1Color = vehicleDress.Part1Color;
+                playerInfo.vehicle_dress.Part2Color = vehicleDress.Part2Color;
+                playerInfo.vehicle_dress.Part3Color = vehicleDress.Part3Color;
+                playerInfo.vehicle_dress.Part4Color = vehicleDress.Part4Color;
+                playerInfo.vehicle_dress.Part5Color = vehicleDress.Part5Color;
+                playerInfo.vehicle_dress.Part6Color = vehicleDress.Part6Color;
+                playerInfo.vehicle_dress.Part7Color = vehicleDress.Part7Color;
+            }
+            else
+            {
+                playerInfo.vehicle_dress.Part0Color = RandomUserNames.GetColor();
+                playerInfo.vehicle_dress.Part1Color = RandomUserNames.GetColor();
+                playerInfo.vehicle_dress.Part2Color = RandomUserNames.GetColor();
+                playerInfo.vehicle_dress.Part3Color = RandomUserNames.GetColor();
+                playerInfo.vehicle_dress.Part4Color = RandomUserNames.GetColor();
+                playerInfo.vehicle_dress.Part5Color = RandomUserNames.GetColor();
+                playerInfo.vehicle_dress.Part6Color = RandomUserNames.GetColor();
+                playerInfo.vehicle_dress.Part7Color = RandomUserNames.GetColor();
             }
 
             ClientScene.AddPlayer(conn, controllerID, playerInfo);
@@ -71,10 +107,9 @@ namespace UGP
                 var message_stream = reader.ReadMessage<NetworkMessage>();
 
                 player_Dress = message_stream.player_dress;
+                vehicle_Dress = message_stream.vehicle_dress;
                 player_Index = player_Dress.prefab_index;
                 //player_Index = message_stream.player_index;
-
-                //vehicleDress = message_stream.vehicle_dress;
             }
 
             //playerIndex = Random.Range(0, PlayerPrefabs.Count);
@@ -87,14 +122,13 @@ namespace UGP
 
             var playerBehaviour = spawn_player.GetComponent<PlayerBehaviour>();
             var playerDressBehaviour = spawn_player.GetComponent<PlayerDressBehaviour>();
-            playerDressBehaviour.Load(player_Dress);
+            playerDressBehaviour.Load(player_Dress, vehicle_Dress);
 
             //playerDress.SkinColor = RandomUserNames.GetColor();
             //playerDress.ShirtColor = RandomUserNames.GetColor();
             //playerDress.PantsColor = RandomUserNames.GetColor();
 
             playerBehaviour.playerName = player_Dress.player_name;
-            playerBehaviour.vehicleColor = player_Dress.shirt_color;
 
             NetworkServer.AddPlayerForConnection(conn, spawn_player, controller_id);
             gamemode_manager.gamemode.Players.Add(playerBehaviour);

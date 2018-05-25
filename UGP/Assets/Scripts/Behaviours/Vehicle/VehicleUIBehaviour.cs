@@ -12,6 +12,7 @@ namespace UGP
 
         public GameObject vehicleUI;
         public GameObject enterVehicleUI;
+        public Image EnterVehicleSlider;
         public Image HealthSlider;
         public Image FuelSlider;
 
@@ -30,6 +31,11 @@ namespace UGP
             //return calc.normalized.x;
 
             return (1 / VehicleBrain.max_fuel) * VehicleBrain.vehicleFuel;
+        }
+
+        public float GetEnterVehicleProgression(PlayerInteractionBehaviour player)
+        {
+            return (1 / player.TimeToEnterVehicle) * player.enterTimer;
         }
 
         public void UpdateVehicleUI()
@@ -140,9 +146,21 @@ namespace UGP
             {
                 //ENABLE THE ENTERVEHICLE UI
                 var player_network_identity = other.GetComponentInParent<NetworkIdentity>();
+                var player_behaviour = other.GetComponentInParent<PlayerBehaviour>();
+                var player_interaction = other.GetComponentInParent<PlayerInteractionBehaviour>();
                 if (player_network_identity.isLocalPlayer && !VehicleBrain.vehicleActive && !VehicleBrain.playerInSeat)
                 {
                     enterVehicleUI.SetActive(true);
+
+                    var ui_pos = player_behaviour.transform.position;
+                    var original_ui_pos = enterVehicleUI.transform.position;
+                    enterVehicleUI.transform.position = Vector3.Lerp(original_ui_pos, ui_pos, 1);
+
+                    var cinemachine_rig = player_behaviour.VirtualCamera.GetComponent<Cinemachine.CinemachineFreeLook>().LiveChildOrSelf;
+                    var camTransform = cinemachine_rig.VirtualCameraGameObject.transform;
+                    enterVehicleUI.transform.LookAt(camTransform);
+
+                    EnterVehicleSlider.fillAmount = GetEnterVehicleProgression(player_interaction);
                 }
             }
         }
@@ -150,6 +168,7 @@ namespace UGP
         {
             //DISABLE THE ENTERVEHICLE UI
             enterVehicleUI.SetActive(false);
+            EnterVehicleSlider.fillAmount = 0.0f;
         }
     }
 }

@@ -21,6 +21,7 @@ namespace UGP
         public NetworkUserControl ic;
         public PlayerInteractionBehaviour interaction;
         public PlayerUIBehaviour ui;
+        public PlayerAudioBehaviour audioBehaviour;
         public Vector3 Gravity = new Vector3(0, -4.0f, 0);
 
         public Animator ani;
@@ -75,8 +76,10 @@ namespace UGP
                     collider.enabled = false;
                 });
 
+                audioBehaviour.CmdPlayerDead();
+
                 var holding_item = interaction.isHolding;
-                if(holding_item)
+                if (holding_item)
                 {
                     if(interaction.item != null)
                     {
@@ -93,7 +96,7 @@ namespace UGP
                     interaction.enabled = false;
                 }
 
-                if(isLocalPlayer)
+                if (isLocalPlayer)
                 {
                     if(isDriving)
                     {
@@ -134,6 +137,7 @@ namespace UGP
         {
             playerHealth -= healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
+            audioBehaviour.RpcPlayerHit();
 
             //Debug.Log("Player Take Damage");
             if (playerHealth <= 0.0f)
@@ -153,6 +157,7 @@ namespace UGP
         {
             playerHealth -= healthTaken;
             playerHealth = Mathf.Clamp(playerHealth, 0.0f, 99999);
+            audioBehaviour.RpcPlayerHit();
 
             //Debug.Log("Player Take Damage");
             if (playerHealth <= 0.0f)

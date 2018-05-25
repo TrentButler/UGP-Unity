@@ -23,6 +23,7 @@ namespace UGP
         public float crosshairXOffset;
         public float crosshairYOffset;
         public float crosshairSpeed;
+        [Range(0.001f, 100.0f)] public float CrosshairLerpSpeed = 1.5f;
         public Vector3 crosshairWorldOffset;
         public float AimCooldown = 4.0f;
         public float MinGunXRot = 10;
@@ -106,10 +107,10 @@ namespace UGP
 
             var round_behaviour = b.GetComponent<DefaultRoundBehaviour>();
             round_behaviour.owner = shooter;
-
+            
             var b_rb = b.GetComponent<Rigidbody>();
-
             var force = b_rb.transform.TransformDirection(Vector3.forward) * strength;
+            
             b_rb.AddForce(force, ForceMode.VelocityChange);
 
             net_companion.Spawn(b);
@@ -129,20 +130,32 @@ namespace UGP
             }
         }
 
-        private bool ClampGunRotation()
+        private void ClampGunRotation()
         {
-            var currentRot = GunTransform.localRotation.eulerAngles;
-            var currentX = currentRot[0];
+            var parent_rotation = GunTransform.parent.rotation;
+            var current_rotation = GunTransform.rotation;
+            var current_quaternion_x = current_rotation.x;
 
-            if (currentX < MinGunXRot)
+            var max_euler_rot = Vector3.right * MaxGunXRot;
+            var max_quaternion_rot = Quaternion.Euler(max_euler_rot);
+            var max_quaternion_x = max_quaternion_rot.x;
+
+            var min_euler_rot = Vector3.right * MinGunXRot;
+            var min_quaternion_rot = Quaternion.Euler(min_euler_rot);
+            var min_quaternion_x = min_quaternion_rot.x;
+
+            if (current_quaternion_x > max_quaternion_x)
             {
-                return false;
+                current_quaternion_x = max_quaternion_x;
             }
-            if (currentX > MaxGunXRot)
+            if (current_quaternion_x < min_quaternion_x)
             {
-                return false;
+                current_quaternion_x = min_quaternion_x;
             }
-            return true;
+
+            parent_rotation[0] = current_quaternion_x;
+            parent_rotation[2] = 0.0f;
+            GunTransform.rotation = parent_rotation;
         }
 
         private void ClampCrosshairUI()
@@ -231,8 +244,13 @@ namespace UGP
                 aimTimer = 0;
             }
 
+            ClampGunRotation();
+
             var crosshairLookAt = weapon.GunBarrel.TransformPoint(Vector3.forward * weapon.ShotStrength);
-            crosshair.rectTransform.position = cam.WorldToScreenPoint(crosshairLookAt + crosshairWorldOffset);
+            var previousCrosshairPos = crosshair.rectTransform.position;
+            var targetCrosshairPos = cam.WorldToScreenPoint(crosshairLookAt + crosshairWorldOffset);
+
+            crosshair.rectTransform.position = Vector3.Lerp(previousCrosshairPos, targetCrosshairPos, Time.smoothDeltaTime * CrosshairLerpSpeed);
             ClampCrosshairUI();
         }
 
@@ -273,7 +291,7 @@ namespace UGP
         }
         private void Fire_RailGun()
         {
-            if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+            if (Input.GetMouseButton(0))
             {
                 if (!needs_recharge)
                 {
@@ -300,7 +318,7 @@ namespace UGP
                     }
                 }
             }
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButton(1) && !Input.GetMouseButton(0))
             {
                 if (!needs_recharge)
                 {
@@ -369,7 +387,7 @@ namespace UGP
             {
                 if (hasAuthority && !isServer)
                 {
-                    Aim();
+                    //Aim();
 
                     if (weapon != null)
                     {

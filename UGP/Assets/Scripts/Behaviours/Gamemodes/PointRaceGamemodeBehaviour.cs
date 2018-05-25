@@ -39,6 +39,8 @@ namespace UGP
         [SyncVar(hook = "OnRaceTimerChange")] public float RaceTimer;
         [SyncVar(hook = "OnPreStormTimerChange")] [Range(0.001f, 999999)] public float PreStormTimer;
         private float OriginalPreStormTimer;
+        private float restart_timer = 10.0f;
+        private float original_restart_timer;
 
         private void OnPreRaceTimerChange(float timerChange)
         {
@@ -189,7 +191,6 @@ namespace UGP
                 }
             });
 
-
             OriginalPreStormTimer = PreStormTimer;
             OriginalStormPosition = Storm.position;
             OriginalStormRotation = Storm.rotation;
@@ -197,6 +198,8 @@ namespace UGP
             StormPosition = Storm.position;
             StormRotation = Storm.rotation;
             TotalStormDistance = Vector3.Distance(StormPosition, Finish.position);
+
+            original_restart_timer = restart_timer;
         }
 
         private void LateUpdate()
@@ -356,8 +359,14 @@ namespace UGP
 
             if(Players.Count <= 0)
             {
-                RestartMatch();
-                //RestartPreMatchTimer();
+                RestartPreMatchTimer();
+
+                restart_timer -= Time.deltaTime;
+                if(restart_timer <= 0.0f)
+                {
+                    RestartMatch();
+                    restart_timer = original_restart_timer;
+                }
             }
 
             if(PreRaceTimer > 0.0f)
@@ -436,6 +445,8 @@ namespace UGP
             StormPosition = OriginalStormPosition;
             StormRotation = OriginalStormRotation;
             StormProgression = GetStormProgression();
+
+            restart_timer = original_restart_timer;
 
             Players.ForEach(player =>
             {
