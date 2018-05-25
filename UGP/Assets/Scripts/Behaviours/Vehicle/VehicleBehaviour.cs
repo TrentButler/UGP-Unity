@@ -2,6 +2,8 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Networking.Types;
+
 
 namespace UGP
 {
@@ -9,7 +11,6 @@ namespace UGP
     public class VehicleBehaviour : NetworkBehaviour
     {
         #region COLOR_CHANGE
-        public List<MeshRenderer> models;
         [Range(0.001f, 1.0f)] public float colorChangeSpeed;
         #endregion
 
@@ -35,7 +36,17 @@ namespace UGP
         #region SYNCED_VARIABLES
         [SyncVar] public bool vehicleActive;
         [SyncVar(hook = "OnIsDestroyedChange")] public bool isDestroyed = false;
-        [SyncVar] public Color vColor;
+        [SyncVar] public Color Part0Color;
+        [SyncVar] public Color Part1Color;
+        [SyncVar] public Color Part2Color;
+        [SyncVar] public Color Part3Color;
+        [SyncVar] public Color Part4Color;
+        [SyncVar] public Color Part5Color;
+        [SyncVar] public Color Part6Color;
+        [SyncVar] public Color Part7Color;
+        private List<Color> _colors = new List<Color>();
+        public List<MeshRenderer> models = new List<MeshRenderer>();
+
         [SyncVar] public bool playerInSeat = false;
         [SyncVar] public float max_health, max_fuel;
         [SyncVar(hook = "OnVehicleHealthChange")] public float vehicleHealth;
@@ -268,15 +279,42 @@ namespace UGP
         //    }
         //}
 
+        public void LoadColors(List<Color> colors)
+        {
+            for(int i = 0; i < _colors.Count; i++)
+            {
+                if(colors[i] != null)
+                {
+                    var col = _colors[i];
+                    if (colors[i] != null)
+                    {
+                        col.r = colors[i].r;
+                        col.g = colors[i].g;
+                        col.b = colors[i].b;
+                        col.a = colors[i].a;
+                    }
+                }
+            }
+        }
+
         public void ColorChangeOn()
         {
             //LERP THE CURRENT COLOR OF THE VEHICLE TO THE TARGET COLOR
-            models.ForEach(m =>
+            for(int i = 0; i < models.Count; i++)
             {
-                var oldColor = m.material.color;
+                var oldColor = models[i].material.color;
                 var cVector = new Vector4(oldColor.r, oldColor.g, oldColor.b, oldColor.a);
 
-                var targetColor = new Vector4(vColor.r, vColor.g, vColor.b, vColor.a);
+                var targetColor = Vector4.zero;
+
+                if (_colors[i] != null)
+                {
+                    targetColor = _colors[i];
+                }
+                else
+                {
+                    targetColor = RandomUserNames.GetColor();
+                }
 
                 var lerpR = Mathf.Lerp(cVector.x, targetColor.x, Time.deltaTime * colorChangeSpeed);
                 var lerpG = Mathf.Lerp(cVector.y, targetColor.y, Time.deltaTime * colorChangeSpeed);
@@ -285,8 +323,8 @@ namespace UGP
 
                 var lerpColor = new Vector4(lerpR, lerpG, lerpB, lerpA);
 
-                m.material.color = lerpColor;
-            });
+                models[i].material.color = lerpColor;
+            }
         }
         public void ColorChangeOff()
         {
@@ -446,9 +484,11 @@ namespace UGP
                 pov_camera.m_VerticalAxis.m_InvertAxis = ic.InvertCameraVertical;
             }
 
-            models.ForEach(m =>
+            _colors = new List<Color>() { Part0Color, Part1Color, Part2Color, Part3Color, Part4Color, Part5Color, Part6Color, Part7Color };
+
+            _colors.ForEach(m =>
             {
-                m.material.color = Vector4.one;
+                m = Vector4.one;
             });
         }
 

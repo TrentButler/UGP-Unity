@@ -109,9 +109,9 @@ namespace UGP
             vehicleIdentity.GetComponent<VehicleBehaviour>().playerInSeat = inSeat;
         }
         [Command]
-        public void CmdSetVehicleColor(Color color, NetworkIdentity vehicleIdentity)
+        public void CmdSetVehicleColor(List<Color> colors, NetworkIdentity vehicleIdentity)
         {
-            vehicleIdentity.GetComponent<VehicleBehaviour>().vColor = color;
+            vehicleIdentity.GetComponent<VehicleBehaviour>().LoadColors(colors);
         }
         [Command]
         public void CmdAssignItemAuthority(NetworkIdentity itemIdentity)
@@ -255,7 +255,13 @@ namespace UGP
                         playerBrain.SetVehicle(vehicleBrain);
                         CmdSetVehicleActive(true, vehicleIdentity);
                         CmdSetPlayerInSeat(true, vehicleIdentity);
-                        CmdSetVehicleColor(playerBrain.vehicleColor, vehicleIdentity);
+
+                        var player_dress = playerBrain.GetComponent<PlayerDressBehaviour>();
+                        if (player_dress != null)
+                        {
+                            CmdSetVehicleColor(player_dress.GetColors(), vehicleIdentity);
+                        }
+
                         CmdAssignVehicleAuthority(vehicleIdentity);
 
                         vehicleBrain.seatedPlayer = playerBrain;
