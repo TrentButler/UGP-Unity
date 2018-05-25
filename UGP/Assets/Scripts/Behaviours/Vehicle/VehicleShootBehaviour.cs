@@ -387,7 +387,7 @@ namespace UGP
             {
                 if (hasAuthority && !isServer)
                 {
-                    Aim();
+                    //Aim();
 
                     if (weapon != null)
                     {
