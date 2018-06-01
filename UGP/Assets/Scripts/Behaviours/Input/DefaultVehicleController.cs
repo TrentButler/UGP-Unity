@@ -44,7 +44,7 @@ namespace UGP
         public bool isTesting = false;
         public bool useDownforce = true;
         public Vector3 Downforce;
-
+        
         public Rigidbody rb;
 
         [HideInInspector] public float currentVehicleThrottle;

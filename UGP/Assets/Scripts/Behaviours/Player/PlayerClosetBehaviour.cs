@@ -247,7 +247,7 @@ namespace UGP
         }
         public void OnJoin()
         {
-            SceneManager.LoadScene("53.COREdemo");
+            SceneManager.LoadScene("50.CORETrack");
         }
         // Use this for initialization
         void Start()

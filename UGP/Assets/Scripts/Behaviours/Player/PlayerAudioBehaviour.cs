@@ -85,12 +85,12 @@ namespace UGP
         }
         public void PlayPlayerWalkSound()
         {
-            WalkAudioSource.Stop();
-            WalkAudioSource.Play();
+            //WalkAudioSource.Stop();
+            //WalkAudioSource.Play();
         }
         public void StopPlayerWalkSound()
         {
-            WalkAudioSource.Stop();
+            //WalkAudioSource.Stop();
         }
 
         private void Start()
