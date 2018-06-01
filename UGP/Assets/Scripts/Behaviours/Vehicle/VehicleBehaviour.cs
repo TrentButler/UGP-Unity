@@ -17,12 +17,15 @@ namespace UGP
         public GameObject RagDoll;
         public GameObject Model;
         public NetworkUserControl ic;
+        public DefaultVehicleController vehicleController;
         public VehicleShootBehaviour shootBehaviour;
         public VehicleUIBehaviour vehicleUIBehaviour;
         public VehicleAudioBehaviour audioBehaviour;
 
         public Vehicle VehicleConfig;
         [HideInInspector] public Vehicle _v;
+
+        public Collider nonTriggerCol;
 
         #region ParticleSystems
         public ParticleSystem VehicleDestroyedParticle;
@@ -308,7 +311,22 @@ namespace UGP
                 m.material.color = lerpColor;
             });
         }
-        
+
+        public void CheckisGrounded()
+        {
+            var rb = GetComponent<Rigidbody>();
+            var center = nonTriggerCol.bounds.center;
+            var isGrounded = Physics.BoxCast(center, nonTriggerCol.bounds.extents, -Vector3.up, rb.rotation, 1.5f);
+            if (isGrounded)
+            {
+                rb.isKinematic = true;
+            }
+            else
+            {
+                rb.isKinematic = false;
+            }
+        }
+
         private void OnCollisionEnter(Collision collision)
         {
             if (!isServer)
@@ -460,14 +478,6 @@ namespace UGP
                 {
                     if (vehicleActive)
                     {
-                        if(Input.GetKeyDown(KeyCode.Keypad0))
-                        {
-                            CmdTakeDamage(999999);
-                        }
-                        if (Input.GetKeyDown(KeyCode.Keypad0))
-                        {
-                            CmdTakeHealth(999999);
-                        }
                         VirtualCamera.SetActive(true);
                         Cursor.visible = false;
                         ic.enabled = true;
@@ -521,9 +531,7 @@ namespace UGP
 
         private void LateUpdate()
         {
-            var rb = GetComponent<Rigidbody>();
-            
-            if(isDestroyed)
+            if (isDestroyed)
             {
                 if(!isServer)
                 {
@@ -539,7 +547,6 @@ namespace UGP
                 ColorChangeOff();
                 //VehicleDestroyedParticle.Play();
                 //BurningVehicleParticle.Play();
-                rb.isKinematic = true;
                 return;
             }
             else
@@ -549,12 +556,11 @@ namespace UGP
 
             if (vehicleActive)
             {
-                rb.isKinematic = false;
                 ColorChangeOn();
             }
             else
             {
-                rb.isKinematic = true;
+                CheckisGrounded();
                 ColorChangeOff();
             }
         }

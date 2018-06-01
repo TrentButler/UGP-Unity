@@ -22,6 +22,7 @@ namespace UGP
         [Range(0f, 1f)] public float EngineMasterVolume = 0.5f;
 
         public DefaultVehicleController vehicleController;
+        public VehicleBehaviour vehicle;
 
         [SyncVar(hook = "OnCurrentVerticalThrottleChange")] public float current_vertical_throttle = 0.0f;
         [SyncVar(hook = "OnCurrentHorizontalThrottleChange")] public float current_horizontal_throttle = 0.0f;
@@ -99,22 +100,25 @@ namespace UGP
         {
             if (hasAuthority && !isServer)
             {
-                current_vertical_throttle = vehicleController.currentVehiclePower;
-                current_horizontal_throttle = Mathf.Abs(vehicleController.currentVehicleStrafe);
-                vehicle_max_speed = vehicleController.MaxSpeed;
-                CmdCurrentVerticalThrottle(vehicleController.currentVehiclePower);
-                CmdCurrentHorizontalThrottle(Mathf.Abs(vehicleController.currentVehicleStrafe));
-                CmdVehicleMaxSpeed(vehicleController.MaxSpeed);
+                //current_vertical_throttle = vehicleController.currentVehiclePower;
+                //current_horizontal_throttle = Mathf.Abs(vehicleController.currentVehicleStrafe);
+                //vehicle_max_speed = vehicleController.MaxSpeed;
+                //CmdCurrentVerticalThrottle(vehicleController.currentVehiclePower);
+                //CmdCurrentHorizontalThrottle(Mathf.Abs(vehicleController.currentVehicleStrafe));
+                //CmdVehicleMaxSpeed(vehicleController.MaxSpeed);
             }
         }
 
         private void Update()
         {
-            var enginePowerProportion = Mathf.InverseLerp(0, vehicle_max_speed, current_vertical_throttle);
+            //if (vehicle.vehicleActive)
+            //{
+            //    var enginePowerProportion = Mathf.InverseLerp(0, vehicle_max_speed, current_vertical_throttle);
 
-            EngineAudioSource.pitch = Mathf.Lerp(MinThrottlePitch, MaxThrottlePitch, enginePowerProportion);
+            //    EngineAudioSource.pitch = Mathf.Lerp(MinThrottlePitch, MaxThrottlePitch, enginePowerProportion);
 
-            EngineAudioSource.volume = Mathf.InverseLerp(0, vehicle_max_speed * EngineMasterVolume, current_vertical_throttle);
+            //    EngineAudioSource.volume = Mathf.InverseLerp(0, vehicle_max_speed * EngineMasterVolume, current_vertical_throttle);
+            //}
         }
     }
 }
